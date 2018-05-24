@@ -7,21 +7,21 @@ import java.io.*;
 import java.net.*;
 import java.security.*;
 
-public class SkuggaServer {
+public class HttpsServer {
 
 	private int port;
 	private String host;
 
 	private KeyStore keyStore;
-	private HttpsServer server;
+	private com.sun.net.httpserver.HttpsServer server;
 	private SSLContext sslContext;
 
-	public SkuggaServer(String host, int port) {
+	public HttpsServer(String host, int port) {
 		this.port = port;
 		this.host = host;
 
 		try {
-			this.server = HttpsServer.create(new InetSocketAddress(host, port), 1);
+			this.server = com.sun.net.httpserver.HttpsServer.create(new InetSocketAddress(host, port), 1);
 			this.sslContext = SSLContext.getInstance("TLS");
 		} catch(Exception e) {
 			// TODO: Define this
@@ -29,10 +29,10 @@ public class SkuggaServer {
 		}
 	}
 
-	public SkuggaServer ssl(String path, String password) {
+	public HttpsServer ssl(String path, String password) {
 		try {
 			char[] passArray = password.toCharArray();
-			this.keyStore = KeyStore.getInstance("JKS");
+			this.keyStore = KeyStore.getInstance("PKCS12");
 			FileInputStream stream = new FileInputStream(path);
 			this.keyStore.load(stream, passArray);
 
@@ -68,8 +68,14 @@ public class SkuggaServer {
 		return this;
 	}
 
-	public SkuggaServer start() {
-		this.server.createContext("/", new SkuggaHandler());
+	public HttpsServer start() {
+		this.server.createContext("/", new AbstractHttpExchangeHandler() {
+			@Override
+			public void onGet() { }
+
+			@Override
+			public void onPut() { }
+		});
 		this.server.setExecutor(null);
 		this.server.start();
 		return this;
