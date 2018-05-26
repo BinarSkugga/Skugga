@@ -1,11 +1,14 @@
-package com.binarskugga;
+package com.binarskugga.skuggahttps;
 
+import com.google.common.io.*;
 import com.sun.net.httpserver.*;
+import org.slf4j.*;
 
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.*;
 import java.security.*;
+import java.util.concurrent.*;
 
 public class HttpsServer {
 
@@ -15,6 +18,11 @@ public class HttpsServer {
 	private KeyStore keyStore;
 	private com.sun.net.httpserver.HttpsServer server;
 	private SSLContext sslContext;
+
+	private ExecutorService executor = null;
+	private int executorSize;
+
+	private Logger logger = LoggerFactory.getLogger(HttpsServer.class);
 
 	public HttpsServer(String host, int port) {
 		this.port = port;
@@ -29,11 +37,11 @@ public class HttpsServer {
 		}
 	}
 
-	public HttpsServer ssl(String path, String password) {
+	public HttpsServer ssl(String resourceName, String password) {
 		try {
 			char[] passArray = password.toCharArray();
 			this.keyStore = KeyStore.getInstance("PKCS12");
-			FileInputStream stream = new FileInputStream(path);
+			FileInputStream stream = new FileInputStream(Resources.getResource(resourceName).getPath());
 			this.keyStore.load(stream, passArray);
 
 			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -68,16 +76,29 @@ public class HttpsServer {
 		return this;
 	}
 
+	public HttpsServer threaded(int threads) {
+		this.executor = Executors.newFixedThreadPool(threads);
+		this.executorSize = threads;
+		return this;
+	}
+
 	public HttpsServer start() {
 		this.server.createContext("/", new AbstractHttpExchangeHandler() {
 			@Override
-			public void onGet() { }
+			public Response onGet(Headers outHeaders, Headers inHeaders, String path) {
+				return Response.ok();
+			}
 
 			@Override
-			public void onPut() { }
+			public Response onPost(Headers outHeaders, Headers inHeaders, String path) {
+				return Response.ok();
+			}
 		});
-		this.server.setExecutor(null);
+		this.server.setExecutor(this.executor);
 		this.server.start();
+		this.logger.info("Started HTTPS Server on " + this.host + ":" + this.port);
+		if(this.executor != null)
+			this.logger.debug("Using a thread pool of " + this.executorSize + " threads.");
 		return this;
 	}
 
