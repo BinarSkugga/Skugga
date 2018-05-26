@@ -32,7 +32,7 @@ public class Response {
 	int status;
 	String body;
 
-	public Response(int status, String body) {
+	private Response(int status, String body) {
 		this.status = status;
 		this.body = body;
 	}
@@ -95,6 +95,14 @@ public class Response {
 
 	public static Response forbidden() {
 		return new Response(FORBIDDEN, null) {};
+	}
+
+	public static Response notfound(String body) {
+		return new Response(NOT_FOUND, body) {};
+	}
+
+	public static Response notfound() {
+		return new Response(NOT_FOUND, null) {};
 	}
 
 }
