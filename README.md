@@ -24,4 +24,4 @@ R: No, I still have no idea how to implement that with only the Java Standard Li
 
 **Q: Is the server using compression ?**
 
-R: Yes, the server uses GZIP or Brotli when the browser specifies it as an accepted encoding in its request headers. The server will always prioritize Brotli.
+R: Yes, the server uses GZIP or Brotli when the browser specifies either of them as an accepted encoding. The server will always prioritize Brotli.
