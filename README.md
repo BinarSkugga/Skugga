@@ -1,9 +1,25 @@
 # SkuggaHttps
+## Description
+SkuggaHttps is a lightweight HTTPS server hosted with Oracle's HTTPS server implementation. The goal of this project is to have a fast, clean and easy to understand annotation API to create REST servers and data APIs.
+
+## Strict URL Overloading
+URL overloading is a subject of opinion. SkuggaHttps doesn't allow for much overloading to keep things clear and easy to follow. You can overload an endpoint with a different number of path parameters but you can not have two endpoints with the same number of paramters of different types. For example:
+
+/api/inventory/electronic/{int} is valid with /api/inventory/electronic/{int}/{string}
+
+but
+
+/api/inventory/electronic/{int} is **not** valid with /api/inventory/electronic/{string}
+
 ## Questions
 **Q: Is there a way to use HTTP if I don't need the whole...**
 
-R: No. Only HTTPS using PKCS12 keystore is available.
+R: No. Only HTTPS using PKCS12 keystore is available. Might add other keystore in the future but not plain HTTP.
 
-**Q: Is the server using GZIP ?**
+**Q: Can I use HTTP/2.0**
 
-R: Yes, the server uses GZIP when the browser specifies it as an accepted encoding in its request headers. 
+R: No, I still have no idea how to implement that with only the Java Standard Library. Please contact me if you know.
+
+**Q: Is the server using compression ?**
+
+R: Yes, the server uses GZIP when the browser specifies it as an accepted encoding in its request headers. It doesn't support deflate or br yet.
