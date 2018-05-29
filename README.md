@@ -3,7 +3,7 @@
 SkuggaHttps is a lightweight HTTPS server hosted with Oracle's HTTPS server implementation. The goal of this project is to have a fast, clean and easy to understand annotation API to create REST servers and data APIs.
 
 ## Strict URL Overloading
-URL overloading is a subject of opinion. SkuggaHttps doesn't allow for much overloading to keep things clear and easy to follow. You can overload an endpoint with a different number of path parameters but you can not have two endpoints with the same number of paramters of different types. For example:
+URL overloading is a subject of opinion. SkuggaHttps doesn't allow for much overloading to keep things clear and easy to follow. You can overload an endpoint with a different number of path parameters but you can not have two endpoints with the same number of parameters of different types. For example:
 
 */api/inventory/electronic/{int}* **can** coexist with */api/inventory/electronic/{int}/{string}*
 
