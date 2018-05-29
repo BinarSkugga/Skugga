@@ -6,14 +6,14 @@ import com.binarskugga.skuggahttps.annotation.*;
 @Controller("main")
 public class MainController {
 
-	@Get("hello")
-	public Response hello() {
-		return Response.ok("{\"value\":\"hello\"}");
+	@Get("hello/{int}")
+	public Response hello(int blop) {
+		return Response.ok("{\"value\":" + blop + "}");
 	}
 
 	@Post("bonjour")
-	public Response bonjour() {
-		return Response.ok();
+	public Response bonjour(String body) {
+		return Response.ok(body);
 	}
 
 	@Get("salut")

@@ -2,7 +2,7 @@ package com.binarskugga.skuggahttps;
 
 import com.binarskugga.skuggahttps.annotation.*;
 import com.binarskugga.skuggahttps.exception.*;
-import com.google.common.collect.*;
+import com.binarskugga.skuggahttps.parse.*;
 import com.google.common.io.*;
 import com.sun.net.httpserver.*;
 import org.reflections.*;
@@ -15,7 +15,6 @@ import java.net.*;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
 import static com.binarskugga.skuggahttps.Response.*;
@@ -32,8 +31,8 @@ public class HttpsServer {
 	private ExecutorService executor = null;
 	private int executorSize;
 
-	private Map<String, Method> gets;
-	private Map<String, Method> posts;
+	private Map<String, ParsedAction> gets;
+	private Map<String, ParsedAction> posts;
 
 	private PropertiesConfiguration configuration;
 	private Logger logger;
@@ -62,11 +61,25 @@ public class HttpsServer {
 		ref.getTypesAnnotatedWith(Controller.class).forEach(controller -> {
 			Controller controllerAnnotation = controller.getAnnotation(Controller.class);
 			String controllerValue = this.configuration.getString("settings.root") + controllerAnnotation.value();
+			List<String> parsed = new ArrayList<>();
 			Stream.of(controller.getDeclaredMethods()).forEach(method -> {
-				if(method.isAnnotationPresent(Get.class))
-					gets.putIfAbsent(controllerValue + "/" + method.getAnnotation(Get.class).value(), method);
-				if(method.isAnnotationPresent(Post.class))
-					posts.putIfAbsent(controllerValue + "/" + method.getAnnotation(Post.class).value(), method);
+				if(method.isAnnotationPresent(Get.class)) {
+					String endpoint = method.getAnnotation(Get.class).value();
+					String parsedPath = "GET:" + endpoint.replaceAll("\\{[A-z]+\\}", "{}");
+					if(parsed.contains(parsedPath))
+						throw new EndpointDuplicateException("The endpoint " + endpoint + " is duplicated as a GET in the controller " + controller.getSimpleName() + ".");
+					String fullroute = controllerValue + "/" + endpoint;
+					gets.putIfAbsent(fullroute, HttpsServer.this.parseRoute(fullroute, method));
+					parsed.add(parsedPath);
+				} else if(method.isAnnotationPresent(Post.class)) {
+					String endpoint = method.getAnnotation(Post.class).value();
+					String parsedPath = "POST:" + endpoint.replaceAll("\\{[A-z]+\\}", "{}");
+					if(parsed.contains(parsedPath))
+						throw new EndpointDuplicateException("The endpoint " + endpoint + " is duplicated as a POST in the controller " + controller.getSimpleName() + ".");
+					String fullroute = controllerValue + "/" + endpoint;
+					posts.putIfAbsent(fullroute, HttpsServer.this.parseRoute(fullroute, method));
+					parsed.add(parsedPath);
+				}
 			});
 		});
 		return this;
@@ -122,21 +135,26 @@ public class HttpsServer {
 			@Override
 			public Response onGet(Headers outHeaders, Headers inHeaders, String path) {
 				try {
-					Method action = HttpsServer.this.route(path, HttpsServer.this.gets);
-					return (Response) action.invoke(action.getDeclaringClass().newInstance());
+					ParsedAction parsed = HttpsServer.this.route(path, HttpsServer.this.gets);
+					Method action = parsed.getAction();
+					return (Response) action.invoke(action.getDeclaringClass().newInstance(), parsed.args().toArray());
+				} catch(UndefinedRouteException e) {
+					return Response.notfound();
 				} catch(Exception ignored) {}
-				return Response.notfound();
+				return Response.create(METHOD_NOT_ALLOWED, "{\"value\":\"salut\"}");
 			}
 
 			@Override
 			public Response onPost(Headers outHeaders, Headers inHeaders, String path, InputStream body) {
 				try {
 					String strBody = new String(ByteStreams.toByteArray(body));
-					Method action = HttpsServer.this.route(path, HttpsServer.this.posts);
-					logger.info(action.getName());
-					return (Response) action.invoke(action.getDeclaringClass().newInstance());
+					ParsedAction parsed = HttpsServer.this.route(path, HttpsServer.this.posts);
+					Method action = parsed.getAction();
+					List<Object> args = parsed.args();
+					args.add(strBody);
+					return (Response) action.invoke(action.getDeclaringClass().newInstance(), args.toArray());
 				} catch(Exception ignored) {}
-				return Response.notfound();
+				return Response.create(METHOD_NOT_ALLOWED, "{\"value\":\"salut\"}");
 			}
 		});
 		this.server.setExecutor(this.executor);
@@ -147,26 +165,59 @@ public class HttpsServer {
 		return this;
 	}
 
-	private Method route(String search, Map<String, Method> pool) {
-		String[] searchParts = search.split("/");
-		final AtomicReference<Method> chosen = new AtomicReference<>(null);
-		pool.forEach((path, action) -> {
-			String[] pathParts = path.split("/");
-			if(searchParts.length != pathParts.length) return;
+	private ParsedAction parseRoute(String path, Method action) {
+		ParsedAction result = new ParsedAction();
+		String[] pathParts = path.split("/");
 
-			boolean success = true;
+		int paramIndex = 0;
+		for(String pathPart : pathParts) {
+			if(pathPart.startsWith("{") && pathPart.endsWith("}")) {
+				String cleaned = pathPart.substring(1, pathPart.length() - 1);
+				URLParamParser parser = HttpsServer.this.parser(cleaned);
+				if(parser == null) throw new WrongUrlFormatException();
+				result.addParam(paramIndex++, parser, null);
+			}
+		}
+		result.setAction(action);
+		return result;
+	}
+
+	private ParsedAction route(String search, Map<String, ParsedAction> pool) {
+		ParsedAction chosen = null;
+		String[] searchParts = search.substring(1).split("/");
+		for(Map.Entry<String, ParsedAction> entry : pool.entrySet()) {
+			chosen = entry.getValue();
+			String[] pathParts = entry.getKey().substring(1).split("/");
+			if(searchParts.length != pathParts.length) continue;
+
+			int paramIndex = 0;
 			for(int i = 0; i < pathParts.length; i++) {
-				if(!pathParts[i].equals(searchParts[i])) {
-					success = false;
+				if(pathParts[i].startsWith("{") && pathParts[i].endsWith("}")) {
+					chosen.setParam(paramIndex++, searchParts[i]);
+				} else if(!pathParts[i].equals(searchParts[i])) {
+					chosen = null;
 					break;
 				}
 			}
-			if(!success) return;
+			if(chosen != null) break;
+		}
+		if(chosen == null)
+			throw new UndefinedRouteException();
+		return chosen;
+	}
 
-			if(chosen.get() != null) throw new EndpointDeplicateException("Endpoint duplicate for " + search);
-			else chosen.set(action);
-		});
-		return chosen.get();
+	private URLParamParser parser(String type) {
+		switch(type){
+			case "int":
+				return new IntParamParser();
+			case "long":
+				return new LongParamParser();
+			case "uuid":
+				return new UUIDParamParser();
+			case "string":
+				return new StringParamParser();
+		}
+		return null;
 	}
 
 }
