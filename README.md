@@ -24,4 +24,4 @@ R: No, I still have no idea how to implement that with only the Java Standard Li
 
 **Q: Is the server using compression ?**
 
-R: Yes, the server uses GZIP when the browser specifies it as an accepted encoding in its request headers. It doesn't support deflate or br yet.
+R: Yes, the server uses GZIP when the browser specifies it as an accepted encoding in its request headers. It doesn't support br yet.
