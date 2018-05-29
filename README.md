@@ -22,6 +22,17 @@ R: No. Only HTTPS using PKCS12 keystore is available. Might add other keystore i
 
 R: No, I still have no idea how to implement that with only the Java Standard Library. Please contact me if you know.
 
+**Q: Is it multithreaded ?**
+
+R: Yes, you can specify the amount of thread during the server creation like so:
+```java
+HttpsServer server = new HttpsServer("127.0.0.1", 5002)
+				.threaded(4)
+				.ssl("keystore.p12", "ilovetacos")
+				.controllers("com.binarskugga.app")
+				.start();
+```
+
 **Q: Is the server using compression ?**
 
 R: Yes, the server uses GZIP or Brotli when the browser specifies either of them as an accepted encoding. The server will always prioritize Brotli.
