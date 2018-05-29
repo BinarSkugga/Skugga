@@ -11,7 +11,7 @@ But...
 
 */api/inventory/electronic/{int}* **cannot** coexist with */api/inventory/electronic/{string}*
 
-The main reason for this is both performance and clarity. All parameters in a URL is a string at its core. Having the same url with the same amount of parameters causes a conflict that needs to be resolved through a priority system. For example, an Integer is more specific than a String so you test for that first and only assume a String if the Integer fails. It all good and games until you want 10-15 different types of arguments and you need to go thought all those fails before getting a response. So yes, it is possible but no it will not be added.
+The main reason for this is both performance and clarity. All parameters in a URL is a string at its core. Having the same url with the same amount of parameters causes a conflict that needs to be resolved through a priority system. For example, an Integer is more specific than a String so you test for that first and only assume a String if the Integer fails. It all fun and games until you want 10-15 different types of arguments and you need to go through all those fails before getting a response. So yes, it is possible but no it will not be added.
 
 ## Questions
 **Q: Is there a way to use HTTP if I don't need the whole...**
