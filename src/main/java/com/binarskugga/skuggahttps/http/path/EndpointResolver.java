@@ -38,7 +38,7 @@ public class EndpointResolver {
 					if(endpoint.getRoute() == null || endpoint.getRoute().equals(""))
 						endpoint.setRoute(this.sanitizePath(method.getName().replaceAll("_", "/")));
 
-					endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root") +
+					endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("") +
 							method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
 					endpoint.setAction(method);
 					return endpoint;

@@ -15,7 +15,7 @@ public class PropertiesConfiguration {
 	public PropertiesConfiguration(String resourceName) {
 		try {
 			this.properties = new Properties();
-			this.properties.load(ResourceLoader.load(resourceName));
+			this.properties.load(PropertiesConfiguration.class.getClassLoader().getResourceAsStream(resourceName));
 		} catch(IOException e) {
 			logger.log(Level.SEVERE, "", e.getCause());
 		}

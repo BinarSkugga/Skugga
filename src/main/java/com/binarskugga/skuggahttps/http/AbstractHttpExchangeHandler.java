@@ -177,11 +177,14 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	}
 
 	private Map<String, Cookie> parseCookies(Headers resquestHeaders) {
-		List<String> cookies = Lists.newArrayList(resquestHeaders.get("Cookie").get(0).split("; "));
-		return cookies.stream().map(strCookie -> {
-			String[] parts = strCookie.split("=");
-			return new Cookie(parts[0], parts[1], "/");
-		}).collect(Collectors.toMap(Cookie::getName, cookie -> cookie));
+		if(resquestHeaders.get("Cookie") != null) {
+			List<String> cookies = Lists.newArrayList(resquestHeaders.get("Cookie").get(0).split("; "));
+			return cookies.stream().map(strCookie -> {
+				String[] parts = strCookie.split("=");
+				return new Cookie(parts[0], parts[1], "/");
+			}).collect(Collectors.toMap(Cookie::getName, cookie -> cookie));
+		} else
+			return new HashMap<>();
 	}
 
 	public abstract HttpJsonHandler getJsonHandler();

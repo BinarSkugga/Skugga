@@ -108,9 +108,9 @@ public class HttpServer {
 		this.server.start();
 
 		if(this.sslContext != null) {
-			this.logger.info(String.format("Started HTTPS Server on https://%s:%d" + this.configuration.getString("server.root").get(), this.host, this.port));
+			this.logger.info(String.format("Started HTTPS Server on https://%s:%d" + this.configuration.getString("server.root").orElse(""), this.host, this.port));
 		} else {
-			this.logger.info(String.format("Started HTTP Server on http://%s:%d" + this.configuration.getString("server.root").get(), this.host, this.port));
+			this.logger.info(String.format("Started HTTP Server on http://%s:%d" + this.configuration.getString("server.root").orElse(""), this.host, this.port));
 		}
 
 		if(this.executor != null) {
