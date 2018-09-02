@@ -22,7 +22,7 @@ public class AuthService {
 		File secretKeyFile = ResourceLoader.load("", "secret.key");
 		if(!secretKeyFile.exists()) {
 			PropertiesConfiguration configuration = HttpConfigProvider.get();
-			this.key = generateKey(configuration.getInt("server.security.hmac.keylength"));
+			this.key = generateKey(configuration.getInt("server.security.hmac.keylength").orElse(2048));
 			try(FileOutputStream os = new FileOutputStream(secretKeyFile)) {
 				os.write(key.getEncoded());
 			} catch(Exception e) { e.printStackTrace(); }

@@ -33,11 +33,11 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		this.logger = Logger.getLogger(getClass().getName());
 		this.configuration = HttpConfigProvider.get();
 
-		Reflections ref = new Reflections(this.configuration.getString("server.package.controller"));
+		Reflections ref = new Reflections(this.configuration.getString("server.package.controller").get());
 		this.endpointResolver = new EndpointResolver(this, ref.getSubTypesOf(AbstractController.class));
 
 		this.filters = new ArrayList<>();
-		initiateFilters(HttpConfigProvider.get().getString("server.package.filter"));
+		initiateFilters(HttpConfigProvider.get().getString("server.package.filter").get());
 	}
 
 	@Override
@@ -68,11 +68,11 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			outHeaders.add("Content-Encoding", "gzip");
 		}
 
-		outHeaders.add("Connection", session.getConfig().getString("headers.connection"));
-		outHeaders.add("Content-Type", session.getConfig().getString("headers.content-type"));
-		outHeaders.add("Server", session.getConfig().getString("headers.server"));
-		outHeaders.add("Vary", session.getConfig().getString("headers.vary"));
-		outHeaders.add("Access-Control-Allow-Origin", session.getConfig().getString("headers.cors.access-control-allow-origin"));
+		outHeaders.add("Connection", session.getConfig().getString("headers.connection").orElse("keep-alive"));
+		outHeaders.add("Content-Type", session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
+		outHeaders.add("Server", session.getConfig().getString("headers.server").orElse("SkuggaHttps"));
+		outHeaders.add("Vary", session.getConfig().getString("headers.vary").orElse("Accept-Encoding"));
+		outHeaders.add("Access-Control-Allow-Origin", session.getConfig().getString("headers.cors.access-control-allow-origin").orElse("*"));
 
 		session.setResponse(Response.notfound());
 		AbstractController controller = null;

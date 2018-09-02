@@ -30,13 +30,20 @@ public class HttpServer {
 	private PropertiesConfiguration configuration;
 	private Logger logger;
 
-	public HttpServer(String host, int port, AbstractHttpExchangeHandler exchangeHandler) {
-		this.port = port;
-		this.host = host;
+	public HttpServer(AbstractHttpExchangeHandler exchangeHandler) {
+		this.configuration = HttpConfigProvider.get();
+
+		this.port = this.configuration.getInt("server.port").orElse(8000);
+		this.host = this.configuration.getString("server.ip").orElse("127.0.0.1");
 		this.exchangeHandler = exchangeHandler;
 
-		this.configuration = HttpConfigProvider.get();
 		this.logger = Logger.getLogger(HttpServer.class.getName());
+
+		Integer threadSize = this.configuration.getInt("server.threads").orElse(0);
+		if(threadSize > 1) {
+			this.executor = Executors.newFixedThreadPool(threadSize);
+			this.executorSize = threadSize;
+		}
 
 		AuthService.get();
 	}
@@ -61,9 +68,9 @@ public class HttpServer {
 		}
 	}
 
-	public void setThreadPoolSize(int size) {
-		this.executor = Executors.newFixedThreadPool(size);
-		this.executorSize = size;
+	public void test() {
+		this.port = this.configuration.getInt("server.test.port").orElse(8000);
+		this.host = this.configuration.getString("server.test.ip").orElse("127.0.0.1");
 	}
 
 	public void start() {
@@ -95,15 +102,15 @@ public class HttpServer {
 			this.logger.log(Level.SEVERE, "", e.getCause());
 		}
 
-		this.server.createContext(this.configuration.getString("server.root"), this.exchangeHandler);
+		this.server.createContext(this.configuration.getString("server.root").orElse(""), this.exchangeHandler);
 
 		this.server.setExecutor(this.executor);
 		this.server.start();
 
 		if(this.sslContext != null) {
-			this.logger.info(String.format("Started HTTPS Server on https://%s:%d" + this.configuration.getString("server.root"), this.host, this.port));
+			this.logger.info(String.format("Started HTTPS Server on https://%s:%d" + this.configuration.getString("server.root").get(), this.host, this.port));
 		} else {
-			this.logger.info(String.format("Started HTTP Server on http://%s:%d" + this.configuration.getString("server.root"), this.host, this.port));
+			this.logger.info(String.format("Started HTTP Server on http://%s:%d" + this.configuration.getString("server.root").get(), this.host, this.port));
 		}
 
 		if(this.executor != null) {
