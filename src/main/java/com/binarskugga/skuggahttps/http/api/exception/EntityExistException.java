@@ -11,6 +11,6 @@ public class EntityExistException extends APIException {
 
 	public EntityExistException(Class specific) {
 		super(Response.BAD_REQUEST, "E_ENTITY_EXIST", "This entity already exists.");
-		setName("E_" + specific.getTypeName().toUpperCase() + "_EXIST");
+		setName("E_" + specific.getSimpleName().toUpperCase() + "_EXIST");
 	}
 }

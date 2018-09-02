@@ -11,6 +11,6 @@ public class EntityNotFoundException extends APIException {
 
 	public EntityNotFoundException(Class specific) {
 		super(Response.BAD_REQUEST, "E_ENTITY_NOTFOUND", "Couldn't find this entity.");
-		setName("E_" + specific.getTypeName().toUpperCase() + "_NOTFOUND");
+		setName("E_" + specific.getSimpleName().toUpperCase() + "_NOTFOUND");
 	}
 }
