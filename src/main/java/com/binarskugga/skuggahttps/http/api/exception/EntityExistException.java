@@ -1,0 +1,16 @@
+package com.binarskugga.skuggahttps.http.api.exception;
+
+import com.binarskugga.skuggahttps.http.*;
+import com.binarskugga.skuggahttps.http.api.*;
+
+public class EntityExistException extends APIException {
+
+	public EntityExistException() {
+		super(Response.BAD_REQUEST, "E_ENTITY_EXIST", "This entity already exists.");
+	}
+
+	public EntityExistException(Class specific) {
+		super(Response.BAD_REQUEST, "E_ENTITY_EXIST", "This entity already exists.");
+		setName("E_" + specific.getTypeName().toUpperCase() + "_EXIST");
+	}
+}
