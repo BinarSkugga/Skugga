@@ -1,5 +1,6 @@
 package com.binarskugga.skuggahttps;
 
+import com.binarskugga.skuggahttps.auth.*;
 import com.sun.net.httpserver.*;
 import lombok.*;
 import com.binarskugga.skuggahttps.http.*;
@@ -36,6 +37,8 @@ public class HttpServer {
 
 		this.configuration = HttpConfigProvider.get();
 		this.logger = Logger.getLogger(HttpServer.class.getName());
+
+		AuthService.get();
 	}
 
 	public void addSSLCertificate(String resourceName, String password) {
