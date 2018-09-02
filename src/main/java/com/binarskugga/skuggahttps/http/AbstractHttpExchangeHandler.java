@@ -2,6 +2,7 @@ package com.binarskugga.skuggahttps.http;
 
 import com.binarskugga.skuggahttps.annotation.Filter;
 import com.google.common.base.*;
+import com.google.common.collect.*;
 import com.google.common.io.*;
 import com.sun.net.httpserver.*;
 import com.binarskugga.skuggahttps.*;
@@ -17,6 +18,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.stream.*;
 import java.util.zip.*;
 
 import static com.binarskugga.skuggahttps.http.Response.*;
@@ -62,6 +64,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 
 		Headers inHeaders = session.getExchange().getRequestHeaders();
 		Headers outHeaders = session.getExchange().getResponseHeaders();
+		session.setCookies(this.parseCookies(inHeaders));
 
 		boolean acceptGzip = inHeaders.get("Accept-Encoding").get(0).contains("gzip");
 		if(acceptGzip) {
@@ -171,6 +174,14 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			int o2Priority = o2.getDeclaredAnnotation(Filter.class).value();
 			return Integer.compare(o1Priority, o2Priority);
 		}).forEach(filter -> AbstractHttpExchangeHandler.this.filters.add((Class<? extends AbstractFilter>) filter));
+	}
+
+	private Map<String, Cookie> parseCookies(Headers resquestHeaders) {
+		List<String> cookies = Lists.newArrayList(resquestHeaders.get("Cookie").get(0).split("; "));
+		return cookies.stream().map(strCookie -> {
+			String[] parts = strCookie.split("=");
+			return new Cookie(parts[0], parts[1], "/");
+		}).collect(Collectors.toMap(Cookie::getName, cookie -> cookie));
 	}
 
 	public abstract HttpJsonHandler getJsonHandler();

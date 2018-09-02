@@ -22,7 +22,8 @@ public class HttpSession {
 	@Getter @Setter Object body;
 	@Getter @Setter Response response;
 
-	@Singular @Getter private Map<String, Object> extras = new HashMap<>();
+	@Getter @Setter Map<String, Cookie> cookies;
+	@Getter private Map<String, Object> extras = new HashMap<>();
 
 	public void setExtra(String key, Object value) {
 		this.extras.put(key, value);
