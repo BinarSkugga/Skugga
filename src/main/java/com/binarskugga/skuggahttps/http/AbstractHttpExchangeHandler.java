@@ -2,7 +2,6 @@ package com.binarskugga.skuggahttps.http;
 
 import com.binarskugga.skuggahttps.annotation.Filter;
 import com.binarskugga.skuggahttps.auth.*;
-import com.binarskugga.skuggahttps.auth.role.*;
 import com.binarskugga.skuggahttps.data.*;
 import com.google.common.base.*;
 import com.google.common.collect.*;
@@ -149,9 +148,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		}
 
 		session.getExchange().sendResponseHeaders(session.getResponse().getStatus(), 0);
-
-		this.logger.config(String.format("Handled in %dms", System.currentTimeMillis() - time));
-		this.logger.config("================== END ==================");
+		this.logger.config("================== " + (System.currentTimeMillis() - time) + "ms ==================");
 
 		if(acceptGzip) {
 			os = new GZIPOutputStream(os);
