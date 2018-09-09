@@ -3,6 +3,7 @@ package com.binarskugga.skuggahttps.http;
 import com.binarskugga.skuggahttps.annotation.Filter;
 import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.auth.role.*;
+import com.binarskugga.skuggahttps.data.*;
 import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.io.*;
@@ -56,7 +57,12 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		FilterChain chain = new FilterChain();
 		for(Class<? extends AbstractFilter> clazz : this.filters) {
 			try {
-				chain.addFilter(clazz.newInstance());
+				if(clazz.equals(AuthFilter.class)) {
+					Constructor constructor = AuthFilter.class.getConstructor(DataRepository.class);
+					chain.addFilter((AbstractFilter) constructor.newInstance(getIdentityRepository()));
+				} else {
+					chain.addFilter(clazz.newInstance());
+				}
 			} catch(Exception e) {
 				this.logger.log(Level.SEVERE, "", e.getCause());
 			}
@@ -171,6 +177,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	private void initiateFilters(String filterPackage) {
 		Reflections reflections = new Reflections(filterPackage);
 		Set<Class<?>> filters = reflections.getTypesAnnotatedWith(Filter.class);
+		filters.add(AuthFilter.class);
 		filters.stream().sorted((o1, o2) -> {
 			int o1Priority = o1.getDeclaredAnnotation(Filter.class).value();
 			int o2Priority = o2.getDeclaredAnnotation(Filter.class).value();
@@ -190,7 +197,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	}
 
 	public abstract HttpJsonHandler getJsonHandler();
-
+	public abstract <Q, T extends Identifiable> DataRepository<Q, I, T> getIdentityRepository();
 	public abstract I createID(String id);
 
 }

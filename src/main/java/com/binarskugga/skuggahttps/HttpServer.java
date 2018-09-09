@@ -1,6 +1,7 @@
 package com.binarskugga.skuggahttps;
 
 import com.binarskugga.skuggahttps.auth.*;
+import com.binarskugga.skuggahttps.data.*;
 import com.sun.net.httpserver.*;
 import lombok.*;
 import com.binarskugga.skuggahttps.http.*;
@@ -26,6 +27,7 @@ public class HttpServer {
 	private int executorSize;
 
 	private AbstractHttpExchangeHandler exchangeHandler;
+	private DataRepository identityRepository;
 
 	private PropertiesConfiguration configuration;
 	private Logger logger;
@@ -35,8 +37,8 @@ public class HttpServer {
 
 		this.port = this.configuration.getInt("server.port").orElse(8000);
 		this.host = this.configuration.getString("server.ip").orElse("127.0.0.1");
-		this.exchangeHandler = exchangeHandler;
 
+		this.exchangeHandler = exchangeHandler;
 		this.logger = Logger.getLogger(HttpServer.class.getName());
 
 		Integer threadSize = this.configuration.getInt("server.threads").orElse(0);
