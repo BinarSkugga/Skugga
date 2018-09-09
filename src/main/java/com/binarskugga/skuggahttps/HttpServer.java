@@ -27,7 +27,6 @@ public class HttpServer {
 	private int executorSize;
 
 	private AbstractHttpExchangeHandler exchangeHandler;
-	private DataRepository identityRepository;
 
 	private PropertiesConfiguration configuration;
 	private Logger logger;
@@ -40,6 +39,9 @@ public class HttpServer {
 
 		this.exchangeHandler = exchangeHandler;
 		this.logger = Logger.getLogger(HttpServer.class.getName());
+
+		if(!Identifiable.class.isAssignableFrom(exchangeHandler.getIdentityRepository().getClazz()))
+			throw new IllegalStateException("The Identity repository must refer to a model that implements GenericUser or Identifiable.");
 
 		Integer threadSize = this.configuration.getInt("server.threads").orElse(0);
 		if(threadSize > 1) {
