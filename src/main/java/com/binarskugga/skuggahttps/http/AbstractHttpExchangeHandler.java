@@ -177,7 +177,8 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	private void initiateFilters(String filterPackage) {
 		Reflections reflections = new Reflections(filterPackage);
 		Set<Class<?>> filters = reflections.getTypesAnnotatedWith(Filter.class);
-		filters.add(AuthFilter.class);
+		if(getIdentityRepository() != null)
+			filters.add(AuthFilter.class);
 		filters.stream().sorted((o1, o2) -> {
 			int o1Priority = o1.getDeclaredAnnotation(Filter.class).value();
 			int o2Priority = o2.getDeclaredAnnotation(Filter.class).value();
