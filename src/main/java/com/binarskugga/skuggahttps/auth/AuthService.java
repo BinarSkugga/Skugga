@@ -12,9 +12,11 @@ import java.nio.file.*;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.logging.*;
 
 public class AuthService {
 
+	private static Logger logger = Logger.getLogger(AuthService.class.getName());
 	private static AuthService instance = null;
 	private SecretKey key;
 
@@ -22,6 +24,10 @@ public class AuthService {
 		File secretKeyFile = ResourceLoader.load("", "secret.key");
 		if(!secretKeyFile.exists()) {
 			PropertiesConfiguration configuration = HttpConfigProvider.get();
+			int keyLenth = configuration.getInt("server.security.hmac.keylength").orElse(2048);
+			if(keyLenth < 2048)
+				logger.severe("HMAC key length is less than 2048, insecure password hash will be generated !");
+
 			this.key = generateKey(configuration.getInt("server.security.hmac.keylength").orElse(2048));
 			try(FileOutputStream os = new FileOutputStream(secretKeyFile)) {
 				os.write(key.getEncoded());
