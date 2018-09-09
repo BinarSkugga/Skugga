@@ -2,6 +2,7 @@ package com.binarskugga.skuggahttps.http.path;
 
 import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.auth.role.*;
+import com.binarskugga.skuggahttps.controller.*;
 import com.binarskugga.skuggahttps.http.exception.*;
 import com.google.common.base.*;
 import com.google.common.cache.*;
@@ -29,6 +30,7 @@ public class EndpointResolver {
 	private BloomFilter<String> routingCacheFilter;
 
 	public EndpointResolver(AbstractHttpExchangeHandler exchangeHandler, Collection<Class<? extends AbstractController>> controllers) {
+		controllers.add(SecurityController.class);
 		this.endpoints = controllers.stream().filter(controller -> controller.isAnnotationPresent(Controller.class))
 				.map(controller -> Lists.newArrayList(controller.getDeclaredMethods()))
 				.flatMap(Collection::stream)

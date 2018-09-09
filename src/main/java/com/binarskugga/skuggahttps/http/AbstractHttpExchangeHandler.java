@@ -79,7 +79,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		}
 
 		outHeaders.add("Connection", session.getConfig().getString("headers.connection").orElse("keep-alive"));
-		outHeaders.add("Content-Type", session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
+		outHeaders.add("Content-type", session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
 		outHeaders.add("Server", session.getConfig().getString("headers.server").orElse("SkuggaHttps"));
 		outHeaders.add("Vary", session.getConfig().getString("headers.vary").orElse("Accept-Encoding"));
 		outHeaders.add("Access-Control-Allow-Origin", session.getConfig().getString("headers.cors.access-control-allow-origin").orElse("*"));
@@ -101,7 +101,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			}
 
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
-				outHeaders.set("Content-Type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
+				outHeaders.set("Content-type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
 			}
 
 			if(session.getEndpoint().getType().equals(EndpointType.POST)) {
@@ -123,7 +123,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
 				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) obj);
 				else {
-					if(outHeaders.get("Content-Type").contains("json"))
+					if(outHeaders.get("Content-type").get(0).contains("json"))
 						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, obj)));
 					else
 						session.setResponse(Response.ok(obj.toString()));
@@ -162,7 +162,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		if(session.getResponse().getBody() != null) {
 			String rp;
 			if(session.getResponse().getStatus() > 300) {
-				if(outHeaders.get("Content-Type").contains("json"))
+				if(outHeaders.get("Content-type").get(0).contains("json"))
 					rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
 				else
 					rp = session.getResponse().toString();
