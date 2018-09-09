@@ -12,12 +12,17 @@ HttpServer server = new HttpServer(new CustomExchangeHandler());
 server.start();
 ```
 
-In this code we do a couple of things. First we create the server using our property "server.ip" and "server.port". Next we provide a HttpExchangeHandler to the server. This class is created by you and describes what id types you are using as well as how to transform object into json. It would look like this for a MongoDB database using the BSON type ObjectId.
+In this code we do a couple of things. First we create the server using our property "server.ip" and "server.port". Next we provide a HttpExchangeHandler to the server. This class is created by you and describes what id types you are using as well as how to transform object into json. It would look like this for a MongoDB database using the BSON type ObjectId. The IdentityRepository is not done here but will be covered in the [Link Data section](#link-your-data).
 ``` java
 public class CustomExchangeHandler extends AbstractHttpExchangeHandler<ObjectId> {
 	@Override
 	public HttpJsonHandler getJsonHandler() {
 		return new MoshiJsonHandler();
+	}
+	
+	@Override
+	public <Q, T extends Identifiable> DataRepository<Q, ObjectId, T> getIdentityRepository() {
+		return null;
 	}
 
 	@Override
