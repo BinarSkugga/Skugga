@@ -6,11 +6,11 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
-public abstract class DataCRUD<Q, I extends Serializable, T> {
+public abstract class DataRepository<Q, I extends Serializable, T> {
 
 	@Getter private Class<T> clazz;
 
-	protected DataCRUD(Class<T> clazz) {
+	protected DataRepository(Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
