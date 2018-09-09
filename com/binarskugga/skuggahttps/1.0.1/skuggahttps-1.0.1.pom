@@ -36,6 +36,17 @@
 		<github.global.server>github</github.global.server>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>SkuggaHttps.Auth-maven</id>
+			<url>https://raw.githubusercontent.com/BinarSkugga/SkuggaHttps.Auth/maven/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<distributionManagement>
 		<repository>
 			<id>skuggahttps.repo</id>
