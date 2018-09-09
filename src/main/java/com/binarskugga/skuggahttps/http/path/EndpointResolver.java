@@ -1,5 +1,8 @@
 package com.binarskugga.skuggahttps.http.path;
 
+import com.binarskugga.skuggahttps.auth.*;
+import com.binarskugga.skuggahttps.auth.role.*;
+import com.binarskugga.skuggahttps.http.exception.*;
 import com.google.common.base.*;
 import com.google.common.cache.*;
 import com.google.common.collect.*;
@@ -41,6 +44,27 @@ public class EndpointResolver {
 					endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("") +
 							method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
 					endpoint.setAction(method);
+
+					Access access = endpoint.getAction().getAnnotation(Access.class);
+					List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(LoggedAccess.class) : Lists.newArrayList(access.value());
+					endpoint.setAccess(roles);
+
+					if(endpoint.getAccess().contains(SubjectiveAccess.class)) {
+						for(Parameter parameter : endpoint.getAction().getParameters()) {
+							if(parameter.isAnnotationPresent(Subject.class)) {
+								if(Identifiable.class.isAssignableFrom(parameter.getType()))
+									endpoint.setSubject(parameter);
+								else
+									throw new InvalidSubjectException("A subject parameter needs to be a subclass of Identifiable." +
+											"(" + endpoint.getFullRoute() + ")");
+							}
+						}
+						if(endpoint.getSubject() == null) {
+							throw new InvalidSubjectException("Subjective access require a parameter annotated with Subject."
+									+ "(" + endpoint.getFullRoute() + ")");
+						}
+					}
+
 					return endpoint;
 				}).collect(Collectors.toList());
 

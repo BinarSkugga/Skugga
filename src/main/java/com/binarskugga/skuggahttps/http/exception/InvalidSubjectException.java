@@ -2,13 +2,14 @@ package com.binarskugga.skuggahttps.http.exception;
 
 import static com.binarskugga.skuggahttps.http.Response.*;
 
-public class InvalidTargetException extends HTTPException {
+public class InvalidSubjectException extends HTTPException {
 
-	public InvalidTargetException(String message) {
+	public InvalidSubjectException(String message) {
 		super(INTERNAL_ERROR, message);
 	}
 
-	public InvalidTargetException() {
+	public InvalidSubjectException() {
 		super(INTERNAL_ERROR);
 	}
+
 }

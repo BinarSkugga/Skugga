@@ -1,6 +1,8 @@
 package com.binarskugga.skuggahttps.http;
 
 import com.binarskugga.skuggahttps.annotation.Filter;
+import com.binarskugga.skuggahttps.auth.*;
+import com.binarskugga.skuggahttps.auth.role.*;
 import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.io.*;

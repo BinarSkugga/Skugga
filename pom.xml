@@ -81,6 +81,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.binarskugga</groupId>
+			<artifactId>skuggahttps.auth</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>24.0-jre</version>
