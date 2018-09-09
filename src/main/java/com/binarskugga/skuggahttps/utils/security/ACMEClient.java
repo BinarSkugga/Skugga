@@ -48,26 +48,29 @@ public abstract class ACMEClient {
 		System.out.println("LoggedAccess in as: " + this.account.getAccountLocation());
 	}
 
-	public void order(String... domains) {
+	public boolean order(String... domains) {
 		try {
 			Order order = this.account.getAccount().newOrder().domains(domains).create();
+			boolean success = true;
 			for(Authorization auth : order.getAuthorizations()) {
 				if(auth.getStatus() != Status.VALID) {
-					processAuth(auth);
+					success &= processAuth(auth);
 				}
 			}
+			return success;
 		} catch(Exception e) {
 			System.err.println("Couldn't create a new certificate order !");
+			return false;
 		}
 	}
 
-	protected abstract void createHTTPResource(String token, String content);
+	public abstract void processHttpChallenge(String token, String content);
 
-	private void processAuth(Authorization auth) {
+	private boolean processAuth(Authorization auth) {
 		System.out.println("Challenging domain '" + auth.getDomain() + "'...");
 		try {
 			Http01Challenge httpChallenge = auth.findChallenge(Http01Challenge.TYPE);
-			this.createHTTPResource(httpChallenge.getToken(), httpChallenge.getAuthorization());
+			processHttpChallenge(httpChallenge.getToken(), httpChallenge.getAuthorization());
 
 			httpChallenge.trigger();
 			while(auth.getStatus() != Status.VALID && auth.getStatus() != Status.INVALID) {
@@ -76,10 +79,13 @@ public abstract class ACMEClient {
 			}
 			if(auth.getStatus() == Status.INVALID) {
 				System.err.println("Failed to order new certificate !");
+				return false;
 			}
 		} catch(Exception e) {
 			System.err.println("Couldn't execute the DNS challenge !");
+			return false;
 		}
+		return true;
 	}
 
 	private boolean isRegistered() {

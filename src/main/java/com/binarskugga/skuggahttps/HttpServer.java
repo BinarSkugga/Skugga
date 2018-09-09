@@ -106,7 +106,7 @@ public class HttpServer {
 			this.logger.log(Level.SEVERE, "", e.getCause());
 		}
 
-		this.server.createContext(this.configuration.getString("server.root").orElse(""), this.exchangeHandler);
+		this.server.createContext("/", this.exchangeHandler);
 
 		this.server.setExecutor(this.executor);
 		this.server.start();

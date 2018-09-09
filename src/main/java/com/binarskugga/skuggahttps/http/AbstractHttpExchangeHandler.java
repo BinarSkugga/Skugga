@@ -122,7 +122,12 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 				Object obj = session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray());
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
 				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) obj);
-				else session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, obj)));
+				else {
+					if(outHeaders.get("Content-Type").contains("json"))
+						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, obj)));
+					else
+						session.setResponse(Response.ok(obj.toString()));
+				}
 
 				chain.applyPost(session);
 			} catch(Exception e) {
@@ -157,7 +162,10 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		if(session.getResponse().getBody() != null) {
 			String rp;
 			if(session.getResponse().getStatus() > 300) {
-				rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
+				if(outHeaders.get("Content-Type").contains("json"))
+					rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
+				else
+					rp = session.getResponse().toString();
 			} else {
 				rp = session.getResponse().getBody();
 			}

@@ -35,14 +35,21 @@ public class EndpointResolver {
 				.filter(method ->  method.isAnnotationPresent(Get.class) || method.isAnnotationPresent(Post.class))
 				.map(method -> {
 					Endpoint endpoint = new Endpoint();
+					boolean rootedController = false;
+					if(method.getDeclaringClass().getAnnotation(Controller.class).value().startsWith("/")) rootedController = true;
 					endpoint.setType(method.getAnnotation(Get.class) == null ? EndpointType.POST : EndpointType.GET);
 
 					endpoint.setRoute(this.sanitizePath(endpoint.getType().equals(EndpointType.GET) ? method.getAnnotation(Get.class).value() : method.getAnnotation(Post.class).value()));
 					if(endpoint.getRoute() == null || endpoint.getRoute().equals(""))
 						endpoint.setRoute(this.sanitizePath(method.getName().replaceAll("_", "/")));
 
-					endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("") +
-							method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
+					if(rootedController) {
+						endpoint.setFullRoute(this.sanitizePath(method.getDeclaringClass().getAnnotation(Controller.class).value()
+								+ "/" + endpoint.getRoute()));
+					} else {
+						endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
+								+ method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
+					}
 					endpoint.setAction(method);
 
 					Access access = endpoint.getAction().getAnnotation(Access.class);

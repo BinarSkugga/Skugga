@@ -2,6 +2,7 @@ package com.binarskugga.skuggahttps.http;
 
 import lombok.*;
 
+@ToString
 public class Response {
 
 	public static final int OK = 200;
