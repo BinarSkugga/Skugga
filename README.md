@@ -8,8 +8,7 @@ PropertiesConfiguration config = HttpConfigProvider.get();
 
 PropertiesConfiguration provides an easy interface to interacts with .properties files in your resource folder. Using this configuration you can easily create and start your server.
 ``` java
-HttpServer server = new HttpServer(config.getString("server.ip"), config.getInt("server.port"), 
-  new CustomExchangeHandler());
+HttpServer server = new HttpServer(new CustomExchangeHandler());
 server.start();
 ```
 
