@@ -60,7 +60,7 @@ public class Response {
 	}
 
 	public static Response internalError() {
-		return new Response(INTERNAL_ERROR, null) {};
+		return new Response(INTERNAL_ERROR, "") {};
 	}
 
 	public static Response ok(String body) {
@@ -68,7 +68,7 @@ public class Response {
 	}
 
 	public static Response ok() {
-		return new Response(OK, null) {};
+		return new Response(OK, "") {};
 	}
 
 	public static Response created(String body) {
@@ -76,7 +76,7 @@ public class Response {
 	}
 
 	public static Response created() {
-		return new Response(CREATED, null) {};
+		return new Response(CREATED, "") {};
 	}
 
 	public static Response accepted(String body) {
@@ -84,7 +84,7 @@ public class Response {
 	}
 
 	public static Response accepted() {
-		return new Response(ACCEPTED, null) {};
+		return new Response(ACCEPTED, "") {};
 	}
 
 	public static Response bad(String body) {
@@ -92,7 +92,7 @@ public class Response {
 	}
 
 	public static Response bad() {
-		return new Response(BAD_REQUEST, null) {};
+		return new Response(BAD_REQUEST, "") {};
 	}
 
 	public static Response unauthorized(String body) {
@@ -100,7 +100,7 @@ public class Response {
 	}
 
 	public static Response unauthorized() {
-		return new Response(UNAUTHORIZED, null) {};
+		return new Response(UNAUTHORIZED, "") {};
 	}
 
 	public static Response forbidden(String body) {
@@ -108,7 +108,7 @@ public class Response {
 	}
 
 	public static Response forbidden() {
-		return new Response(FORBIDDEN, null) {};
+		return new Response(FORBIDDEN, "") {};
 	}
 
 	public static Response notfound(String body) {
@@ -116,6 +116,6 @@ public class Response {
 	}
 
 	public static Response notfound() {
-		return new Response(NOT_FOUND, null) {};
+		return new Response(NOT_FOUND, "") {};
 	}
 }
