@@ -5,7 +5,6 @@ import lombok.*;
 public class APIException extends RuntimeException {
 
 	@Getter private int status;
-
 	@Getter @Setter private String name;
 
 	public APIException(int status, String name, String message) {

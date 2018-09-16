@@ -26,7 +26,7 @@ public class AuthService {
 			PropertiesConfiguration configuration = HttpConfigProvider.get();
 			int keyLenth = configuration.getInt("server.security.hmac.keylength").orElse(2048);
 			if(keyLenth < 2048)
-				logger.severe("HMAC key length is less than 2048, insecure password hash will be generated !");
+				logger.severe("HMAC key length is less than 2048 bit, insecure password hashes will be generated !");
 
 			this.key = generateKey(configuration.getInt("server.security.hmac.keylength").orElse(2048));
 			try(FileOutputStream os = new FileOutputStream(secretKeyFile)) {
