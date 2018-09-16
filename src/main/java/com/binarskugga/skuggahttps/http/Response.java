@@ -1,6 +1,9 @@
 package com.binarskugga.skuggahttps.http;
 
+import com.binarskugga.skuggahttps.validation.*;
 import lombok.*;
+
+import java.util.*;
 
 @ToString
 public class Response {
@@ -35,6 +38,8 @@ public class Response {
 	@Getter private int status;
 	@Getter @Setter private String body;
 	@Getter private String name;
+	@Getter @Setter Object input;
+	@Getter @Setter Set<ValidationError> errors;
 
 	private Response(int status, String body) {
 		this.status = status;

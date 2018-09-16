@@ -3,6 +3,7 @@ package com.binarskugga.skuggahttps.http;
 import com.binarskugga.skuggahttps.annotation.Filter;
 import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.data.*;
+import com.binarskugga.skuggahttps.http.api.filter.impl.*;
 import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.io.*;
@@ -145,6 +146,9 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 
 					this.logger.warning(String.format("HTTP %d - %s", apiException.getStatus(), apiException.getMessage()));
 					session.setResponse(Response.create(apiException.getStatus(), apiException.getName(), apiException.getMessage()));
+
+					if(apiException.getBody() != null) session.getResponse().setInput(apiException.getBody());
+					if(apiException.getErrors() != null) session.getResponse().setErrors(apiException.getErrors());
 				} else {
 					this.logger.log(Level.SEVERE, String.format("Server error"), e);
 					session.setResponse(Response.internalError(e.getMessage()));

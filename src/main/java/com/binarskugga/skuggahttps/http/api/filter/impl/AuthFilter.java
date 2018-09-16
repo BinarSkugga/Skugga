@@ -1,6 +1,7 @@
-package com.binarskugga.skuggahttps.auth;
+package com.binarskugga.skuggahttps.http.api.filter.impl;
 
 import com.binarskugga.skuggahttps.annotation.*;
+import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.auth.role.*;
 import com.binarskugga.skuggahttps.data.*;
 import com.binarskugga.skuggahttps.http.*;
@@ -9,7 +10,7 @@ import com.binarskugga.skuggahttps.http.api.filter.*;
 
 import java.util.*;
 
-@Filter(-1)
+@Filter(-2)
 public class AuthFilter extends PreFilter {
 
 	private DataRepository identityRepository;
