@@ -38,8 +38,8 @@
 
 	<repositories>
 		<repository>
-			<id>SkuggaHttps.Auth-maven</id>
-			<url>https://raw.githubusercontent.com/BinarSkugga/SkuggaHttps.Auth/maven/</url>
+			<id>SkuggaHttps.Commons-maven</id>
+			<url>https://raw.githubusercontent.com/BinarSkugga/SkuggaHttps.Commons/maven/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
@@ -93,7 +93,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.binarskugga</groupId>
-			<artifactId>skuggahttps.auth</artifactId>
+			<artifactId>skuggahttps.commons</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
