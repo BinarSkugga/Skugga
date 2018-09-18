@@ -55,7 +55,15 @@ public class EndpointResolver {
 					endpoint.setAction(method);
 
 					Access access = endpoint.getAction().getAnnotation(Access.class);
-					List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(LoggedAccess.class) : Lists.newArrayList(access.value());
+
+					Class<? extends AccessRole> defaultAccess = LoggedAccess.class;
+					if(configuration.getString("server.default.access").isPresent()) {
+						try {
+							defaultAccess = (Class<? extends AccessRole>) Class.forName(configuration.getString("server.default.access").get());
+						} catch(ClassNotFoundException ignored) {}
+					}
+
+					List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(defaultAccess) : Lists.newArrayList(access.value());
 					endpoint.setAccess(roles);
 
 					if(endpoint.getAccess().contains(SubjectiveAccess.class)) {
