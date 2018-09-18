@@ -36,7 +36,7 @@ public class ValidationFilter extends PreFilter {
 			throw new ValidationException(input, paramErrors);
 		}
 
-		if(!(httpSession.getBody() instanceof ForeignInput)) return true;
+		if(httpSession.getBody() == null || !ForeignInput.class.isAssignableFrom(httpSession.getBody().getClass())) return true;
 
 		ForeignInput body = (ForeignInput) httpSession.getBody();
 		Set<ValidationError> errors = body.validate();
