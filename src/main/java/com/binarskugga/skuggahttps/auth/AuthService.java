@@ -61,7 +61,7 @@ public class AuthService {
 	}
 
 	public String hashPassword(String password) {
-		return Sha512.hash(password);
+		return HSha512.hash(this.key.getEncoded(), password);
 	}
 
 	public Token createToken(GenericUser user) {
