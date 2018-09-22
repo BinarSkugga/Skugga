@@ -8,9 +8,6 @@ import com.binarskugga.skuggahttps.http.api.*;
 @Controller("test")
 public class TestController extends AbstractController {
 
-	public TestController(String trst) {
-	}
-
 	@Get
 	@Access({ AllAccess.class })
 	public Response ping() {
