@@ -10,7 +10,6 @@ public class APIException extends RuntimeException {
 	@Getter private int status;
 	@Getter @Setter private String name;
 
-	@Getter @Setter private Object body;
 	@Getter @Setter private Set<ValidationError> errors;
 
 	public APIException(int status, String name, String message) {

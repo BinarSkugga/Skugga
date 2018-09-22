@@ -14,7 +14,6 @@ import java.util.*;
 public class ValidationFilter extends PreFilter {
 	@Override
 	public boolean apply(HttpSession httpSession) {
-		Map<String, Object> input = new HashMap<>();
 		Set<ValidationError> paramErrors = new HashSet<>();
 		for(Parameter param : httpSession.getArgs().keySet()) {
 			if(param.isAnnotationPresent(Validator.class)) {
@@ -25,15 +24,13 @@ public class ValidationFilter extends PreFilter {
 					Object value = httpSession.getArgs().get(param);
 					ParameterValidator validator = validatorAnn.value().newInstance();
 					Set<ValidationError> errors = validator.validate(name, value);
-					if(errors.size() > 0) {
+					if(errors.size() > 0)
 						paramErrors.addAll(errors);
-						input.put(name.toUpperCase(), value);
-					}
 				} catch(IllegalAccessException | InstantiationException ignored) {}
 			}
 		}
 		if(paramErrors.size() > 0) {
-			throw new ValidationException(input, paramErrors);
+			throw new ValidationException(paramErrors);
 		}
 
 		if(httpSession.getBody() == null || !ForeignInput.class.isAssignableFrom(httpSession.getBody().getClass())) return true;
@@ -41,7 +38,7 @@ public class ValidationFilter extends PreFilter {
 		ForeignInput body = (ForeignInput) httpSession.getBody();
 		Set<ValidationError> errors = body.validate();
 		if(errors.size() > 0) {
-			throw new ValidationException(body, errors);
+			throw new ValidationException(errors);
 		}
 
 		return true;

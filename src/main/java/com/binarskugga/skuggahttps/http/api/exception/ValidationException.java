@@ -8,9 +8,8 @@ import java.util.*;
 
 public class ValidationException extends APIException {
 
-	public ValidationException(Object body, Set<ValidationError> errors) {
+	public ValidationException(Set<ValidationError> errors) {
 		super(Response.BAD_REQUEST, "E_VALIDATION", "One or multiple inputs are invalid.");
-		setBody(body);
 		setErrors(errors);
 	}
 }
