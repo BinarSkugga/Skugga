@@ -29,10 +29,9 @@ public class EndpointResolver {
 	private Cache<String, Endpoint> routingCache;
 	private BloomFilter<String> routingCacheFilter;
 
-	public EndpointResolver(AbstractHttpExchangeHandler exchangeHandler, Collection<Class<? extends AbstractController>> controllers) {
-		controllers.add(MetaController.class);
-		this.endpoints = controllers.stream().filter(controller -> controller.isAnnotationPresent(Controller.class))
-				.map(controller -> Lists.newArrayList(controller.getDeclaredMethods()))
+	public EndpointResolver(AbstractHttpExchangeHandler exchangeHandler, Collection<AbstractController> controllers) {
+		this.endpoints = controllers.stream()
+				.map(controller -> Lists.newArrayList(controller.getClass().getDeclaredMethods()))
 				.flatMap(Collection::stream)
 				.filter(method ->  method.isAnnotationPresent(Get.class) || method.isAnnotationPresent(Post.class))
 				.map(method -> {

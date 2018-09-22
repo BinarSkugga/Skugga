@@ -2,6 +2,7 @@ package com.binarskugga.skuggahttps.http;
 
 import com.binarskugga.skuggahttps.annotation.Filter;
 import com.binarskugga.skuggahttps.auth.*;
+import com.binarskugga.skuggahttps.controller.*;
 import com.binarskugga.skuggahttps.data.*;
 import com.binarskugga.skuggahttps.http.api.filter.impl.*;
 import com.google.common.base.*;
@@ -32,16 +33,19 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	private PropertiesConfiguration configuration;
 	private EndpointResolver endpointResolver;
 
-	private List<Class<? extends AbstractFilter>> filters;
+	private FilterChain filterChain;
+	private Set<AbstractController> controllers;
 
 	public AbstractHttpExchangeHandler() {
 		this.logger = Logger.getLogger(getClass().getName());
 		this.configuration = HttpConfigProvider.get();
 
-		Reflections ref = new Reflections(this.configuration.getString("server.package.controller").get());
-		this.endpointResolver = new EndpointResolver(this, ref.getSubTypesOf(AbstractController.class));
+		this.controllers = new HashSet<>();
+		this.createControllers(this.configuration.getString("server.package.controller").get());
 
-		this.filters = new ArrayList<>();
+		this.endpointResolver = new EndpointResolver(this, this.controllers);
+
+		this.filterChain = new FilterChain();
 		initiateFilters(HttpConfigProvider.get().getString("server.package.filter").get());
 	}
 
@@ -53,20 +57,6 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		HttpSession session = new HttpSession();
 		session.setExchange(exchange);
 		session.setConfig(HttpConfigProvider.get());
-
-		FilterChain chain = new FilterChain();
-		for(Class<? extends AbstractFilter> clazz : this.filters) {
-			try {
-				if(clazz.equals(AuthFilter.class)) {
-					Constructor constructor = AuthFilter.class.getConstructor(DataRepository.class);
-					chain.addFilter((AbstractFilter) constructor.newInstance(getIdentityRepository()));
-				} else {
-					chain.addFilter(clazz.newInstance());
-				}
-			} catch(Exception e) {
-				logger.severe("Filters need to have an empty constructor. (" + clazz.getName() + ")");
-			}
-		}
 
 		OutputStream os = session.getExchange().getResponseBody();
 
@@ -94,10 +84,9 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		if(session.getEndpoint() == null) {
 			session.setResponse(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
 		} else {
-			try {
-				controller = (AbstractController) session.getEndpoint().getAction().getDeclaringClass().newInstance();
-				controller.setSession(session);
-			} catch(Exception ignored) {}
+			controller = this.controllers.stream()
+					.filter(c -> c.getClass().equals(session.getEndpoint().getAction().getDeclaringClass())).findFirst().get();
+			controller.setSession(session);
 
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
 				outHeaders.set("Content-type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
@@ -121,7 +110,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 							+ session.getEndpoint().getAction().getDeclaringClass().getName() + ")");
 				}
 
-				chain.applyPre(session);
+				filterChain.applyPre(session);
 
 				Object obj = session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray());
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
@@ -133,7 +122,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 						session.setResponse(Response.ok(obj.toString()));
 				}
 
-				chain.applyPost(session);
+				filterChain.applyPost(session);
 			} catch(Exception e) {
 				if(e.getCause() instanceof HTTPException || e instanceof HTTPException) {
 					HTTPException httpException;
@@ -190,6 +179,20 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		session.getExchange().close();
 	}
 
+	private void createControllers(String controllerPackage) {
+		Reflections reflections = new Reflections(controllerPackage);
+		Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
+		controllers.add(MetaController.class);
+		controllers.stream().filter(controller -> AbstractController.class.isAssignableFrom(controller))
+				.forEach(controller -> {
+					try {
+						this.controllers.add((AbstractController) controller.newInstance());
+					} catch(Exception e) {
+						logger.severe("Controllers need to have an empty constructor. (" + controller.getName() + ")");
+					}
+				});
+	}
+
 	private void initiateFilters(String filterPackage) {
 		Reflections reflections = new Reflections(filterPackage);
 		Set<Class<?>> filters = reflections.getTypesAnnotatedWith(Filter.class);
@@ -200,7 +203,19 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			int o1Priority = o1.getDeclaredAnnotation(Filter.class).value();
 			int o2Priority = o2.getDeclaredAnnotation(Filter.class).value();
 			return Integer.compare(o1Priority, o2Priority);
-		}).forEach(filter -> AbstractHttpExchangeHandler.this.filters.add((Class<? extends AbstractFilter>) filter));
+		}).forEach(filter -> {
+			try {
+				Class<? extends AbstractFilter> typedFilter = ((Class<? extends AbstractFilter>) filter);
+				if(typedFilter.equals(AuthFilter.class)) {
+					Constructor constructor = AuthFilter.class.getConstructor(DataRepository.class);
+					this.filterChain.addFilter((AbstractFilter) constructor.newInstance(getIdentityRepository()));
+				} else {
+					this.filterChain.addFilter(typedFilter.newInstance());
+				}
+			} catch(Exception e) {
+				logger.severe("Filters need to have an empty constructor. (" + filter.getName() + ")");
+			}
+		});
 	}
 
 	private Map<String, Cookie> parseCookies(Headers resquestHeaders) {
