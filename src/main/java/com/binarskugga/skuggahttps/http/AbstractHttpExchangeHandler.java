@@ -84,10 +84,6 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		if(session.getEndpoint() == null) {
 			session.setResponse(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
 		} else {
-			controller = this.controllers.stream()
-					.filter(c -> c.getClass().equals(session.getEndpoint().getAction().getDeclaringClass())).findFirst().get();
-			controller.setSession(session);
-
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
 				outHeaders.set("Content-type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
 			}
@@ -105,11 +101,6 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			session.setArgs(this.endpointResolver.getArguments(session, path));
 
 			try {
-				if(controller == null) {
-					throw new InvalidControllerException("The controller couldn't not be initialized. ("
-							+ session.getEndpoint().getAction().getDeclaringClass().getName() + ")");
-				}
-
 				filterChain.applyPre(session);
 
 				Object obj = session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray());
