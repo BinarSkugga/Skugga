@@ -22,8 +22,8 @@ public class AuthService {
 
 	private AuthService() {
 		File secretKeyFile = ResourceLoader.load("", "secret.key");
+		PropertiesConfiguration configuration = HttpConfigProvider.get();
 		if(!secretKeyFile.exists()) {
-			PropertiesConfiguration configuration = HttpConfigProvider.get();
 			int keyLenth = configuration.getInt("server.security.hmac.keylength").orElse(2048);
 			if(keyLenth < 2048)
 				logger.severe("HMAC key length is less than 2048 bit, insecure password hashes will be generated !");
@@ -36,6 +36,11 @@ public class AuthService {
 			try {
 				byte[] encoded = Files.readAllBytes(Paths.get(secretKeyFile.toURI()));
 				this.key = new SecretKeySpec(encoded, "HMACSHA512");
+
+				int configKeySize = configuration.getInt("server.security.hmac.keylength").orElse(2048);
+				if((encoded.length * 8) != configKeySize)
+					logger.severe("Outdated HMAC key length ! Please clean your target to update your secret to the new size."
+							+ "(Current=" + (encoded.length * 8) + ", Config=" + configKeySize);
 			} catch(Exception e) { e.printStackTrace(); }
 		}
 	}
