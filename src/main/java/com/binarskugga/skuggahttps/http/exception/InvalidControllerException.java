@@ -2,9 +2,9 @@ package com.binarskugga.skuggahttps.http.exception;
 
 import static com.binarskugga.skuggahttps.http.Response.*;
 
-public class InvalidSubjectException extends HTTPException {
+public class InvalidControllerException extends HTTPException {
 
-	public InvalidSubjectException(String message) {
+	public InvalidControllerException(String message) {
 		super(INTERNAL_ERROR, message);
 	}
 

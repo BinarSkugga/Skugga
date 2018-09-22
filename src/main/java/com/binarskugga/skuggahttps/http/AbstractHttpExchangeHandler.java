@@ -64,7 +64,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 					chain.addFilter(clazz.newInstance());
 				}
 			} catch(Exception e) {
-				this.logger.log(Level.SEVERE, "", e.getCause());
+				logger.severe("Filters need to have an empty constructor. (" + clazz.getName() + ")");
 			}
 		}
 
@@ -81,7 +81,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 
 		outHeaders.add("Connection", session.getConfig().getString("headers.connection").orElse("keep-alive"));
 		outHeaders.add("Content-type", session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
-		outHeaders.add("Server", session.getConfig().getString("headers.server").orElse("SkuggaHttps"));
+		outHeaders.add("Server", session.getConfig().getString("server.name").orElse("SkuggaHttps"));
 		outHeaders.add("Vary", session.getConfig().getString("headers.vary").orElse("Accept-Encoding"));
 		outHeaders.add("Access-Control-Allow-Origin", session.getConfig().getString("headers.cors.access-control-allow-origin").orElse("*"));
 
@@ -97,9 +97,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			try {
 				controller = (AbstractController) session.getEndpoint().getAction().getDeclaringClass().newInstance();
 				controller.setSession(session);
-			} catch(Exception e) {
-				logger.log(Level.SEVERE, "Controllers need to have an empty constructor.", e);
-			}
+			} catch(Exception ignored) {}
 
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
 				outHeaders.set("Content-type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
@@ -118,6 +116,11 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			session.setArgs(this.endpointResolver.getArguments(session, path));
 
 			try {
+				if(controller == null) {
+					throw new InvalidControllerException("The controller couldn't not be initialized. ("
+							+ session.getEndpoint().getAction().getDeclaringClass().getName() + ")");
+				}
+
 				chain.applyPre(session);
 
 				Object obj = session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray());
