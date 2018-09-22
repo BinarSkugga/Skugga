@@ -40,7 +40,7 @@ public class HttpServer {
 		this.exchangeHandler = exchangeHandler;
 		this.logger = Logger.getLogger(HttpServer.class.getName());
 
-		if(!Identifiable.class.isAssignableFrom(exchangeHandler.getIdentityRepository().getClazz()))
+		if(exchangeHandler.getIdentityRepository() != null && !Identifiable.class.isAssignableFrom(exchangeHandler.getIdentityRepository().getClazz()))
 			throw new IllegalStateException("The Identity repository must refer to a model that implements GenericUser or Identifiable.");
 
 		Integer threadSize = this.configuration.getInt("server.threads").orElse(0);
