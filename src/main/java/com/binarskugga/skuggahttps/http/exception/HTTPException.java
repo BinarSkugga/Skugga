@@ -5,7 +5,7 @@ public class HTTPException extends RuntimeException {
 	private int status;
 
 	public HTTPException(int status, String message) {
-		super(message.equals("") ? "No Message" : "");
+		super(message.equals("") ? "No Message" : message);
 		this.status = status;
 	}
 
