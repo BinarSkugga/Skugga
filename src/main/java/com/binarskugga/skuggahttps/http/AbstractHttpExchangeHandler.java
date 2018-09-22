@@ -137,20 +137,24 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 					if(e.getCause() instanceof HTTPException) httpException = (HTTPException) e.getCause();
 					else httpException = (HTTPException) e;
 
-					this.logger.warning(String.format("HTTP error %d - %s", httpException.getStatus(), httpException.getMessage()));
+					this.logger.warning(String.format("HTTP Error %d - %s", httpException.getStatus(), httpException.getMessage()));
 					session.setResponse(Response.create(httpException.getStatus(), httpException.getMessage()));
 				} else if(e.getCause() instanceof APIException || e instanceof APIException) {
 					APIException apiException;
 					if(e.getCause() instanceof APIException) apiException = (APIException) e.getCause();
 					else apiException = (APIException) e;
 
-					this.logger.warning(String.format("HTTP %d - %s", apiException.getStatus(), apiException.getMessage()));
+					this.logger.warning(String.format("API Error %d - %s", apiException.getStatus(), apiException.getMessage()));
 					session.setResponse(Response.create(apiException.getStatus(), apiException.getName(), apiException.getMessage()));
 
 					if(apiException.getErrors() != null) session.getResponse().setErrors(apiException.getErrors());
 				} else {
-					this.logger.log(Level.SEVERE, String.format("Server error"), e);
-					session.setResponse(Response.internalError(e.getMessage()));
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					for(String line : sw.toString().split("\n"))
+						this.logger.severe(line);
+					session.setResponse(Response.internalError(e.getClass().getName()));
 				}
 			}
 		}
@@ -175,7 +179,8 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 
 			os.write(rp.getBytes(Charsets.UTF_8));
 		} else {
-			os.write(session.getResponse().getStatus());
+			String rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
+			os.write(rp.getBytes(Charsets.UTF_8));
 		}
 
 		os.close();
