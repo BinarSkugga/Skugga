@@ -30,7 +30,7 @@ public class EndpointResolver {
 	private BloomFilter<String> routingCacheFilter;
 
 	public EndpointResolver(AbstractHttpExchangeHandler exchangeHandler, Collection<Class<? extends AbstractController>> controllers) {
-		controllers.add(SecurityController.class);
+		controllers.add(MetaController.class);
 		this.endpoints = controllers.stream().filter(controller -> controller.isAnnotationPresent(Controller.class))
 				.map(controller -> Lists.newArrayList(controller.getDeclaredMethods()))
 				.flatMap(Collection::stream)
