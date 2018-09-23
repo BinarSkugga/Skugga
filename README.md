@@ -51,9 +51,9 @@ public class MetaController extends AbstractController {
 > The meta controller is included with all SkuggaHTTPS servers and can be disabled by setting 'server.controller.meta' 
 to false.
 
-There are multiple thing to cover here. Firstly how the server build the url. In your configuration, you can set the
-property 'server.root' to start every url with a prefix. This prefix is followed by the value of the controller
-annotation. So in this case with a root of /api/ the url would be '/api/meta'.
+The server will build urls using the root in your configuration. You can set the property 'server.root' to start 
+every url with a prefix. This prefix is followed by the value of the controller annotation. So in this case with a 
+root of /api/ the url would be '/api/meta'.
 
 ==
 ``` java
