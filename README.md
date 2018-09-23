@@ -90,8 +90,7 @@ public Response create(CoolDTO dto) {
 }
 ```
 Next, you can see the Post method. The post annotation works the same as the get. The only difference with a post
-method is that the first argument of the method need to ALWAYS be the body. Following arguments can be followed by
-path params.
+method is that the first argument of the method need to ALWAYS be the body. Following arguments path parameters.
 
 ## Add filters
 To add filters, you'll need to first tell the server where you store your filter classes. This package can be 
