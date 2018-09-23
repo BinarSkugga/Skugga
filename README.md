@@ -158,12 +158,16 @@ repository to do comparison and search on ids.
 > You don't want to implement all this for each model so I would advise to create a factory method that takes the
 > model class as argument.
 
+Since MongoDB is single threaded my query builder is static here. You might also see that the initializer and
+connector logic are handle by you in the constructor. This is because the connector can return a wrapper and the
+initializer might require some pre-initialization.
+
 ``` java
 public class MongoRepository<T extends Identifiable> extends DataRepository<Query<T>, ObjectId, T> {
 
 	private static Datastore store = null;
 
-	private MongoRepository(Class<T> clazz) {
+	public MongoRepository(Class<T> clazz) {
 		super(clazz);
 
 		if(store == null) {
