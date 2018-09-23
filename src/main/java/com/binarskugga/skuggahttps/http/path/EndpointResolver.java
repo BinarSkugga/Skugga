@@ -151,7 +151,7 @@ public class EndpointResolver {
 		if(session.getEndpoint().getType().equals(EndpointType.POST))
 			fullArgs = Lists.asList(session.getBody(), args.toArray());
 		else
-			fullArgs = Lists.newArrayList(args);
+			fullArgs = args;
 
 		Parameter[] params = session.getEndpoint().getAction().getParameters();
 		Map<Parameter, Object> mappedArgs = new HashMap<>();
