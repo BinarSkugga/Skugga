@@ -11,7 +11,7 @@
 	+ [Data Connector](#data-connector)
 	+ [Data Repository](#data-repository)
 	+ [Data Initializer](#data-initializer)
-* [Authentication & Access](#authentication---access)
+* [Authentication and access](#authentication-and-access)
 
 ## Create and start your server
 First off all, you'll need to get your configuration file. You can do that using the HttpConfigProvider 
@@ -240,7 +240,7 @@ public class MongoInitializer implements DataInitializer {
 }
 ```
 
-## Authentication & Access
+## Authentication and access
 Authentication and access control is built in into SkuggaHttps and is pretty easy to use. You simply need to return
 a repository using the DataRepository implementation explained above. So your exchange handler would look like this:
 ``` java
