@@ -106,10 +106,13 @@ public class CustomFilter extends PreFilter {
 ```
 Filters are classes that are executed before and after your endpoint (PreFilter and PostFilter interfaces). These classes
 are used internally to allow access to clients and validate input but you can more of them to complexify your routine.
-When creating your own filters, it is important to specify a value of 0 or higher. Negative values are used for internal
-filters and can change in future versions. The apply method takes an HttpSession and returns a boolean. The return value
-indicates if this filter needs to be the last in the chain. Returning false will prevent any further filter in the 
-chain from executing.
+When creating your own filters, it is important to specify an order value of 0 or higher. Negative values are used 
+for internal filters and can change in future versions. The apply method takes an HttpSession and returns a boolean.
+The return value indicates if this filter needs to be the last in the chain. Returning false will prevent any further
+filter in the chain from executing.
+
+The HttpSession is a wrapper object that contains every information that might (or not) be useful to your filter.
+Note that the Response won't be available in a PreFilter and the body will null for a GET endpoint.
 
 ## Add models
 To add models, you'll need to first tell the server where you store your model classes. This package can be specified
