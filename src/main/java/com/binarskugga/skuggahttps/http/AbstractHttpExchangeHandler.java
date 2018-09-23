@@ -112,7 +112,9 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
 				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) session.getResponseBody());
 				else {
-					if(outHeaders.get("Content-type").get(0).contains("json"))
+					if(session.getResponseBody().getClass().equals(TransformableImage.class))
+						outHeaders.set("Content-type", "image/" + ((TransformableImage)session.getResponseBody()).getType().toLowerCase());
+					else if(outHeaders.get("Content-type").get(0).contains("json"))
 						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, session.getResponseBody())));
 					else
 						session.setResponse(Response.ok(null));
@@ -171,9 +173,11 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			if(session.getResponseBody() != null) {
 				if(session.getResponseBody() instanceof byte[])
 					os.write((byte[]) session.getResponseBody());
-				else if(session.getResponseBody() instanceof String) {
+				else if(session.getResponseBody() instanceof String)
 					os.write(((String) session.getResponseBody()).getBytes(Charsets.UTF_8));
-				} else if(session.getResponseBody() instanceof Serializable) {
+				else if(session.getResponseBody() instanceof TransformableImage)
+					os.write(((TransformableImage) session.getResponseBody()).getData());
+				else if(session.getResponseBody() instanceof Serializable) {
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					try {
 						ObjectOutput out = new ObjectOutputStream(bos);
