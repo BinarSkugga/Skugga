@@ -53,31 +53,30 @@ public class EndpointResolver {
 					}
 					endpoint.setAction(method);
 
-					Access access = endpoint.getAction().getAnnotation(Access.class);
+					if(exchangeHandler.getIdentityRepository() != null) {
+						Access access = endpoint.getAction().getAnnotation(Access.class);
 
-					Class<? extends AccessRole> defaultAccess = LoggedAccess.class;
-					if(configuration.getString("server.default.access").isPresent()) {
-						try {
-							defaultAccess = (Class<? extends AccessRole>) Class.forName(configuration.getString("server.default.access").get());
-						} catch(ClassNotFoundException ignored) {}
-					}
-
-					List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(defaultAccess) : Lists.newArrayList(access.value());
-					endpoint.setAccess(roles);
-
-					if(endpoint.getAccess().contains(SubjectiveAccess.class)) {
-						for(Parameter parameter : endpoint.getAction().getParameters()) {
-							if(parameter.isAnnotationPresent(Subject.class)) {
-								if(Identifiable.class.isAssignableFrom(parameter.getType()))
-									endpoint.setSubject(parameter);
-								else
-									throw new InvalidSubjectException("A subject parameter needs to be a subclass of Identifiable." +
-											"(" + endpoint.getFullRoute() + ")");
-							}
+						Class<? extends AccessRole> defaultAccess = LoggedAccess.class;
+						if(configuration.getString("server.default.access").isPresent()) {
+							try {
+								defaultAccess = (Class<? extends AccessRole>) Class.forName(configuration.getString("server.default.access").get());
+							} catch(ClassNotFoundException ignored) {}
 						}
-						if(endpoint.getSubject() == null) {
-							throw new InvalidSubjectException("Subjective access require a parameter annotated with Subject."
-									+ "(" + endpoint.getFullRoute() + ")");
+
+						List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(defaultAccess) : Lists.newArrayList(access.value());
+						endpoint.setAccess(roles);
+
+						if(endpoint.getAccess().contains(SubjectiveAccess.class)) {
+							for(Parameter parameter : endpoint.getAction().getParameters()) {
+								if(parameter.isAnnotationPresent(Subject.class)) {
+									if(Identifiable.class.isAssignableFrom(parameter.getType())) endpoint.setSubject(parameter);
+									else
+										throw new InvalidSubjectException("A subject parameter needs to be a subclass of Identifiable." + "(" + endpoint.getFullRoute() + ")");
+								}
+							}
+							if(endpoint.getSubject() == null) {
+								throw new InvalidSubjectException("Subjective access require a parameter annotated with Subject." + "(" + endpoint.getFullRoute() + ")");
+							}
 						}
 					}
 
