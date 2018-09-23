@@ -228,4 +228,47 @@ public class MongoInitializer implements DataInitializer {
 ```
 
 ## Authentication & Access
-(TO BE DONE)
+Authentication and access control is built in into SkuggaHttps and is pretty easy to use. You simply need to return
+a repository using the DataRepository implementation explained above. So you exchange handler would look like this:
+``` java
+public class CustomExchangeHandler extends AbstractHttpExchangeHandler<ObjectId> {
+	@Override
+	public HttpJsonHandler getJsonHandler() {
+		return new MoshiJsonHandler();
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <Q, T extends Identifiable> DataRepository<Q, ObjectId, T> getIdentityRepository() {
+		return (DataRepository) MongoRepository.of(User.class);
+	}
+
+	@Override
+	public ObjectId createID(String s) {
+		return new ObjectId(s);
+	}
+}
+```
+
+The first constraint is that the repository must manipulate an object that extends GenericUser. So here User would
+implement GenericUser looking like this:
+``` java
+public class User implements GenericUser<ObjectId> {
+
+	@Override
+	public ObjectId getId() {
+		return this.id;
+	}
+
+	@Override
+	public String getPasswordHash() {
+		return this.hash;
+	}
+
+	@Override
+	public Class<? extends AccessRole> getAccessRole() {
+		return this.access;
+	}
+
+}
+```
