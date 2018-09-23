@@ -85,7 +85,8 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			session.setResponse(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
 		} else {
 			controller = this.controllers.stream()
-					.filter(c -> c.getClass().equals(session.getEndpoint().getAction().getDeclaringClass())).findFirst().get();
+					.filter(c -> c.getClass().equals(session.getEndpoint().getAction().getDeclaringClass()))
+					.findFirst().get().copy();
 			controller.setSession(session);
 
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
