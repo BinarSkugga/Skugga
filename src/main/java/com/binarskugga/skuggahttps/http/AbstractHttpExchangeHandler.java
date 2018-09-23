@@ -177,7 +177,9 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	private void createControllers(String controllerPackage) {
 		Reflections reflections = new Reflections(controllerPackage);
 		Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
-		controllers.add(MetaController.class);
+
+		if(this.configuration.getBoolean("server.controller.meta").orElse(true))
+			controllers.add(MetaController.class);
 		controllers.stream().filter(controller -> AbstractController.class.isAssignableFrom(controller))
 				.forEach(controller -> {
 					try {
