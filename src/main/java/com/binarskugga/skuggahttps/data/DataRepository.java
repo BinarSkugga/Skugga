@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
-public abstract class DataRepository<Q, I extends Serializable, T extends Identifiable<I>> {
+public abstract class DataRepository<Q, I extends Serializable, T extends Identifiable> {
 
 	@Getter private Class<T> clazz;
 
