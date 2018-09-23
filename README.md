@@ -122,7 +122,7 @@ To add models, you'll need to first tell the server where you store your model c
 ## Link your data
 Linking your data needs you to implements 3 classes: a connector, an initializer and a repository.
 ### Data Connector
-A connector is a class that allows you to... connect to your data. It creates a connection and return a query builder.
+A connector is a class that allows you to... connect to your data. It creates a connection and returns a query builder.
 Query builders are different from one data backend to another so you might need to create a wrapper to have all the
 objects needed. Here is an example for a MongoDB backend.
 ``` java
