@@ -48,7 +48,7 @@ public class MetaController extends AbstractController {
 
 }
 ```
-> The meta controller is included with all SkuggaHTTPS servers and can be disabled by setting 'server.controller.meta' 
+> The meta controller is included with all SkuggaHttps servers and can be disabled by setting 'server.controller.meta' 
 to false.
 
 The server will build urls using the root in your configuration. You can set the property 'server.root' to start 
@@ -67,6 +67,19 @@ the method is automatically use to map a url. So to ping, you would go to '/api/
 contains an underscore, it is replaced with a forward slash.
 
 > To expose an endpoint that contains an underscore, you need to set the value for the Get or Post annotation.
+
+``` java
+@Get("get/{string}/{id}")
+public Response get(String category, ObjectId id) {
+	...
+	return Response.ok();
+}
+```
+Using path parameters is pretty simple. There are 3 types of parameters: id, int and string. String and int needs
+a parameter with the String or int type respectively. As for id, it needs a parameter that match the return type 
+of createID in your HttpExchangeHandler.
+
+> SkuggaHttps doesn't / won't support query parameters.
 
 ### POST
 ``` java
