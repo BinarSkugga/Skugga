@@ -95,13 +95,28 @@ method is that the first argument of the method need to ALWAYS be the body. Foll
 ## Add filters
 To add filters, you'll need to first tell the server where you store your filter classes. This package can be 
 specified in "http.properties" with the key "server.package.filter".
+``` java
+@Filter(0)
+public class CustomFilter extends PreFilter {
+	@Override
+	public boolean apply(HttpSession httpSession) {
+		return true;
+	}
+}
+```
+Filters are classes that are executed before and after your endpoint (PreFilter and PostFilter interfaces). These classes
+are used internally to allow access to clients and validate input but you can more of them to complexify your routine.
+When creating your own filters, it is important to specify a value of 0 or higher. Negative values are used for internal
+filters and can change in future versions. The apply method takes an HttpSession and returns a boolean. The return value
+indicates if this filter needs to be the last in the chain. Returning false will prevent any further filter in the 
+chain from executing.
 
 ## Add models
 To add models, you'll need to first tell the server where you store your model classes. This package can be specified
  in "http.properties" with the key "server.package.model".
 
-## Add roles
+## Link your data
 (TO BE DONE)
 
-## Link your data
+## Add roles
 (TO BE DONE)
