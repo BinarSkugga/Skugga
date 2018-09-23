@@ -249,7 +249,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	}
 
 	public abstract HttpJsonHandler getJsonHandler();
-	public abstract <Q, T extends Identifiable<I>> DataRepository<Q, I, T> getIdentityRepository();
+	public abstract <Q, T extends Identifiable> DataRepository<Q, I, T> getIdentityRepository();
 	public abstract I createID(String id);
 
 }
