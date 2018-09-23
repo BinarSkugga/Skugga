@@ -66,6 +66,8 @@ Here is a method with the Get annotation. When no value is specified to the Get 
 the method is automatically use to map a url. So to ping, you would go to '/api/meta/ping'. If the method name 
 contains an underscore, it is replaced with a forward slash.
 
+> To expose an endpoint that contains an underscore, you need to set the value for the Get or Post annotation.
+
 ### POST
 ``` java
 @Post
