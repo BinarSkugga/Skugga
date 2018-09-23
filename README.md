@@ -72,9 +72,27 @@ There are multiple thing to cover here. Firstly how the server build the url. In
 property 'server.root' to start every url with a prefix. This prefix is followed by the value of the controller
 annotation. So in this case with a root of /api/ the url would be '/api/meta'.
 
-Secondly, you can see that both methods are GET as specified with Get annotation. When no value is specified to the
-Get or Post annotation, the name of the method is automatically use to map a url. So to ping, you would go to
-'/api/meta/ping'. If the method name contains an underscore, it is replaced with a forward slash.
+--
+``` java
+@Get
+@Access({AllAccess.class})
+public Response ping() {
+	return Response.ok();
+}
+```
+
+Here is a method with the Get annotation. When no value is specified to the Get or Post annotation, the name of 
+the method is automatically use to map a url. So to ping, you would go to '/api/meta/ping'. If the method name 
+contains an underscore, it is replaced with a forward slash.
+
+--
+``` java
+@Get
+@Access({AllAccess.class})
+public Response ping() {
+	return Response.ok();
+}
+```
 
 Next, you can see the Post method. The post annotation works the same as the get. The only difference with a post
 method is that the first argument of the method need to ALWAYS be the body. Following arguments can be followed by
