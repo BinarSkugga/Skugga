@@ -40,7 +40,27 @@ public class CustomExchangeHandler extends AbstractHttpExchangeHandler<ObjectId>
 
 ## Add controllers
 To add controllers, you'll need to first tell the server where you store your controller classes. This package can be 
-specified in "http.properties" with the key "server.package.controller".
+specified in "http.properties" with the key "server.package.controller". You can then simply create a new class in
+this package annotated with Controller and extending AbstractController.
+``` java
+@Controller("meta")
+public class MetaController extends AbstractController {
+
+	@Get
+	@Access({AllAccess.class})
+	public Response ping() {
+		return Response.ok();
+	}
+
+	@Get
+	@Access({AllAccess.class})
+	public ServerInfoDTO info() {
+		return new ServerInfoDTO();
+	}
+
+}
+```
+PS: This controller is included with all server and can be disabled by setting 'server.controller.meta' to false.
 
 ## Add filters
 To add filters, you'll need to first tell the server where you store your filter classes. This package can be 
