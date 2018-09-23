@@ -138,11 +138,76 @@ public class MongoConnector extends DataConnector<Datastore> {
 		Set<Class> models = reflections.getTypesAnnotatedWith(Entity.class).stream()
 			.collect(Collectors.toSet());
 		
+		// Datastore is the Query Builder for MongoDB / Morphia
 		Datastore store = morphia.map(models)
 			.createDatastore(new MongoClient(), config.getString("server.database").get());
 		store.ensureIndexes();
 
 		return store;
+	}
+
+}
+```
+
+### Data Repository
+``` java
+public class MongoRepository<T extends Identifiable> 
+	extends DataRepository<Query<T>, ObjectId, T> {
+
+	private static Datastore store = null;
+
+	private MongoRepository(Class<T> clazz) {
+		super(clazz);
+
+		if(store == null) {
+			MongoConnector connector = new MongoConnector();
+			store = connector.create();
+			connector.initialize(new MongoInitializer());
+		}
+	}
+
+	@Override
+	protected T byId(ObjectId id) {}
+
+	@Override
+	public T id(String id) {}
+
+	@Override
+	public T single(Function<Query<T>, T> filter) {}
+
+	@Override
+	public List<T> list(Function<Query<T>, List<T>> filter) {}
+
+	@Override
+	public T create(T entity) {}
+
+	@Override
+	public List<T> createAll(Iterable<T> entities) {}
+
+	@Override
+	protected T doUpdate(T entity) {}
+
+	@Override
+	public List<T> updateAll(Iterable<T> entities) {}
+
+	@Override
+	public boolean delete(T entity) {}
+
+	@Override
+	public boolean deleteAll(Iterable<T> entities) {}
+
+}
+```
+
+### Data Initializer
+The data initializer is a class that gets executed every time you start the server. This is mostly useful in
+development cycles where you might want to truncate your tables and fill them with trusted values.
+``` java
+public class MongoInitializer implements DataInitializer {
+
+	@Override
+	public void initialize() {
+		// Create repository and entities here.
 	}
 
 }
