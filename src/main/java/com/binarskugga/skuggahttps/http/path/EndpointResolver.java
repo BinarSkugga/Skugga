@@ -2,7 +2,6 @@ package com.binarskugga.skuggahttps.http.path;
 
 import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.auth.role.*;
-import com.binarskugga.skuggahttps.controller.*;
 import com.binarskugga.skuggahttps.http.exception.*;
 import com.google.common.base.*;
 import com.google.common.cache.*;
@@ -85,7 +84,7 @@ public class EndpointResolver {
 
 		this.exchangeHandler = exchangeHandler;
 		this.routingCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.HOURS).build();
-		this.routingCacheFilter = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), 1000);
+		this.routingCacheFilter = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), 100);
 	}
 
 	public Endpoint getEndpoint(String search, EndpointType type) {

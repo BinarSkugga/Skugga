@@ -14,7 +14,7 @@ public class TestExchangeHandler extends AbstractHttpExchangeHandler<ObjectId> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <Q, T extends Identifiable> DataRepository<Q, ObjectId, T> getIdentityRepository() {
+	public <Q, T extends Identifiable<ObjectId>> DataRepository<Q, ObjectId, T> getIdentityRepository() {
 		return null;
 	}
 

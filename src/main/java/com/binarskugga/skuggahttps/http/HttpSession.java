@@ -20,6 +20,7 @@ public class HttpSession {
 	@Getter @Setter private HttpExchange exchange;
 
 	@Getter @Setter Object body;
+	@Getter @Setter Object responseBody;
 	@Getter @Setter Response response;
 
 	@Getter @Setter Map<String, Cookie> cookies;

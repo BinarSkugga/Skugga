@@ -89,7 +89,8 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			controller.setSession(session);
 
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
-				outHeaders.set("Content-type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
+				ContentType contentType = session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class);
+				outHeaders.set("Content-type", contentType.value());
 			}
 
 			if(session.getEndpoint().getType().equals(EndpointType.POST)) {
@@ -107,14 +108,14 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			try {
 				filterChain.applyPre(session);
 
-				Object obj = session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray());
+				session.setResponseBody(session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray()));
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
-				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) obj);
+				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) session.getResponseBody());
 				else {
 					if(outHeaders.get("Content-type").get(0).contains("json"))
-						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, obj)));
+						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, session.getResponseBody())));
 					else
-						session.setResponse(Response.ok(obj.toString()));
+						session.setResponse(Response.ok(null));
 				}
 
 				filterChain.applyPost(session);
@@ -153,21 +154,42 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			os = new GZIPOutputStream(os);
 		}
 
-		if(session.getResponse().getBody() != null) {
-			String rp;
+		if(session.getResponse().getBody() != null && session.getResponse().getBody().length() > 0) {
+			String rp = null;
 			if(session.getResponse().getStatus() > 300) {
 				if(outHeaders.get("Content-type").get(0).contains("json"))
 					rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
-				else
+				else {
 					rp = session.getResponse().toString();
+				}
 			} else {
 				rp = session.getResponse().getBody();
 			}
 
 			os.write(rp.getBytes(Charsets.UTF_8));
 		} else {
-			String rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
-			os.write(rp.getBytes(Charsets.UTF_8));
+			if(session.getResponseBody() != null) {
+				if(session.getResponseBody() instanceof byte[])
+					os.write((byte[]) session.getResponseBody());
+				else if(session.getResponseBody() instanceof String) {
+					os.write(((String) session.getResponseBody()).getBytes(Charsets.UTF_8));
+				} else if(session.getResponseBody() instanceof Serializable) {
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					try {
+						ObjectOutput out = new ObjectOutputStream(bos);
+						out.writeObject(session.getResponseBody());
+						out.flush();
+						os.write(bos.toByteArray());
+					} catch(IOException ignored) {} finally {
+						try {
+							bos.close();
+						} catch (IOException ignored) {}
+					}
+				}
+			} else {
+				String rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
+				os.write(rp.getBytes(Charsets.UTF_8));
+			}
 		}
 
 		os.close();
@@ -227,7 +249,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	}
 
 	public abstract HttpJsonHandler getJsonHandler();
-	public abstract <Q, T extends Identifiable> DataRepository<Q, I, T> getIdentityRepository();
+	public abstract <Q, T extends Identifiable<I>> DataRepository<Q, I, T> getIdentityRepository();
 	public abstract I createID(String id);
 
 }
