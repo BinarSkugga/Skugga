@@ -112,7 +112,7 @@ The return value indicates if this filter needs to be the last in the chain. Ret
 filter in the chain from executing.
 
 The HttpSession is a wrapper object that contains every information that might (or not) be useful to your filter.
-Note that the Response won't be available in a PreFilter and the body will null for a GET endpoint.
+Note that certain value might be unavailable like the Response in a PreFilter and the body for a GET endpoint.
 
 ## Add models
 To add models, you'll need to first tell the server where you store your model classes. This package can be specified
