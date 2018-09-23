@@ -116,10 +116,35 @@ Note that certain values might be unavailable like the Response in a PreFilter a
 
 ## Add models
 To add models, you'll need to first tell the server where you store your model classes. This package can be specified
- in "http.properties" with the key "server.package.model".
+ in "http.properties" with the key "server.package.model". This is more for your convenience when linking the data.
+ The internals do not actually use this property.
 
 ## Link your data
-(TO BE DONE)
+Linking your data needs you to implements 3 classes: a connector, an initializer and a repository.
+### Data Connector
+A connector is a class that allows you to... connect to your data. It creates a connection and return a query builder.
+Query builders are different from one data backend to another so you might need to create a wrapper to have all the
+objects needed. Here is an example for a MongoDB backend.
+``` java
+public class MongoConnector extends DataConnector<Datastore> {
 
-## Add roles
+	@Override
+	protected Datastore create() {
+		PropertiesConfiguration config = HttpConfigProvider.get();
+		Morphia morphia = new Morphia();
+
+		// Get all models using the Reflections package and the models property.
+		Reflections reflections = new Reflections(config.getString("server.package.model").get());
+		Set<Class> models = reflections.getTypesAnnotatedWith(Entity.class).stream().collect(Collectors.toSet());
+		
+		Datastore store = morphia.map(models).createDatastore(new MongoClient(), config.getString("server.database").get());
+		store.ensureIndexes();
+
+		return store;
+	}
+
+}
+```
+
+## Authentication & Access
 (TO BE DONE)
