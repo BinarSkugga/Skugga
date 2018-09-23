@@ -158,11 +158,6 @@ repository to do comparison and search on ids.
 > You don't want to implement all this for each model so I would advise to create a factory method that takes the
 > model class as argument.
 
-Since MongoDB is single threaded my query builder is static here. You might also see that the initializer and
-connector logic are handle by you in the constructor. This is because the connector can return a wrapper and the
-initializer might require some pre-initialization. In this, this is the standard and expected setup for these two
-classes.
-
 ``` java
 public class MongoRepository<T extends Identifiable> extends DataRepository<Query<T>, ObjectId, T> {
 
@@ -210,6 +205,13 @@ public class MongoRepository<T extends Identifiable> extends DataRepository<Quer
 
 }
 ```
+Since MongoDB is single threaded my query builder is static here. You might also see that the initializer and
+connector logic are handle by you in the constructor. This is because the connector can return a wrapper and the
+initializer might require some pre-initialization. In this, this is the standard and expected setup for these two
+classes.
+
+> byId and doUpdate are protected because they automatically manipulate a cache. If you don't want this cache,
+> override id and update.
 
 ### Data Initializer
 The data initializer is a class that gets executed every time you start the server. This is mostly useful in
