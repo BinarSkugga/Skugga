@@ -21,17 +21,17 @@ PropertiesConfiguration config = HttpConfigProvider.get();
 ```
 
 PropertiesConfiguration provides an easy interface to interacts with .properties files in your resource 
-folder. Using this configuration you can easily create and start your server.
+folder.
+
+All you need to start your server is an HttpExchangeHandler
 ``` java
 HttpServer server = new HttpServer(new CustomExchangeHandler());
 server.start();
 ```
-
-In this code we do a couple of things. First we create the server using our property "server.ip" and "server.port". 
-Next we provide a HttpExchangeHandler to the server. This class is created by you and describes what id types you 
-are using as well as how to transform object into json. It would look like this for a MongoDB database using the 
-BSON type ObjectId. The IdentityRepository method returns null here meaning this API is 'auth-less'. Note that this will
-be implemented later in the README.
+This class is created by you and describes what id types you are using as well as how to transform object into json. 
+It would look like this for a MongoDB database using the BSON type ObjectId. The IdentityRepository method returns 
+null here meaning this API is 'auth-less'. Note that this will be implemented [later](#authentication-and-access) 
+in the README.
 ``` java
 public class CustomExchangeHandler extends AbstractHttpExchangeHandler<ObjectId> {
 	@Override
