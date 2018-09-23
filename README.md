@@ -46,26 +46,9 @@ this package annotated with Controller and extending AbstractController.
 @Controller("meta")
 public class MetaController extends AbstractController {
 
-	@Get
-	@Access({AllAccess.class})
-	public Response ping() {
-		return Response.ok();
-	}
-
-	@Get
-	@Access({AllAccess.class})
-	public ServerInfoDTO info() {
-		return new ServerInfoDTO();
-	}
-	
-	@Post
-	public Response create(CoolDTO dto) {
-		return Response.ok();
-	}
-
 }
 ```
-PS: This controller is included with all SkuggaHTTPS servers and can be disabled by setting 'server.controller.meta' 
+> The meta controller is included with all SkuggaHTTPS servers and can be disabled by setting 'server.controller.meta' 
 to false.
 
 There are multiple thing to cover here. Firstly how the server build the url. In your configuration, you can set the
@@ -75,7 +58,6 @@ annotation. So in this case with a root of /api/ the url would be '/api/meta'.
 ==
 ``` java
 @Get
-@Access({AllAccess.class})
 public Response ping() {
 	return Response.ok();
 }
@@ -87,9 +69,8 @@ contains an underscore, it is replaced with a forward slash.
 
 ==
 ``` java
-@Get
-@Access({AllAccess.class})
-public Response ping() {
+@Post
+public Response create(CoolDTO dto) {
 	return Response.ok();
 }
 ```
