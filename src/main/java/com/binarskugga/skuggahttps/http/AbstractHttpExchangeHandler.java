@@ -34,16 +34,16 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 	private EndpointResolver endpointResolver;
 
 	private FilterChain filterChain;
-	private Set<AbstractController> controllers;
+	private Map<Class, AbstractController> controllers;
 
 	public AbstractHttpExchangeHandler() {
 		this.logger = Logger.getLogger(getClass().getName());
 		this.configuration = HttpConfigProvider.get();
 
-		this.controllers = new HashSet<>();
+		this.controllers = new HashMap<>();
 		this.createControllers(this.configuration.getString("server.package.controller").get());
 
-		this.endpointResolver = new EndpointResolver(this, this.controllers);
+		this.endpointResolver = new EndpointResolver(this, this.controllers.values());
 
 		this.filterChain = new FilterChain();
 		initiateFilters(HttpConfigProvider.get().getString("server.package.filter").get());
@@ -84,9 +84,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		if(session.getEndpoint() == null) {
 			session.setResponse(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
 		} else {
-			controller = this.controllers.stream()
-					.filter(c -> c.getClass().equals(session.getEndpoint().getAction().getDeclaringClass()))
-					.findFirst().get().copy();
+			controller = this.controllers.get(session.getEndpoint().getAction().getDeclaringClass()).copy();
 			controller.setSession(session);
 
 			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
@@ -195,7 +193,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		controllers.stream().filter(controller -> AbstractController.class.isAssignableFrom(controller))
 				.forEach(controller -> {
 					try {
-						this.controllers.add((AbstractController) controller.newInstance());
+						this.controllers.put(controller, (AbstractController) controller.newInstance());
 					} catch(Exception e) {
 						logger.severe("Controllers need to have an empty constructor. (" + controller.getName() + ")");
 					}
