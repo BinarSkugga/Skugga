@@ -60,7 +60,12 @@ public class MetaController extends AbstractController {
 
 }
 ```
-PS: This controller is included with all server and can be disabled by setting 'server.controller.meta' to false.
+PS: This controller is included with all SkuggaHTTPS servers and can be disabled by setting 'server.controller.meta' 
+to false.
+
+There are multiple thing to cover here. Firstly how the server build the url. In your configuration, you can set the
+property 'server.root' to start every url with a prefix. This prefix is followed by the value of the controller
+annotation. So in this case with a root of /api/ the url would be '/api/meta'.
 
 ## Add filters
 To add filters, you'll need to first tell the server where you store your filter classes. This package can be 
