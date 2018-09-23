@@ -70,14 +70,16 @@ contains an underscore, it is replaced with a forward slash.
 
 ``` java
 @Get("get/{string}/{id}")
-public Response get(String category, ObjectId id) {
+public SuperCoolEntity get(String category, ObjectId id) {
 	...
-	return Response.ok();
+	return superCoolEntity;
 }
 ```
 Using path parameters is pretty simple. There are 3 types of parameters: id, int and string. String and int needs
 a parameter with the String or int type respectively. As for id, it needs a parameter that match the return type 
 of createID in your HttpExchangeHandler.
+
+> The methods parameters need to be in the same order as the url
 
 > SkuggaHttps doesn't / won't support query parameters.
 
