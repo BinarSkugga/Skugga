@@ -135,7 +135,8 @@ public class MongoConnector extends DataConnector<Datastore> {
 
 		// Get all models using the Reflections package and the models property.
 		Reflections reflections = new Reflections(config.getString("server.package.model").get());
-		Set<Class> models = reflections.getTypesAnnotatedWith(Entity.class).stream().collect(Collectors.toSet());
+		Set<Class> models = reflections.getTypesAnnotatedWith(Entity.class).stream()
+			.collect(Collectors.toSet());
 		
 		Datastore store = morphia.map(models)
 			.createDatastore(new MongoClient(), config.getString("server.database").get());
