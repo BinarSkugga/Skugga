@@ -113,12 +113,12 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
 				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) session.getResponseBody());
 				else {
-					if(session.getResponseBody().getClass().equals(TransformableImage.class))
-						outHeaders.set("Content-type", "image/" + ((TransformableImage)session.getResponseBody()).getType().toLowerCase());
+					if(HttpReturnable.class.isAssignableFrom(session.getResponseBody().getClass()))
+						((HttpReturnable)session.getResponseBody()).changeHeaders(outHeaders);
 					else if(outHeaders.get("Content-type").get(0).contains("json"))
 						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, session.getResponseBody())));
 					else
-						session.setResponse(Response.ok(null));
+						session.setResponse(Response.ok());
 				}
 
 				filterChain.applyPost(session);
@@ -158,7 +158,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		}
 
 		if(session.getResponse().getBody() != null && session.getResponse().getBody().length() > 0) {
-			String rp = null;
+			String rp;
 			if(session.getResponse().getStatus() > 300) {
 				if(outHeaders.get("Content-type").get(0).contains("json"))
 					rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
@@ -172,25 +172,10 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			os.write(rp.getBytes(Charsets.UTF_8));
 		} else {
 			if(session.getResponseBody() != null) {
-				if(session.getResponseBody() instanceof byte[])
-					os.write((byte[]) session.getResponseBody());
+				if(HttpReturnable.class.isAssignableFrom(session.getResponseBody().getClass()))
+					((HttpReturnable)session.getResponseBody()).write(os);
 				else if(session.getResponseBody() instanceof String)
 					os.write(((String) session.getResponseBody()).getBytes(Charsets.UTF_8));
-				else if(session.getResponseBody() instanceof TransformableImage)
-					os.write(((TransformableImage) session.getResponseBody()).getData());
-				else if(session.getResponseBody() instanceof Serializable) {
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					try {
-						ObjectOutput out = new ObjectOutputStream(bos);
-						out.writeObject(session.getResponseBody());
-						out.flush();
-						os.write(bos.toByteArray());
-					} catch(IOException ignored) {} finally {
-						try {
-							bos.close();
-						} catch (IOException ignored) {}
-					}
-				}
 			} else {
 				String rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
 				os.write(rp.getBytes(Charsets.UTF_8));
