@@ -57,6 +57,11 @@ public class MetaController extends AbstractController {
 	public ServerInfoDTO info() {
 		return new ServerInfoDTO();
 	}
+	
+	@Post
+	public Response create(CoolDTO dto) {
+		return Response.ok();
+	}
 
 }
 ```
@@ -66,6 +71,14 @@ to false.
 There are multiple thing to cover here. Firstly how the server build the url. In your configuration, you can set the
 property 'server.root' to start every url with a prefix. This prefix is followed by the value of the controller
 annotation. So in this case with a root of /api/ the url would be '/api/meta'.
+
+Secondly, you can see that both methods are GET as specified with Get annotation. When no value is specified to the
+Get or Post annotation, the name of the method is automatically use to map a url. So to ping, you would go to
+'/api/meta/ping'. If the method name contains an underscore, it is replaced with a forward slash.
+
+Next, you can see the Post method. The post annotation works the same as the get. The only difference with a post
+method is that the first argument of the method need to ALWAYS be the body. Following arguments can be followed by
+path params.
 
 ## Add filters
 To add filters, you'll need to first tell the server where you store your filter classes. This package can be 
