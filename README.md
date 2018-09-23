@@ -77,9 +77,8 @@ public SuperCoolEntity get(String category, ObjectId id) {
 ```
 Using path parameters is pretty simple. There are 3 types of parameters: id, int and string. String and int needs
 a parameter with the String or int type respectively. As for id, it needs a parameter that match the return type 
-of createID in your HttpExchangeHandler.
-
-> The method parameters need to be in the same order as the url
+of createID in your HttpExchangeHandler. Note that the parameters in the url are in the order as the method's
+parameters, this is mandatory for the mapping to work.
 
 > SkuggaHttps doesn't / won't support query parameters.
 
