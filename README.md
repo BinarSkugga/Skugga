@@ -151,10 +151,14 @@ public class MongoConnector extends DataConnector<Datastore> {
 
 ### Data Repository
 The data repository is the main meat of your data implementation. It tells SkuggaHttps how to perform CRUD actions
-on your data layer. The DataRepository class takes 3 type parameters, the first one is the Query object obtain via
-your query builder in the connector, the second the type used as primary id and the last the type of object this
-repository is going to manipulate. The last argument must implement Identifiable which allows the repository to do
-comparison and search on ids.
+on your data layer. The DataRepository class takes 3 type parameters, the first one is the Query object obtained via
+your query builder in the connector, the second is the type used as a primary id and the last type is the type of 
+object this repository is going to manipulate. The last argument must implement Identifiable which allows the 
+repository to do comparison and search on ids.
+> You don't want to implement all this for each model so I would advise to create a factory method like this
+
+>public static <T extends Identifiable> MongoRepository<T> of(Class<T> clazz) {return new MongoRepository<>(clazz);}
+
 ``` java
 public class MongoRepository<T extends Identifiable> extends DataRepository<Query<T>, ObjectId, T> {
 
