@@ -72,7 +72,7 @@ There are multiple thing to cover here. Firstly how the server build the url. In
 property 'server.root' to start every url with a prefix. This prefix is followed by the value of the controller
 annotation. So in this case with a root of /api/ the url would be '/api/meta'.
 
---
+==
 ``` java
 @Get
 @Access({AllAccess.class})
@@ -85,7 +85,7 @@ Here is a method with the Get annotation. When no value is specified to the Get 
 the method is automatically use to map a url. So to ping, you would go to '/api/meta/ping'. If the method name 
 contains an underscore, it is replaced with a forward slash.
 
---
+==
 ``` java
 @Get
 @Access({AllAccess.class})
