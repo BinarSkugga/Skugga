@@ -160,7 +160,8 @@ repository to do comparison and search on ids.
 
 Since MongoDB is single threaded my query builder is static here. You might also see that the initializer and
 connector logic are handle by you in the constructor. This is because the connector can return a wrapper and the
-initializer might require some pre-initialization.
+initializer might require some pre-initialization. In this, this is the standard and expected setup for these two
+classes.
 
 ``` java
 public class MongoRepository<T extends Identifiable> extends DataRepository<Query<T>, ObjectId, T> {
