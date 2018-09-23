@@ -154,7 +154,7 @@ public class EndpointResolver {
 			fullArgs = args;
 
 		Parameter[] params = session.getEndpoint().getAction().getParameters();
-		Map<Parameter, Object> mappedArgs = new HashMap<>();
+		Map<Parameter, Object> mappedArgs = new LinkedHashMap<>();
 		for(int i = 0; i < params.length; i++) {
 			mappedArgs.put(params[i], fullArgs.get(i));
 		}
