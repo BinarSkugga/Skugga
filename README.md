@@ -16,13 +16,6 @@
 	+ [Http configuration](#http-configuration)
 
 ## Create and start your server
-First off all, you'll need to get your configuration file. You can do that using the HttpConfigProvider 
-class that fetches the "http.properties" file in your resources. PropertiesConfiguration provides an easy 
-interface to interacts with .properties files in your resource folder.
-``` java
-PropertiesConfiguration config = HttpConfigProvider.get();
-```
-
 All you need to start your server is an HttpExchangeHandler
 ``` java
 HttpServer server = new HttpServer(new CustomExchangeHandler());
