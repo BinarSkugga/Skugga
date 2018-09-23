@@ -1,5 +1,18 @@
 # SkuggaHttps
 
+## Table of contents
+* [Create and start your server](#create-and-start-your-server)
+* [Add controllers](#add-controllers)
+	+ [GET](#get)
+    + [POST](#post)
+* [Add filters](#add-filters)
+* [Add models](#add-models)
+* [Link your data](#link-your-data)
+	+ [Data Connector](#data-connector)
+	+ [Data Repository](#data-repository)
+	+ [Data Initializer](#data-initializer)
+* [Authentication & Access](#authentication---access)
+
 ## Create and start your server
 First off all, you'll need to get your configuration file. You can do that using the HttpConfigProvider 
 class that fetches the "http.properties" file in your resources.
@@ -229,7 +242,7 @@ public class MongoInitializer implements DataInitializer {
 
 ## Authentication & Access
 Authentication and access control is built in into SkuggaHttps and is pretty easy to use. You simply need to return
-a repository using the DataRepository implementation explained above. So you exchange handler would look like this:
+a repository using the DataRepository implementation explained above. So your exchange handler would look like this:
 ``` java
 public class CustomExchangeHandler extends AbstractHttpExchangeHandler<ObjectId> {
 	@Override
@@ -251,7 +264,7 @@ public class CustomExchangeHandler extends AbstractHttpExchangeHandler<ObjectId>
 ```
 
 The first constraint is that the repository must manipulate an object that extends GenericUser. So here User would
-implement GenericUser looking like this:
+implement GenericUser:
 ``` java
 public class User implements GenericUser<ObjectId> {
 
