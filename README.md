@@ -55,26 +55,24 @@ The server will build urls using the root in your configuration. You can set the
 every url with a prefix. This prefix is followed by the value of the controller annotation. So in this case with a 
 root of /api/ the url would be '/api/meta'.
 
-==
+
 ``` java
 @Get
 public Response ping() {
 	return Response.ok();
 }
 ```
-
 Here is a method with the Get annotation. When no value is specified to the Get or Post annotation, the name of 
 the method is automatically use to map a url. So to ping, you would go to '/api/meta/ping'. If the method name 
 contains an underscore, it is replaced with a forward slash.
 
-==
+
 ``` java
 @Post
 public Response create(CoolDTO dto) {
 	return Response.ok();
 }
 ```
-
 Next, you can see the Post method. The post annotation works the same as the get. The only difference with a post
 method is that the first argument of the method need to ALWAYS be the body. Following arguments can be followed by
 path params.
