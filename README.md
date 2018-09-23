@@ -12,16 +12,16 @@
 	+ [Data Repository](#data-repository)
 	+ [Data Initializer](#data-initializer)
 * [Authentication and access](#authentication-and-access)
+* [Misc](#misc)
+	+ [Http configuration](#http-configuration)
 
 ## Create and start your server
 First off all, you'll need to get your configuration file. You can do that using the HttpConfigProvider 
-class that fetches the "http.properties" file in your resources.
+class that fetches the "http.properties" file in your resources. PropertiesConfiguration provides an easy 
+interface to interacts with .properties files in your resource folder.
 ``` java
 PropertiesConfiguration config = HttpConfigProvider.get();
 ```
-
-PropertiesConfiguration provides an easy interface to interacts with .properties files in your resource 
-folder.
 
 All you need to start your server is an HttpExchangeHandler
 ``` java
@@ -284,4 +284,12 @@ public class User implements GenericUser<ObjectId> {
 	}
 
 }
+```
+
+## Misc
+### Http configuration
+You can get your http configuration using the HttpConfigProvider class that fetches the "http.properties" file 
+in your resources.
+``` java
+PropertiesConfiguration config = HttpConfigProvider.get();
 ```
