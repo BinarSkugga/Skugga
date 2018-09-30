@@ -1,6 +1,6 @@
 package com.binarskugga.skuggahttps.server;
 
-import com.binarskugga.skuggahttps.http.*;
+import com.binarskugga.skuggahttps.*;
 import com.squareup.moshi.*;
 
 import java.io.*;

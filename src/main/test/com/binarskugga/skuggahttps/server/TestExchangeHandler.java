@@ -1,5 +1,6 @@
 package com.binarskugga.skuggahttps.server;
 
+import com.binarskugga.skuggahttps.*;
 import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.data.*;
 import com.binarskugga.skuggahttps.http.*;
@@ -8,13 +9,13 @@ import org.bson.types.*;
 public class TestExchangeHandler extends AbstractHttpExchangeHandler<ObjectId> {
 
 	@Override
-	public HttpJsonHandler getJsonHandler() {
+	public HttpResponseHandler getResponseHandler() {
 		return new MoshiJsonHandler();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <Q, T extends Identifiable> DataRepository<Q, ObjectId, T> getIdentityRepository() {
+	public <Q, T extends GenericUser> DataRepository<Q, ObjectId, T> getIdentityRepository() {
 		return null;
 	}
 

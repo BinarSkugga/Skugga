@@ -4,7 +4,7 @@
 
 	<groupId>com.binarskugga</groupId>
 	<artifactId>skuggahttps</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>SkuggaHttps</name>
@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>com.binarskugga</groupId>
 			<artifactId>skuggahttps.commons</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -127,6 +127,7 @@
 			<groupId>org.projectlombok</groupId> <!-- CODEGEN -->
 			<artifactId>lombok</artifactId>
 			<version>1.18.2</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.shredzone.acme4j</groupId>

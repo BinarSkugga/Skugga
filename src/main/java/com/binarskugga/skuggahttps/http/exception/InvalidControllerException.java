@@ -1,6 +1,6 @@
 package com.binarskugga.skuggahttps.http.exception;
 
-import static com.binarskugga.skuggahttps.http.Response.*;
+import static com.binarskugga.skuggahttps.response.Response.*;
 
 public class InvalidControllerException extends HTTPException {
 

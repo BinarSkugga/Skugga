@@ -12,7 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.binarskugga:skuggahttps.commons:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.binarskugga:skuggahttps.commons:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:24.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.checkerframework:checker-compat-qual:2.0.0" level="project" />
@@ -23,7 +23,7 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-jdk14:1.7.25" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.reflections:reflections:0.9.11" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.javassist:javassist:3.21.0-GA" level="project" />
-    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.2" level="project" />
     <orderEntry type="library" name="Maven: org.shredzone.acme4j:acme4j-it:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.shredzone.acme4j:acme4j-client:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.bitbucket.b_c:jose4j:0.6.4" level="project" />

@@ -5,6 +5,7 @@ import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.controller.*;
 import com.binarskugga.skuggahttps.data.*;
 import com.binarskugga.skuggahttps.http.api.filter.impl.*;
+import com.binarskugga.skuggahttps.response.*;
 import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.io.*;
@@ -25,9 +26,11 @@ import java.util.logging.*;
 import java.util.stream.*;
 import java.util.zip.*;
 
-import static com.binarskugga.skuggahttps.http.Response.*;
+import static com.binarskugga.skuggahttps.response.Response.*;
 
 public abstract class AbstractHttpExchangeHandler<I extends Serializable> implements HttpHandler {
+
+	private static final String CONTENT_TYPE = "Content-type";
 
 	private Logger logger;
 	private PropertiesConfiguration configuration;
@@ -70,35 +73,30 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		}
 
 		outHeaders.add("Connection", session.getConfig().getString("headers.connection").orElse("keep-alive"));
-		outHeaders.add("Content-type", session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
+		outHeaders.add(CONTENT_TYPE, session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
 		outHeaders.add("Server", session.getConfig().getString("server.name").orElse("SkuggaHttps"));
 		outHeaders.add("Vary", session.getConfig().getString("headers.vary").orElse("Accept-Encoding"));
 		outHeaders.add("Access-Control-Allow-Origin", session.getConfig().getString("headers.cors.access-control-allow-origin").orElse("*"));
 
-		session.setResponse(Response.notfound());
+		session.setResponseBody(Response.notfound());
 		AbstractController controller = null;
 
 		String path = session.getExchange().getRequestURI().getPath();
 
 		session.setEndpoint(this.endpointResolver.getEndpoint(path, EndpointType.valueOf(session.getExchange().getRequestMethod())));
 		if(session.getEndpoint() == null) {
-			session.setResponse(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
+			session.setResponseBody(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
 		} else {
 			controller = this.controllers.get(session.getEndpoint().getAction().getDeclaringClass()).copy();
 			controller.setSession(session);
 
-			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
-				ContentType contentType = session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class);
-				outHeaders.set("Content-type", contentType.value());
-			}
-
 			if(session.getEndpoint().getType().equals(EndpointType.POST)) {
-				String strBody = new String(ByteStreams.toByteArray(session.getExchange().getRequestBody()));
-				session.setExtra("str-body", strBody);
+				byte[] bytesBody = ByteStreams.toByteArray(session.getExchange().getRequestBody());
+				session.setExtra("bytes", bytesBody);
 
 				Method action = session.getEndpoint().getAction();
 				Class<?> bodyType = action.getParameterTypes()[0];
-				Object body = this.getJsonHandler().fromJson(bodyType, strBody);
+				Object body = this.getResponseHandler().fromBytes(bodyType, bytesBody);
 
 				session.setBody(body);
 			}
@@ -109,15 +107,14 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 
 				session.setResponseBody(session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray()));
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
-				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) session.getResponseBody());
-				else {
-					if(HttpReturnable.class.isAssignableFrom(session.getResponseBody().getClass()))
-						((HttpReturnable)session.getResponseBody()).changeHeaders(outHeaders);
-					else if(outHeaders.get("Content-type").get(0).contains("json"))
-						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, session.getResponseBody())));
+				if(HttpReturnable.class.isAssignableFrom(endpointReturnType)) {
+					String ct = ((HttpReturnable) session.getResponseBody()).contentType();
+					if(ct == null)
+						outHeaders.set(CONTENT_TYPE, this.getResponseHandler().defaultContentType());
 					else
-						session.setResponse(Response.ok());
-				}
+						outHeaders.set(CONTENT_TYPE, ct);
+				} else
+					outHeaders.set(CONTENT_TYPE, this.getResponseHandler().defaultContentType());
 
 				filterChain.applyPost(session);
 			} catch(Exception e) {
@@ -127,57 +124,44 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 					else httpException = (HTTPException) e;
 
 					this.logger.warning(String.format("HTTP Error %d - %s", httpException.getStatus(), httpException.getMessage()));
-					session.setResponse(Response.create(httpException.getStatus(), httpException.getMessage()));
+					session.setResponseBody(Response.create(httpException.getStatus(), httpException.getMessage()));
 				} else if(e.getCause() instanceof APIException || e instanceof APIException) {
 					APIException apiException;
 					if(e.getCause() instanceof APIException) apiException = (APIException) e.getCause();
 					else apiException = (APIException) e;
 
 					this.logger.warning(String.format("API Error %d - %s", apiException.getStatus(), apiException.getMessage()));
-					session.setResponse(Response.create(apiException.getStatus(), apiException.getName(), apiException.getMessage()));
+					session.setResponseBody(Response.create(apiException.getStatus(), apiException.getName(), apiException.getMessage()));
 
-					if(apiException.getErrors() != null) session.getResponse().setErrors(apiException.getErrors());
+					if(apiException.getErrors() != null) ((Response)session.getResponseBody()).setErrors(apiException.getErrors());
 				} else {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					e.printStackTrace(pw);
 					for(String line : sw.toString().split("\n"))
 						this.logger.severe(line);
-					session.setResponse(Response.internalError(e.getClass().getName()));
+					session.setResponseBody(Response.internalError(e.getClass().getName()));
 				}
 			}
 		}
 
-		session.getExchange().sendResponseHeaders(session.getResponse().getStatus(), 0);
+		int status = 200;
+		if(session.getResponseBody() instanceof  Response)
+			status = ((Response) session.getResponseBody()).getStatus();
+
+		session.getExchange().sendResponseHeaders(status, 0);
 		this.logger.config("================== " + (System.currentTimeMillis() - time) + "ms ==================");
 
 		if(acceptGzip) {
 			os = new GZIPOutputStream(os);
 		}
 
-		if(session.getResponse().getBody() != null && session.getResponse().getBody().length() > 0) {
-			String rp;
-			if(session.getResponse().getStatus() > 300) {
-				if(outHeaders.get("Content-type").get(0).contains("json"))
-					rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
-				else {
-					rp = session.getResponse().toString();
-				}
-			} else {
-				rp = session.getResponse().getBody();
-			}
-
-			os.write(rp.getBytes(Charsets.UTF_8));
+		if(session.getResponseBody() instanceof HttpReturnable) {
+			((HttpReturnable)session.getResponseBody()).write(os, this.getResponseHandler());
+		} else if(outHeaders.get(CONTENT_TYPE).get(0).equals(this.getResponseHandler().defaultContentType())) {
+			os.write(this.getResponseHandler().toBytes((Class) session.getEndpoint().getAction().getReturnType(), session.getResponseBody()));
 		} else {
-			if(session.getResponseBody() != null) {
-				if(HttpReturnable.class.isAssignableFrom(session.getResponseBody().getClass()))
-					((HttpReturnable)session.getResponseBody()).write(os);
-				else if(session.getResponseBody() instanceof String)
-					os.write(((String) session.getResponseBody()).getBytes(Charsets.UTF_8));
-			} else {
-				String rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
-				os.write(rp.getBytes(Charsets.UTF_8));
-			}
+			Response.internalError("Can't parse object to bytes.").write(os, this.getResponseHandler());
 		}
 
 		os.close();
@@ -236,7 +220,7 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			return new HashMap<>();
 	}
 
-	public abstract HttpJsonHandler getJsonHandler();
+	public abstract HttpResponseHandler getResponseHandler();
 	public abstract <Q, T extends GenericUser> DataRepository<Q, I, T> getIdentityRepository();
 	public abstract I createID(String id);
 
