@@ -10,6 +10,11 @@ import com.binarskugga.skuggahttps.utils.*;
 @Controller("test")
 public class TestController extends AbstractController {
 
+	@Get(".")
+	public HttpString rooted() {
+		return new HttpString("Boi is works");
+	}
+
 	@Get
 	public Response ping() {
 		return Response.ok();

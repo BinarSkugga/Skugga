@@ -47,8 +47,13 @@ public class EndpointResolver {
 						endpoint.setFullRoute(this.sanitizePath(method.getDeclaringClass().getAnnotation(Controller.class).value()
 								+ "/" + endpoint.getRoute()));
 					} else {
-						endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
-								+ method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
+						if(endpoint.getRoute().equals(".")) {
+							endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
+									+ method.getDeclaringClass().getAnnotation(Controller.class).value()));
+						} else {
+							endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
+									+ method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
+						}
 					}
 					endpoint.setAction(method);
 
