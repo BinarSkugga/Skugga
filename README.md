@@ -111,7 +111,7 @@ public Response ping() {
 }
 ```
 Here is a method with the Get annotation. When no value is specified to the Get or Post annotation, the name of 
-the method is automatically use to map a url. So to ping, you would go to '/api/meta/ping'. If the method name 
+the method is automatically used to map a url. So to ping, you would go to '/api/meta/ping'. If the method name 
 contains an underscore, it is replaced with a forward slash.
 
 > To expose an endpoint that contains an underscore, you need to set the value for the Get or Post annotation.
@@ -153,7 +153,7 @@ public class CustomFilter extends PreFilter {
 }
 ```
 Filters are classes that are executed before and after your endpoint (PreFilter and PostFilter interfaces). These classes
-are used internally to allow access to clients and validate input but you can more of them to complexify your routine.
+are used internally to allow access to clients and validate input but you can add more of them to complexify your routine.
 When creating your own filters, it is important to specify an order value of 0 or higher. Negative values are used 
 for internal filters and can change in future versions. The apply method takes an HttpSession and returns a boolean.
 The return value indicates if this filter needs to be the last in the chain. Returning false will prevent any further
