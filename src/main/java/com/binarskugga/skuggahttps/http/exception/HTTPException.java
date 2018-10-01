@@ -5,12 +5,12 @@ public class HTTPException extends RuntimeException {
 	private int status;
 
 	public HTTPException(int status, String message) {
-		super(message);
+		super(message.equals("") ? "No Message" : message);
 		this.status = status;
 	}
 
 	public HTTPException(int status) {
-		super("");
+		super("No Message");
 		this.status = status;
 	}
 

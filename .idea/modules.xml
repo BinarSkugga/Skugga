@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SkuggaHttps.iml" filepath="$PROJECT_DIR$/SkuggaHttps.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/SkuggaHttps.iml" filepath="$PROJECT_DIR$/.idea/SkuggaHttps.iml" />
     </modules>
   </component>
 </project>

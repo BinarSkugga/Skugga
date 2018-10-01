@@ -2,7 +2,6 @@ package com.binarskugga.skuggahttps.http.path;
 
 import com.binarskugga.skuggahttps.auth.*;
 import com.binarskugga.skuggahttps.auth.role.*;
-import com.binarskugga.skuggahttps.controller.*;
 import com.binarskugga.skuggahttps.http.exception.*;
 import com.google.common.base.*;
 import com.google.common.cache.*;
@@ -29,10 +28,9 @@ public class EndpointResolver {
 	private Cache<String, Endpoint> routingCache;
 	private BloomFilter<String> routingCacheFilter;
 
-	public EndpointResolver(AbstractHttpExchangeHandler exchangeHandler, Collection<Class<? extends AbstractController>> controllers) {
-		controllers.add(SecurityController.class);
-		this.endpoints = controllers.stream().filter(controller -> controller.isAnnotationPresent(Controller.class))
-				.map(controller -> Lists.newArrayList(controller.getDeclaredMethods()))
+	public EndpointResolver(AbstractHttpExchangeHandler exchangeHandler, Collection<AbstractController> controllers) {
+		this.endpoints = controllers.stream()
+				.map(controller -> Lists.newArrayList(controller.getClass().getDeclaredMethods()))
 				.flatMap(Collection::stream)
 				.filter(method ->  method.isAnnotationPresent(Get.class) || method.isAnnotationPresent(Post.class))
 				.map(method -> {
@@ -49,36 +47,40 @@ public class EndpointResolver {
 						endpoint.setFullRoute(this.sanitizePath(method.getDeclaringClass().getAnnotation(Controller.class).value()
 								+ "/" + endpoint.getRoute()));
 					} else {
-						endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
-								+ method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
+						if(endpoint.getRoute().equals(".")) {
+							endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
+									+ method.getDeclaringClass().getAnnotation(Controller.class).value()));
+						} else {
+							endpoint.setFullRoute(this.sanitizePath(configuration.getString("server.root").orElse("")
+									+ method.getDeclaringClass().getAnnotation(Controller.class).value() + "/" + endpoint.getRoute()));
+						}
 					}
 					endpoint.setAction(method);
 
-					Access access = endpoint.getAction().getAnnotation(Access.class);
+					if(exchangeHandler.getIdentityRepository() != null) {
+						Access access = endpoint.getAction().getAnnotation(Access.class);
 
-					Class<? extends AccessRole> defaultAccess = LoggedAccess.class;
-					if(configuration.getString("server.default.access").isPresent()) {
-						try {
-							defaultAccess = (Class<? extends AccessRole>) Class.forName(configuration.getString("server.default.access").get());
-						} catch(ClassNotFoundException ignored) {}
-					}
-
-					List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(defaultAccess) : Lists.newArrayList(access.value());
-					endpoint.setAccess(roles);
-
-					if(endpoint.getAccess().contains(SubjectiveAccess.class)) {
-						for(Parameter parameter : endpoint.getAction().getParameters()) {
-							if(parameter.isAnnotationPresent(Subject.class)) {
-								if(Identifiable.class.isAssignableFrom(parameter.getType()))
-									endpoint.setSubject(parameter);
-								else
-									throw new InvalidSubjectException("A subject parameter needs to be a subclass of Identifiable." +
-											"(" + endpoint.getFullRoute() + ")");
-							}
+						Class<? extends AccessRole> defaultAccess = LoggedAccess.class;
+						if(configuration.getString("server.default.access").isPresent()) {
+							try {
+								defaultAccess = (Class<? extends AccessRole>) Class.forName(configuration.getString("server.default.access").get());
+							} catch(ClassNotFoundException ignored) {}
 						}
-						if(endpoint.getSubject() == null) {
-							throw new InvalidSubjectException("Subjective access require a parameter annotated with Subject."
-									+ "(" + endpoint.getFullRoute() + ")");
+
+						List<Class<? extends AccessRole>> roles = (access == null) ? Lists.newArrayList(defaultAccess) : Lists.newArrayList(access.value());
+						endpoint.setAccess(roles);
+
+						if(endpoint.getAccess().contains(SubjectiveAccess.class)) {
+							for(Parameter parameter : endpoint.getAction().getParameters()) {
+								if(parameter.isAnnotationPresent(Subject.class)) {
+									if(Identifiable.class.isAssignableFrom(parameter.getType())) endpoint.setSubject(parameter);
+									else
+										throw new InvalidSubjectException("A subject parameter needs to be a subclass of Identifiable." + "(" + endpoint.getFullRoute() + ")");
+								}
+							}
+							if(endpoint.getSubject() == null) {
+								throw new InvalidSubjectException("Subjective access require a parameter annotated with Subject." + "(" + endpoint.getFullRoute() + ")");
+							}
 						}
 					}
 
@@ -87,7 +89,7 @@ public class EndpointResolver {
 
 		this.exchangeHandler = exchangeHandler;
 		this.routingCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.HOURS).build();
-		this.routingCacheFilter = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), 1000);
+		this.routingCacheFilter = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), 100);
 	}
 
 	public Endpoint getEndpoint(String search, EndpointType type) {
@@ -154,10 +156,10 @@ public class EndpointResolver {
 		if(session.getEndpoint().getType().equals(EndpointType.POST))
 			fullArgs = Lists.asList(session.getBody(), args.toArray());
 		else
-			fullArgs = Lists.newArrayList(args);
+			fullArgs = args;
 
 		Parameter[] params = session.getEndpoint().getAction().getParameters();
-		Map<Parameter, Object> mappedArgs = new HashMap<>();
+		Map<Parameter, Object> mappedArgs = new LinkedHashMap<>();
 		for(int i = 0; i < params.length; i++) {
 			mappedArgs.put(params[i], fullArgs.get(i));
 		}

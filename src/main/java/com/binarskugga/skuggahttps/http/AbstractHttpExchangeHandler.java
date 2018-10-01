@@ -2,8 +2,10 @@ package com.binarskugga.skuggahttps.http;
 
 import com.binarskugga.skuggahttps.annotation.Filter;
 import com.binarskugga.skuggahttps.auth.*;
+import com.binarskugga.skuggahttps.controller.*;
 import com.binarskugga.skuggahttps.data.*;
 import com.binarskugga.skuggahttps.http.api.filter.impl.*;
+import com.binarskugga.skuggahttps.response.*;
 import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.io.*;
@@ -24,24 +26,29 @@ import java.util.logging.*;
 import java.util.stream.*;
 import java.util.zip.*;
 
-import static com.binarskugga.skuggahttps.http.Response.*;
+import static com.binarskugga.skuggahttps.response.Response.*;
 
 public abstract class AbstractHttpExchangeHandler<I extends Serializable> implements HttpHandler {
+
+	private static final String CONTENT_TYPE = "Content-type";
 
 	private Logger logger;
 	private PropertiesConfiguration configuration;
 	private EndpointResolver endpointResolver;
 
-	private List<Class<? extends AbstractFilter>> filters;
+	private FilterChain filterChain;
+	private Map<Class, AbstractController> controllers;
 
 	public AbstractHttpExchangeHandler() {
 		this.logger = Logger.getLogger(getClass().getName());
 		this.configuration = HttpConfigProvider.get();
 
-		Reflections ref = new Reflections(this.configuration.getString("server.package.controller").get());
-		this.endpointResolver = new EndpointResolver(this, ref.getSubTypesOf(AbstractController.class));
+		this.controllers = new HashMap<>();
+		this.createControllers(this.configuration.getString("server.package.controller").get());
 
-		this.filters = new ArrayList<>();
+		this.endpointResolver = new EndpointResolver(this, this.controllers.values());
+
+		this.filterChain = new FilterChain();
 		initiateFilters(HttpConfigProvider.get().getString("server.package.filter").get());
 	}
 
@@ -53,20 +60,6 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		HttpSession session = new HttpSession();
 		session.setExchange(exchange);
 		session.setConfig(HttpConfigProvider.get());
-
-		FilterChain chain = new FilterChain();
-		for(Class<? extends AbstractFilter> clazz : this.filters) {
-			try {
-				if(clazz.equals(AuthFilter.class)) {
-					Constructor constructor = AuthFilter.class.getConstructor(DataRepository.class);
-					chain.addFilter((AbstractFilter) constructor.newInstance(getIdentityRepository()));
-				} else {
-					chain.addFilter(clazz.newInstance());
-				}
-			} catch(Exception e) {
-				this.logger.log(Level.SEVERE, "", e.getCause());
-			}
-		}
 
 		OutputStream os = session.getExchange().getResponseBody();
 
@@ -80,106 +73,115 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 		}
 
 		outHeaders.add("Connection", session.getConfig().getString("headers.connection").orElse("keep-alive"));
-		outHeaders.add("Content-type", session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
-		outHeaders.add("Server", session.getConfig().getString("headers.server").orElse("SkuggaHttps"));
+		outHeaders.add(CONTENT_TYPE, session.getConfig().getString("headers.content-type").orElse("application/json;charset=UTF-8"));
+		outHeaders.add("Server", session.getConfig().getString("server.name").orElse("SkuggaHttps"));
 		outHeaders.add("Vary", session.getConfig().getString("headers.vary").orElse("Accept-Encoding"));
 		outHeaders.add("Access-Control-Allow-Origin", session.getConfig().getString("headers.cors.access-control-allow-origin").orElse("*"));
 
-		session.setResponse(Response.notfound());
+		session.setResponseBody(Response.notfound());
 		AbstractController controller = null;
 
 		String path = session.getExchange().getRequestURI().getPath();
 
 		session.setEndpoint(this.endpointResolver.getEndpoint(path, EndpointType.valueOf(session.getExchange().getRequestMethod())));
 		if(session.getEndpoint() == null) {
-			session.setResponse(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
+			session.setResponseBody(Response.create(METHOD_NOT_ALLOWED, "This " + session.getExchange().getRequestMethod() + " method does not exist !"));
 		} else {
-			try {
-				controller = (AbstractController) session.getEndpoint().getAction().getDeclaringClass().newInstance();
-				controller.setSession(session);
-			} catch(Exception e) {
-				logger.log(Level.SEVERE, "Controllers need to have an empty constructor.", e);
-			}
-
-			if(session.getEndpoint().getAction().isAnnotationPresent(ContentType.class)) {
-				outHeaders.set("Content-type", session.getEndpoint().getAction().getDeclaredAnnotation(ContentType.class).value() + ";charset=UTF-8");
-			}
+			controller = this.controllers.get(session.getEndpoint().getAction().getDeclaringClass()).copy();
+			controller.setSession(session);
 
 			if(session.getEndpoint().getType().equals(EndpointType.POST)) {
-				String strBody = new String(ByteStreams.toByteArray(session.getExchange().getRequestBody()));
-				session.setExtra("str-body", strBody);
+				byte[] bytesBody = ByteStreams.toByteArray(session.getExchange().getRequestBody());
+				session.setExtra("bytes", bytesBody);
 
 				Method action = session.getEndpoint().getAction();
 				Class<?> bodyType = action.getParameterTypes()[0];
-				Object body = this.getJsonHandler().fromJson(bodyType, strBody);
+				Object body = this.getResponseHandler().fromBytes(bodyType, bytesBody);
 
 				session.setBody(body);
 			}
 			session.setArgs(this.endpointResolver.getArguments(session, path));
 
 			try {
-				chain.applyPre(session);
+				filterChain.applyPre(session);
 
-				Object obj = session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray());
+				session.setResponseBody(session.getEndpoint().getAction().invoke(controller, session.getArgs().values().toArray()));
 				Class endpointReturnType = session.getEndpoint().getAction().getReturnType();
-				if(endpointReturnType.equals(Response.class)) session.setResponse((Response) obj);
-				else {
-					if(outHeaders.get("Content-type").get(0).contains("json"))
-						session.setResponse(Response.ok(this.getJsonHandler().toJson(endpointReturnType, obj)));
+				if(HttpReturnable.class.isAssignableFrom(endpointReturnType)) {
+					String ct = ((HttpReturnable) session.getResponseBody()).contentType();
+					if(ct == null)
+						outHeaders.set(CONTENT_TYPE, this.getResponseHandler().defaultContentType());
 					else
-						session.setResponse(Response.ok(obj.toString()));
-				}
+						outHeaders.set(CONTENT_TYPE, ct);
+				} else
+					outHeaders.set(CONTENT_TYPE, this.getResponseHandler().defaultContentType());
 
-				chain.applyPost(session);
+				filterChain.applyPost(session);
 			} catch(Exception e) {
 				if(e.getCause() instanceof HTTPException || e instanceof HTTPException) {
 					HTTPException httpException;
 					if(e.getCause() instanceof HTTPException) httpException = (HTTPException) e.getCause();
 					else httpException = (HTTPException) e;
 
-					this.logger.warning(String.format("HTTP error %d - %s", httpException.getStatus(), httpException.getMessage()));
-					session.setResponse(Response.create(httpException.getStatus(), httpException.getMessage()));
+					this.logger.warning(String.format("HTTP Error %d - %s", httpException.getStatus(), httpException.getMessage()));
+					session.setResponseBody(Response.create(httpException.getStatus(), httpException.getMessage()));
 				} else if(e.getCause() instanceof APIException || e instanceof APIException) {
 					APIException apiException;
 					if(e.getCause() instanceof APIException) apiException = (APIException) e.getCause();
 					else apiException = (APIException) e;
 
-					this.logger.warning(String.format("HTTP %d - %s", apiException.getStatus(), apiException.getMessage()));
-					session.setResponse(Response.create(apiException.getStatus(), apiException.getName(), apiException.getMessage()));
+					this.logger.warning(String.format("API Error %d - %s", apiException.getStatus(), apiException.getMessage()));
+					session.setResponseBody(Response.create(apiException.getStatus(), apiException.getName(), apiException.getMessage()));
 
-					if(apiException.getErrors() != null) session.getResponse().setErrors(apiException.getErrors());
+					if(apiException.getErrors() != null) ((Response)session.getResponseBody()).setErrors(apiException.getErrors());
 				} else {
-					this.logger.log(Level.SEVERE, String.format("Server error"), e);
-					session.setResponse(Response.internalError(e.getMessage()));
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					for(String line : sw.toString().split("\n"))
+						this.logger.severe(line);
+					session.setResponseBody(Response.internalError(e.getClass().getName()));
 				}
 			}
 		}
 
-		session.getExchange().sendResponseHeaders(session.getResponse().getStatus(), 0);
+		int status = 200;
+		if(session.getResponseBody() instanceof  Response)
+			status = ((Response) session.getResponseBody()).getStatus();
+
+		session.getExchange().sendResponseHeaders(status, 0);
 		this.logger.config("================== " + (System.currentTimeMillis() - time) + "ms ==================");
 
 		if(acceptGzip) {
 			os = new GZIPOutputStream(os);
 		}
 
-		if(session.getResponse().getBody() != null) {
-			String rp;
-			if(session.getResponse().getStatus() > 300) {
-				if(outHeaders.get("Content-type").get(0).contains("json"))
-					rp = this.getJsonHandler().toJson(Response.class, session.getResponse());
-				else
-					rp = session.getResponse().toString();
-			} else {
-				rp = session.getResponse().getBody();
-			}
-
-			os.write(rp.getBytes(Charsets.UTF_8));
+		if(session.getResponseBody() instanceof HttpReturnable) {
+			((HttpReturnable)session.getResponseBody()).write(os, this.getResponseHandler());
+		} else if(outHeaders.get(CONTENT_TYPE).get(0).equals(this.getResponseHandler().defaultContentType())) {
+			os.write(this.getResponseHandler().toBytes((Class) session.getEndpoint().getAction().getReturnType(), session.getResponseBody()));
 		} else {
-			os.write(session.getResponse().getStatus());
+			Response.internalError("Can't parse object to bytes.").write(os, this.getResponseHandler());
 		}
 
 		os.close();
 		session.getExchange().close();
+	}
+
+	private void createControllers(String controllerPackage) {
+		Reflections reflections = new Reflections(controllerPackage);
+		Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
+
+		if(this.configuration.getBoolean("server.controller.meta").orElse(true))
+			controllers.add(MetaController.class);
+		controllers.stream().filter(controller -> AbstractController.class.isAssignableFrom(controller))
+				.forEach(controller -> {
+					try {
+						this.controllers.put(controller, (AbstractController) controller.newInstance());
+					} catch(Exception e) {
+						logger.severe("Controllers need to have an empty constructor. (" + controller.getName() + ")");
+					}
+				});
 	}
 
 	private void initiateFilters(String filterPackage) {
@@ -192,7 +194,19 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			int o1Priority = o1.getDeclaredAnnotation(Filter.class).value();
 			int o2Priority = o2.getDeclaredAnnotation(Filter.class).value();
 			return Integer.compare(o1Priority, o2Priority);
-		}).forEach(filter -> AbstractHttpExchangeHandler.this.filters.add((Class<? extends AbstractFilter>) filter));
+		}).forEach(filter -> {
+			try {
+				Class<? extends AbstractFilter> typedFilter = ((Class<? extends AbstractFilter>) filter);
+				if(typedFilter.equals(AuthFilter.class)) {
+					Constructor constructor = AuthFilter.class.getConstructor(DataRepository.class);
+					this.filterChain.addFilter((AbstractFilter) constructor.newInstance(getIdentityRepository()));
+				} else {
+					this.filterChain.addFilter(typedFilter.newInstance());
+				}
+			} catch(Exception e) {
+				logger.severe("Filters need to have an empty constructor. (" + filter.getName() + ")");
+			}
+		});
 	}
 
 	private Map<String, Cookie> parseCookies(Headers resquestHeaders) {
@@ -206,8 +220,8 @@ public abstract class AbstractHttpExchangeHandler<I extends Serializable> implem
 			return new HashMap<>();
 	}
 
-	public abstract HttpJsonHandler getJsonHandler();
-	public abstract <Q, T extends Identifiable> DataRepository<Q, I, T> getIdentityRepository();
+	public abstract HttpResponseHandler getResponseHandler();
+	public abstract <Q, T extends GenericUser> DataRepository<Q, I, T> getIdentityRepository();
 	public abstract I createID(String id);
 
 }

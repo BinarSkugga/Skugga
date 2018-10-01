@@ -2,7 +2,7 @@ package com.binarskugga.skuggahttps.http.api.exception;
 
 import com.binarskugga.skuggahttps.http.api.*;
 
-import static com.binarskugga.skuggahttps.http.Response.*;
+import static com.binarskugga.skuggahttps.response.Response.*;
 
 public class PrivateUserException extends APIException {
 

@@ -1,5 +1,6 @@
 package com.binarskugga.skuggahttps.http;
 
+import com.binarskugga.skuggahttps.response.*;
 import com.sun.net.httpserver.*;
 import lombok.*;
 import com.binarskugga.skuggahttps.auth.*;
@@ -20,7 +21,7 @@ public class HttpSession {
 	@Getter @Setter private HttpExchange exchange;
 
 	@Getter @Setter Object body;
-	@Getter @Setter Response response;
+	@Getter @Setter Object responseBody;
 
 	@Getter @Setter Map<String, Cookie> cookies;
 	@Getter private Map<String, Object> extras = new HashMap<>();

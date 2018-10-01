@@ -1,7 +1,7 @@
 package com.binarskugga.skuggahttps.http.api.exception;
 
-import com.binarskugga.skuggahttps.http.*;
 import com.binarskugga.skuggahttps.http.api.*;
+import com.binarskugga.skuggahttps.response.*;
 import com.binarskugga.skuggahttps.validation.*;
 
 import java.util.*;
