@@ -13,6 +13,8 @@
 	+ [Data Repository](#data-repository)
 	+ [Data Initializer](#data-initializer)
 * [Authentication and access](#authentication-and-access)
+* [Validation API](#validation-api)
+* [Response API](#response-api)
 * [Misc](#misc)
 	+ [Http configuration](#http-configuration)
 
@@ -318,6 +320,12 @@ public class User implements GenericUser<ObjectId> {
 
 }
 ```
+
+## Validation API
+TO BE DONE
+
+## Response API
+TO BE DONE
 
 ## Misc
 ### Http configuration
