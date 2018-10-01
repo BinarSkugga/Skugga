@@ -1,6 +1,7 @@
 # SkuggaHttps
 
 ## Table of contents
+* [Installation](#installation)
 * [Create and start your server](#create-and-start-your-server)
 * [Add controllers](#add-controllers)
 	+ [GET](#get)
@@ -14,6 +15,45 @@
 * [Authentication and access](#authentication-and-access)
 * [Misc](#misc)
 	+ [Http configuration](#http-configuration)
+
+## Installation
+To use SkuggaHttps, you simply need to add the github repository and the dependency.
+``` xml
+<repository>
+	<id>SkuggaHttps-maven</id>
+	<url>https://raw.githubusercontent.com/BinarSkugga/SkuggaHttps/maven/</url>
+	<snapshots>
+		<enabled>true</enabled>
+		<updatePolicy>always</updatePolicy>
+	</snapshots>
+</repository>
+```
+``` xml
+<dependency>
+	<groupId>com.binarskugga</groupId>
+	<artifactId>skuggahttps</artifactId>
+	<version>1.0.3</version>
+</dependency>
+```
+
+You will also need to include the commons in both the server and client to use the Validation and Response APIs.
+``` xml
+<repository>
+	<id>SkuggaHttps.Commons-maven</id>
+	<url>https://raw.githubusercontent.com/BinarSkugga/SkuggaHttps.Commons/maven/</url>
+	<snapshots>
+		<enabled>true</enabled>
+		<updatePolicy>always</updatePolicy>
+	</snapshots>
+</repository>
+```
+``` xml
+<dependency>
+	<groupId>com.binarskugga</groupId>
+	<artifactId>skuggahttps.commons</artifactId>
+	<version>1.0.3</version>
+</dependency>
+```
 
 ## Create and start your server
 All you need to start your server is an HttpExchangeHandler
