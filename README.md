@@ -256,14 +256,15 @@ public class MongoRepository<T extends Identifiable> extends DataRepository<Quer
 > PS: byId and doUpdate are protected because they automatically manipulate a cache. If you don't want this cache,
 > override id and update.
 
-Since MongoDB is single threaded my query builder is static here. You might also see that the initializer and
-connector logic are handle by you in the constructor. This is because the connector can return a wrapper and the
-initializer might require some pre-initialization. In this, this is the standard and expected setup for these two
+Since MongoDB is single threaded, my query builder is static here. You might also see that the initializer and
+connector logic is handled by you in the constructor. This is because the connector can return a wrapper and the
+initializer might require some pre-initialization. This is the standard and expected setup for these two
 classes.
 
 ### Data Initializer
 The data initializer is a class that gets executed every time you start the server. This is mostly useful in
-development cycles where you might want to truncate your tables and fill them with trusted values.
+development cycles where you might want to truncate your tables and fill them with trusted values for tests and
+debugging.
 ``` java
 public class MongoInitializer implements DataInitializer {
 
