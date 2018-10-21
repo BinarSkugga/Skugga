@@ -92,6 +92,9 @@
 			<testResource>
 				<directory>${basedir}/src/main/test/resources</directory>
 				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/*.p12</exclude>
+				</excludes>
 			</testResource>
 		</testResources>
 	</build>
