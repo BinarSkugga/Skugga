@@ -1,0 +1,8 @@
+com\binarskugga\impl\MoshiProvider.class
+com\binarskugga\TestModel.class
+com\binarskugga\controller\DummyController.class
+com\binarskugga\impl\MoshiParser.class
+com\binarskugga\Test.class
+com\binarskugga\impl\TestToken.class
+com\binarskugga\impl\MoshiExceptionParser.class
+com\binarskugga\TestModel$TestModelBuilder.class
