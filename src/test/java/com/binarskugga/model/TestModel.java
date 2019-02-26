@@ -1,27 +1,28 @@
-package com.binarskugga;
+package com.binarskugga.model;
 
+import com.binarskugga.impl.*;
 import com.binarskugga.skuggahttps.api.AuthentifiableEntity;
 import com.binarskugga.skuggahttps.api.Role;
 import com.binarskugga.skuggahttps.api.annotation.*;
 import com.binarskugga.skuggahttps.api.enums.InclusionMode;
+import com.googlecode.objectify.annotation.*;
 import lombok.*;
+import org.bson.types.*;
 
-@Creatable
+@Entity(name = "test") @Authenticator(repository = ObjectifyRepository.class)
 @Builder @NoArgsConstructor @AllArgsConstructor
-public class TestModel implements AuthentifiableEntity<TestModel, Integer> {
+public class TestModel implements AuthentifiableEntity<TestModel, String> {
 
-	@CreateField(inclusion = InclusionMode.EXCLUDE)
-	@Getter @Setter Integer id;
-	@CreateField(inclusion = InclusionMode.EXCLUDE)
+	@Id
+	@Getter @Setter String id = new ObjectId().toHexString();
+	@Ignore
 	@Getter @Setter Role role;
 
+	@Index
 	@Getter @Setter String authentifier;
-	@MappingOptions(name = "password_hash")
 	@Getter @Setter String passwordHash;
 
-	@CreateField(inclusion = InclusionMode.EXCLUDE)
 	@Getter @Setter String passwordSalt;
-	@CreateField(inclusion = InclusionMode.EXCLUDE)
 	@Getter @Setter long lastPasswordChange;
 
 }

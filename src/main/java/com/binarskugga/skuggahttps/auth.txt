@@ -1,0 +1,5 @@
+login -> /api/token/ltt -> ltt
+ltt -> /api/token/stt -> stt
+stt -> /api/* -> *
+
+ef915cd1ae1bb8f2d4026f415549e0a3c65e324b8cc24562

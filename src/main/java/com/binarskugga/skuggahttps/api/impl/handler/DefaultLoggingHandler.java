@@ -22,7 +22,10 @@ public class DefaultLoggingHandler implements RequestHandler {
 
 	@Override
 	public void handleException(HttpSession session, Exception e) {
-		logger.atInfo().log(session.getExchange().getRequestMethod() + " " + session.getExchange().getRequestPath() + ": " + e.getMessage());
+		if(e.getMessage() != null)
+			logger.atInfo().log(session.getExchange().getRequestMethod() + " " + session.getExchange().getRequestPath() + ":" + e.getMessage());
+		else
+			logger.atSevere().withCause(e).log();
 	}
 
 }

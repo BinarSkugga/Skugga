@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-public interface DataRepository<I extends Serializable, C, T, Q> {
+public interface DataRepository<I extends Serializable, C, T extends BaseEntity<I>, Q> {
 
 	I createId(T entity);
 

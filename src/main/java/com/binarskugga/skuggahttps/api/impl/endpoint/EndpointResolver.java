@@ -5,6 +5,7 @@ import com.binarskugga.skuggahttps.api.annotation.Controller;
 import com.binarskugga.skuggahttps.api.annotation.Get;
 import com.binarskugga.skuggahttps.api.annotation.Post;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
+import com.binarskugga.skuggahttps.impl.*;
 import com.binarskugga.skuggahttps.util.EndpointUtils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
@@ -44,6 +45,7 @@ public class EndpointResolver {
 				.filter(AbstractController.class::isAssignableFrom).map(c -> (Class<? extends AbstractController>)c)
 				.collect(Collectors.toSet());
 
+		this.registerController(root, TokenController.class);
 		for(Class<? extends AbstractController> controller : controllers) {
 			this.registerController(root, controller);
 		}

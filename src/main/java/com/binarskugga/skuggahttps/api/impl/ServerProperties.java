@@ -23,6 +23,7 @@ public class ServerProperties {
 	@Getter private int port;
 	@Getter private String root;
 
+	@Getter private String modelPackage;
 	@Getter private String controllerPackage;
 	@Getter private Class<? extends Token> tokenClass;
 
@@ -48,6 +49,7 @@ public class ServerProperties {
 			this.port = Integer.parseInt((String) properties.getOrDefault("server.port", "8080"));
 			this.root = (String) properties.getOrDefault("server.root", "api");
 
+			this.modelPackage = (String) properties.getOrDefault("server.config.model-package", "");
 			this.controllerPackage = (String) properties.getOrDefault("server.config.controller-package", "");
 			this.tokenClass = (Class<? extends Token>) Class.forName((String) properties.getOrDefault("server.config.token", ""));
 			this.defaultContentType = (String) properties.getOrDefault("server.config.default-content-type", "application/json");

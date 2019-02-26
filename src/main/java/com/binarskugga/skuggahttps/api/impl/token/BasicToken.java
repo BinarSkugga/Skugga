@@ -7,8 +7,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.*;
 
 public abstract class BasicToken<I extends Serializable> implements Token<I> {
+
+	public BasicToken() {
+		this.setIssuedAt(new Date().getTime());
+	}
 
 	@Accessors(chain = false)
 	@Getter @Setter private I authentifier;
@@ -29,5 +34,8 @@ public abstract class BasicToken<I extends Serializable> implements Token<I> {
 	public <AR extends Role> void setRole(AR role) {
 		this.role = role;
 	}
+
+	@Override
+	public void setLTT(boolean ltt) { }
 
 }

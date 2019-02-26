@@ -43,6 +43,7 @@ public interface Token<I extends Serializable> {
 	void setExpires(long expires);
 	String getIssuer();
 	void setIssuer(String issuer);
+	void setLTT(boolean ltt);
 
 	Role getRole();
 	<AR extends Role> void setRole(AR role);
