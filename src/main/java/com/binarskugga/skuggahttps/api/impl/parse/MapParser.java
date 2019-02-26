@@ -19,7 +19,7 @@ public class MapParser {
 		Object instance = ReflectionUtils.constructOrNull(fields.get(0).getDeclaringClass());
 		if (instance != null) {
 			for (Field f : fields) {
-				FieldParsingHandler parsingHandler = new FieldParsingHandler();
+				FieldParsingHandler parsingHandler = FieldParsingHandler.get();
 				FieldParser parser = parsingHandler.getParser(f, ReflectionUtils.getFieldAnnotationOrNull(f, UseParser.class));
 
 				Object value = input.get(f.getName());
@@ -36,7 +36,7 @@ public class MapParser {
 	public static Map<String, Object> unparse(List<Field> fields, Object input) throws RuntimeException {
 		Map<String, Object> map = new HashMap<>();
 		for (Field f : fields) {
-			FieldParsingHandler parsingHandler = new FieldParsingHandler();
+			FieldParsingHandler parsingHandler = FieldParsingHandler.get();
 			FieldParser parser = parsingHandler.getParser(f, ReflectionUtils.getFieldAnnotationOrNull(f, UseParser.class));
 
 			Object value = ReflectionUtils.getField(f, input);

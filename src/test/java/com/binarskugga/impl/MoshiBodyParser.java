@@ -32,7 +32,6 @@ public class MoshiBodyParser implements BodyParser<String> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private JsonAdapter createAdapter(Type[] clazz, Class collectionClazz) {
 		Moshi moshi = MoshiProvider.get();
 		if (collectionClazz == null)

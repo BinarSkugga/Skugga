@@ -5,8 +5,6 @@ import lombok.Setter;
 
 public abstract class AbstractController {
 
-	@Getter
-	@Setter
-	private HttpSession session;
+	@Getter @Setter private HttpSession session;
 
 }

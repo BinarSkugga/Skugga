@@ -94,6 +94,8 @@ public class ReflectionUtils {
 				constructor = declaring.getConstructor(Arrays.asList(arguments).stream()
 						.map(Object::getClass).collect(Collectors.toList()).toArray(new Class[arguments.length]));
 			}
+
+			constructor.setAccessible(true);
 			return constructor.newInstance(arguments);
 		} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new ReflectiveContructFailedException();

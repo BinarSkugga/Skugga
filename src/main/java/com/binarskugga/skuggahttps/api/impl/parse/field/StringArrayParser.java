@@ -10,6 +10,7 @@ import java.util.Collection;
 public class StringArrayParser implements FieldParser<CharSequence[], Object> {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public CharSequence[] parse(Field field, Object value) throws CannotMapFieldException {
 		if (value.getClass().equals(CharSequence[].class))
 			return (CharSequence[]) value;

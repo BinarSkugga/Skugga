@@ -13,10 +13,8 @@ import java.util.stream.Collectors;
 
 public abstract class AuthController extends AbstractController {
 
-	@Getter
-	private DataRepository authRepository;
-	@Getter
-	private Class<? extends Token> tokenClass;
+	@Getter private DataRepository authRepository;
+	@Getter private Class<? extends Token> tokenClass;
 
 	@Override
 	public AbstractController setSession(HttpSession session) {

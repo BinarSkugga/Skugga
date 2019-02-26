@@ -11,6 +11,7 @@ import java.util.Collection;
 public class CollectionParser implements ParameterParser<Collection, String> {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Collection parse(Parameter parameter, String argument) {
 		Class inner = (Class) ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[0];
 		if (ReflectionUtils.isBoxedPrimitive(inner))

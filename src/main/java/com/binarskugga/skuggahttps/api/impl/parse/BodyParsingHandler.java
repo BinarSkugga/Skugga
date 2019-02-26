@@ -10,8 +10,12 @@ public class BodyParsingHandler extends ParsingHandler<BodyParser, Endpoint> {
 
 	private static List<BodyParser> parsers;
 
-	public BodyParsingHandler() {
+	private BodyParsingHandler() {
 		super(BodyParser.class);
+	}
+
+	public static BodyParsingHandler get() {
+		return new BodyParsingHandler();
 	}
 
 	public static void init() {

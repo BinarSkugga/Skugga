@@ -22,10 +22,8 @@ import java.util.stream.Collectors;
 public class EndpointResolver {
 
 	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
-	@Getter
-	private List<Endpoint> endpoints;
-	@Getter
-	private List<Endpoint> socketCallbacks;
+	@Getter private List<Endpoint> endpoints;
+	@Getter private List<Endpoint> socketCallbacks;
 
 	@SuppressWarnings("unchecked")
 	public EndpointResolver(String controllerPackage, String root) {

@@ -15,34 +15,21 @@ import java.util.stream.Stream;
 
 public class ServerProperties {
 
-	@Getter
-	private static String protocol;
-	@Getter
-	private static String ip;
-	@Getter
-	private static int port;
-	@Getter
-	private static String root;
+	@Getter private static String protocol;
+	@Getter private static String ip;
+	@Getter private static int port;
+	@Getter private static String root;
 
-	@Getter
-	private static String rootPackage;
-	@Getter
-	private static String controllerPackage;
-	@Getter
-	private static String modelPackage;
-	@Getter
-	private static Class<? extends Token> tokenClass;
+	@Getter private static String rootPackage;
+	@Getter private static String controllerPackage;
+	@Getter private static String modelPackage;
+	@Getter private static Class<? extends Token> tokenClass;
 
-	@Getter
-	private static String contentType;
-	@Getter
-	private static String allowedOrigin;
-	@Getter
-	private static boolean allowedCredentials;
-	@Getter
-	private static List<HttpMethod> allowedMethods;
-	@Getter
-	private static List<HttpHeader> allowedHeaders;
+	@Getter private static String contentType;
+	@Getter private static String allowedOrigin;
+	@Getter private static boolean allowedCredentials;
+	@Getter private static List<HttpMethod> allowedMethods;
+	@Getter private static List<HttpHeader> allowedHeaders;
 
 	private static Properties properties;
 

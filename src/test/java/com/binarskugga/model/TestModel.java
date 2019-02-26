@@ -12,34 +12,23 @@ import lombok.*;
 import org.bson.types.ObjectId;
 
 @Entity(name = "test")
-@Authenticator(repository = ObjectifyRepository.class)
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Authenticator(ObjectifyRepository.class)
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class TestModel implements AuthentifiableEntity<TestModel, String> {
 
 	@Id
-	@Getter
-	@Setter
-	String id = new ObjectId().toHexString();
+	@Getter @Setter String id = new ObjectId().toHexString();
+
 	@Ignore
-	@Getter
-	@Setter
-	Role role;
+	@Getter @Setter Role role;
 
 	@Index
-	@Getter
-	@Setter
-	String authentifier;
-	@Getter
-	@Setter
-	String passwordHash;
+	@Getter @Setter String authentifier;
 
-	@Getter
-	@Setter
-	String passwordSalt;
-	@Getter
-	@Setter
-	long lastPasswordChange;
+	@Getter @Setter String passwordHash;
+
+	@Getter @Setter String passwordSalt;
+
+	@Getter @Setter long lastPasswordChange;
 
 }

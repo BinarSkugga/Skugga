@@ -9,28 +9,19 @@ import lombok.experimental.Accessors;
 public abstract class BasicToken implements Token {
 
 	@Accessors(chain = false)
-	@Getter
-	@Setter
-	private String authentifier;
+	@Getter @Setter private String authentifier;
 
 	@Accessors(chain = false)
-	@Getter
-	@Setter
-	private long expires;
+	@Getter @Setter private long expires;
 
 	@Accessors(chain = false)
-	@Getter
-	@Setter
-	private String issuer;
+	@Getter @Setter private String issuer;
 
 	@Accessors(chain = false)
-	@Getter
-	@Setter
-	private boolean LTT;
+	@Getter @Setter private boolean LTT;
 
 	@Accessors(chain = false)
-	@Getter
-	private Role role;
+	@Getter private Role role;
 
 	@Override
 	public <AR extends Role> void setRole(AR role) {

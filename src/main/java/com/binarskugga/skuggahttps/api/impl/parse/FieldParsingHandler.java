@@ -10,8 +10,12 @@ public class FieldParsingHandler extends ParsingHandler<FieldParser, Field> {
 
 	private static List<FieldParser> parsers;
 
-	public FieldParsingHandler() {
+	private FieldParsingHandler() {
 		super(FieldParser.class);
+	}
+
+	public static FieldParsingHandler get() {
+		return new FieldParsingHandler();
 	}
 
 	public static void init() {

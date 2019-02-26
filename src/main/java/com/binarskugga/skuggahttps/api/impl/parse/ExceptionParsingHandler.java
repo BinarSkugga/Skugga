@@ -11,8 +11,12 @@ public class ExceptionParsingHandler extends ParsingHandler<ExceptionParser, End
 
 	private static List<ExceptionParser> parsers;
 
-	public ExceptionParsingHandler() {
+	private ExceptionParsingHandler() {
 		super(ExceptionParser.class);
+	}
+
+	public static ExceptionParsingHandler get() {
+		return new ExceptionParsingHandler();
 	}
 
 	public static void init() {

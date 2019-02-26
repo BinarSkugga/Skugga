@@ -27,26 +27,17 @@ import java.util.Map;
 @NoArgsConstructor
 public class HttpSession {
 
-	@Getter
-	private HttpServerExchange exchange;
+	@Getter private HttpServerExchange exchange;
 
-	@Getter
-	@Setter
-	private Endpoint endpoint;
+	@Getter @Setter private Endpoint endpoint;
 
-	@Getter
-	private Map<HttpHeader, HeaderValues> requestHeaders;
-	@Getter
-	private Map<HttpHeader, HeaderValues> responseHeaders;
+	@Getter private Map<HttpHeader, HeaderValues> requestHeaders;
+	@Getter private Map<HttpHeader, HeaderValues> responseHeaders;
 
-	@Getter
-	private Map<String, Cookie> requestCookies;
-	@Getter
-	private Map<String, Cookie> responseCookies;
+	@Getter private Map<String, Cookie> requestCookies;
+	@Getter private Map<String, Cookie> responseCookies;
 
-	@Getter
-	@Setter
-	private Token token;
+	@Getter @Setter private Token token;
 
 	public HttpSession(HttpServerExchange exchange) throws Exception {
 		this.exchange = exchange;
@@ -87,18 +78,18 @@ public class HttpSession {
 	@SuppressWarnings("unchecked")
 	public <T extends BodyParser> T getBodyParser() {
 		if (this.endpoint != null) {
-			return (T) new BodyParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+			return (T) BodyParsingHandler.get().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
 		} else {
-			return (T) new ExceptionParsingHandler().getParsers().get(0);
+			return (T) BodyParsingHandler.get().getParsers().get(0);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends ExceptionParser> T getExceptionParser() {
 		if (this.endpoint != null) {
-			return (T) new ExceptionParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+			return (T) ExceptionParsingHandler.get().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
 		} else {
-			return (T) new ExceptionParsingHandler().getParsers().get(0);
+			return (T) ExceptionParsingHandler.get().getParsers().get(0);
 		}
 	}
 

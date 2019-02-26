@@ -12,6 +12,7 @@ import java.util.Collection;
 public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
 		if (Collection.class.isAssignableFrom(value.getClass())) {
 			if (field.getType().equals(byte[].class))
@@ -52,7 +53,6 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Object unparse(Field field, Object value) throws CannotMapFieldException {
 		if (value.getClass().equals(byte[].class))
 			return Arrays.asList(ArrayUtils.toObject((byte[]) value));

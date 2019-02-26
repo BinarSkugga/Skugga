@@ -1,7 +1,6 @@
 package com.binarskugga.skuggahttps.api.impl.parse;
 
 import com.binarskugga.skuggahttps.api.ParameterParser;
-import lombok.Getter;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -9,11 +8,14 @@ import java.util.List;
 
 public class ParameterParsingHandler extends ParsingHandler<ParameterParser, Parameter> {
 
-	@Getter
 	private static List<ParameterParser> parsers;
 
-	public ParameterParsingHandler() {
+	private ParameterParsingHandler() {
 		super(ParameterParser.class);
+	}
+
+	public static ParameterParsingHandler get() {
+		return new ParameterParsingHandler();
 	}
 
 	public static void init() {

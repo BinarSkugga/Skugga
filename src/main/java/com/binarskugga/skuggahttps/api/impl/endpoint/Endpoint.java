@@ -25,27 +25,15 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 public class Endpoint {
 
-	@Getter
-	@Setter
-	private Method action;
-	@Getter
-	@Setter
-	private HttpMethod method;
-	@Getter
-	@Setter
-	private String route;
-	@Setter
-	private String contentType;
+	@Getter @Setter private Method action;
+	@Getter @Setter private HttpMethod method;
+	@Getter @Setter private String route;
+	@Setter private String contentType;
 
-	@Getter
-	@Setter
-	private Type bodyType;
-	@Getter
-	@Setter
-	private Type returnType;
+	@Getter @Setter private Type bodyType;
+	@Getter @Setter private Type returnType;
 
-	@Getter
-	private Object body;
+	@Getter private Object body;
 
 	public String getContentType() {
 		return this.contentType == null ? ServerProperties.getContentType() : this.contentType;
@@ -66,7 +54,7 @@ public class Endpoint {
 			parameters = Arrays.copyOfRange(parameters, 1, parameters.length);
 		}
 
-		ParameterParsingHandler parsingHandler = new ParameterParsingHandler();
+		ParameterParsingHandler parsingHandler = ParameterParsingHandler.get();
 		for (int i = 0, p = 0; i < brokenEndpoint.length; i++) {
 			if (brokenEndpoint[i].equals("$")) {
 				Parameter parameter = parameters[p++];
