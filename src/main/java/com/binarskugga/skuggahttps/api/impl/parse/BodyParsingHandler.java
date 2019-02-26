@@ -12,7 +12,11 @@ public class BodyParsingHandler extends ParsingHandler<BodyParser, Endpoint> {
 
 	public BodyParsingHandler() {
 		super(BodyParser.class);
-		if(parsers == null) parsers = new ArrayList<>();
+	}
+
+	public static void init() {
+		parsers = new ArrayList<>();
+		ParsingHandler.init(BodyParser.class, parsers);
 	}
 
 	@Override

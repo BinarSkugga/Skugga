@@ -12,12 +12,11 @@ public class ParameterParsingHandler extends ParsingHandler<ParameterParser, Par
 
 	public ParameterParsingHandler() {
 		super(ParameterParser.class);
-		if(parsers == null) parsers = new ArrayList<>();
 	}
 
 	public static void init() {
 		parsers = new ArrayList<>();
-		ParsingHandler.init("com.binarskugga.skuggahttps.api.impl.parse.parameter", ParameterParser.class, parsers);
+		ParsingHandler.init(ParameterParser.class, parsers);
 	}
 
 	@Override

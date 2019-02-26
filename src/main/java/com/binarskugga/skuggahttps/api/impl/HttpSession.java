@@ -96,12 +96,20 @@ public class HttpSession {
 
 	@SuppressWarnings("unchecked")
 	public <T extends BodyParser> T getBodyParser() {
-		return (T) new BodyParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+		if(this.endpoint != null) {
+			return (T) new BodyParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+		} else {
+			return (T) new ExceptionParsingHandler().getParsers().get(0);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends ExceptionParser> T getExceptionParser() {
-		return (T) new ExceptionParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+		if(this.endpoint != null) {
+			return (T) new ExceptionParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+		} else {
+			return (T) new ExceptionParsingHandler().getParsers().get(0);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

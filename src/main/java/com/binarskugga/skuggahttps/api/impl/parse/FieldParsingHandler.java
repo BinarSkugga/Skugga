@@ -11,12 +11,11 @@ public class FieldParsingHandler extends ParsingHandler<FieldParser, Field> {
 
 	public FieldParsingHandler() {
 		super(FieldParser.class);
-		if(parsers == null) parsers = new ArrayList<>();
 	}
 
 	public static void init() {
 		parsers = new ArrayList<>();
-		ParsingHandler.init("com.binarskugga.skuggahttps.api.impl.parse.field", FieldParser.class, parsers);
+		ParsingHandler.init(FieldParser.class, parsers);
 	}
 
 	@Override

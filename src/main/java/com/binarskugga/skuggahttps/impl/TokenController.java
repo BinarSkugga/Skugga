@@ -1,6 +1,7 @@
 package com.binarskugga.skuggahttps.impl;
 
 import com.binarskugga.skuggahttps.api.*;
+import com.binarskugga.skuggahttps.api.Token;
 import com.binarskugga.skuggahttps.api.annotation.*;
 import com.binarskugga.skuggahttps.api.exception.auth.*;
 import com.binarskugga.skuggahttps.api.exception.entity.*;

@@ -5,9 +5,7 @@ import com.binarskugga.skuggahttps.api.enums.HttpMethod;
 import com.binarskugga.skuggahttps.api.enums.HttpStatus;
 import com.binarskugga.skuggahttps.api.impl.ServerProperties;
 import com.binarskugga.skuggahttps.api.impl.HttpSession;
-import com.binarskugga.skuggahttps.api.impl.parse.BodyInformation;
-import com.binarskugga.skuggahttps.api.impl.parse.FieldParsingHandler;
-import com.binarskugga.skuggahttps.api.impl.parse.ParameterParsingHandler;
+import com.binarskugga.skuggahttps.api.impl.parse.*;
 import com.binarskugga.skuggahttps.util.CryptoUtils;
 import com.binarskugga.skuggahttps.api.impl.endpoint.AbstractController;
 import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
@@ -35,6 +33,9 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 
 	public SkuggaHttpHandler() {
 		CryptoUtils.createKeysIfNotExists("token-sign.key");
+
+		BodyParsingHandler.init();
+		ExceptionParsingHandler.init();
 		FieldParsingHandler.init();
 		ParameterParsingHandler.init();
 
@@ -51,7 +52,8 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 				try {
 					session = new HttpSession(exchange);
 					session.setEndpoint(this.endpointResolver.getEndpoint(exchange.getRequestPath(), HttpMethod.fromMethodString(exchange.getRequestMethod().toString())));
-					if(session.getRequestMethod().acceptBody()) session.getEndpoint().setBody(exchange.getInputStream(), session);
+					if(session.getRequestMethod().acceptBody() && session.getEndpoint() != null)
+						session.getEndpoint().setBody(exchange.getInputStream(), session);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(-1);

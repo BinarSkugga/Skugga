@@ -13,7 +13,11 @@ public class ExceptionParsingHandler extends ParsingHandler<ExceptionParser, End
 
 	public ExceptionParsingHandler() {
 		super(ExceptionParser.class);
-		if(parsers == null) parsers = new ArrayList<>();
+	}
+
+	public static void init() {
+		parsers = new ArrayList<>();
+		ParsingHandler.init(BodyParser.class, parsers);
 	}
 
 	@Override

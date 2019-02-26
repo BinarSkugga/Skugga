@@ -1,10 +1,12 @@
 package com.binarskugga.impl;
 
+import com.binarskugga.skuggahttps.api.annotation.Token;
 import com.binarskugga.skuggahttps.api.impl.BasicToken;
 
 import java.util.*;
 import java.util.concurrent.*;
 
+@Token
 public class TestToken extends BasicToken {
 
 	private static final long LTT_EXPIRES = new Date().getTime() + TimeUnit.DAYS.toMillis(365);

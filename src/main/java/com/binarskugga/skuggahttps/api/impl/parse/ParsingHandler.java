@@ -1,9 +1,13 @@
 package com.binarskugga.skuggahttps.api.impl.parse;
 
 import com.binarskugga.skuggahttps.api.Parser;
+import com.binarskugga.skuggahttps.api.annotation.IgnoreParser;
 import com.binarskugga.skuggahttps.api.annotation.UseParser;
+import com.binarskugga.skuggahttps.api.impl.ServerProperties;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.util.List;
 
@@ -16,10 +20,17 @@ public abstract class ParsingHandler<P extends Parser, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	static void init(String parserPackage, Class<? extends Parser> parserType, List parsers) {
-		Reflections reflections = new Reflections(parserPackage);
-		for(Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType))
-			parsers.add(ReflectionUtils.constructOrNull(parserClass));
+	static void init(Class<? extends Parser> parserType, List parsers) {
+		Reflections reflections = new Reflections(
+				new ConfigurationBuilder().forPackages(
+						"com.binarskugga.skuggahttps",
+						ServerProperties.getRootPackage()
+				)
+		);
+		for(Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
+			if(!parserClass.isAnnotationPresent(IgnoreParser.class))
+				parsers.add(ReflectionUtils.constructOrNull(parserClass));
+		}
 	}
 
 	public abstract List<P> getParsers();

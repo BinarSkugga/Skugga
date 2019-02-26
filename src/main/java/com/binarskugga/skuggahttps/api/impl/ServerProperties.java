@@ -2,8 +2,10 @@ package com.binarskugga.skuggahttps.api.impl;
 
 import com.binarskugga.skuggahttps.api.BodyParser;
 import com.binarskugga.skuggahttps.api.ExceptionParser;
+import com.binarskugga.skuggahttps.api.Parser;
 import com.binarskugga.skuggahttps.api.Token;
 import com.binarskugga.skuggahttps.api.annotation.ContentType;
+import com.binarskugga.skuggahttps.api.annotation.IgnoreParser;
 import com.binarskugga.skuggahttps.api.enums.HttpHeader;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
 import com.binarskugga.skuggahttps.api.exception.NoDefaultBodyParserException;
@@ -12,6 +14,8 @@ import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
 import com.binarskugga.skuggahttps.api.impl.parse.BodyParsingHandler;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import lombok.Getter;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.io.InputStream;
 import java.util.*;
@@ -25,6 +29,7 @@ public class ServerProperties {
 	@Getter private static int port;
 	@Getter private static String root;
 
+	@Getter private static String rootPackage;
 	@Getter private static String controllerPackage;
 	@Getter private static String modelPackage;
 	@Getter private static Class<? extends Token> tokenClass;
@@ -50,12 +55,17 @@ public class ServerProperties {
 			port = Integer.parseInt(getString("server.port", "8080"));
 			root = getString("server.root", "api");
 
-			tokenClass = (Class<? extends Token>) Class.forName(getString("server.config.token", ""));
-			controllerPackage =getString("server.config.controller-package", "");
-			modelPackage =getString("server.config.model-package", "");
+			rootPackage = getString("server.config.root-package", "");
+			controllerPackage = getString("server.config.controller-package", "");
+			modelPackage = getString("server.config.model-package", "");
+
+			Reflections reflections = new Reflections(rootPackage);
+			for(Class<? extends Token> token : reflections.getSubTypesOf(Token.class)) {
+				if(token.isAnnotationPresent(com.binarskugga.skuggahttps.api.annotation.Token.class))
+					tokenClass = token;
+			}
 
 			contentType = getString("server.config.content-type", "application/json");
-
 			allowedOrigin = getString("server.cors.allowed-origin", "*");
 			allowedCredentials = Boolean.parseBoolean(getString("server.cors.allowed-credentials", "false"));
 
@@ -72,7 +82,7 @@ public class ServerProperties {
 		}
 	}
 
-	private static String getString(String key, Object def) {
+	public static String getString(String key, Object def) {
 		return (String) properties.getOrDefault(key, def);
 	}
 
