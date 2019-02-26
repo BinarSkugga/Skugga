@@ -1,28 +1,24 @@
 package com.binarskugga.skuggahttps.api.impl.endpoint;
 
+import com.binarskugga.skuggahttps.ServerProperties;
 import com.binarskugga.skuggahttps.api.ParameterParser;
 import com.binarskugga.skuggahttps.api.annotation.UseParser;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
 import com.binarskugga.skuggahttps.api.exception.InvalidArgumentCountException;
-import com.binarskugga.skuggahttps.api.impl.HttpSession;
-
-import java.io.InputStream;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.stream.Stream;
-
-import com.binarskugga.skuggahttps.api.impl.ServerProperties;
 import com.binarskugga.skuggahttps.api.impl.parse.BodyInformation;
 import com.binarskugga.skuggahttps.api.impl.parse.ParameterParsingHandler;
 import com.binarskugga.skuggahttps.util.EndpointUtils;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.io.InputStream;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Builder
 @AllArgsConstructor @NoArgsConstructor

@@ -1,11 +1,10 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.*;
-import com.binarskugga.skuggahttps.api.impl.*;
-import com.googlecode.objectify.*;
+import com.binarskugga.skuggahttps.api.RequestHandler;
+import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
+import com.googlecode.objectify.ObjectifyService;
 
-import java.io.*;
-import java.util.concurrent.*;
+import java.io.Closeable;
 
 public class ObjectifyHandler implements RequestHandler {
 

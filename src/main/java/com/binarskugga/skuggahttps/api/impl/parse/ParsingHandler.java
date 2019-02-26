@@ -1,12 +1,11 @@
 package com.binarskugga.skuggahttps.api.impl.parse;
 
+import com.binarskugga.skuggahttps.ServerProperties;
 import com.binarskugga.skuggahttps.api.Parser;
 import com.binarskugga.skuggahttps.api.annotation.IgnoreParser;
 import com.binarskugga.skuggahttps.api.annotation.UseParser;
-import com.binarskugga.skuggahttps.api.impl.ServerProperties;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.util.List;

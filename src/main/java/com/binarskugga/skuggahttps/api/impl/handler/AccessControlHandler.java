@@ -1,5 +1,6 @@
 package com.binarskugga.skuggahttps.api.impl.handler;
 
+import com.binarskugga.skuggahttps.ServerProperties;
 import com.binarskugga.skuggahttps.api.RequestHandler;
 import com.binarskugga.skuggahttps.api.annotation.Closed;
 import com.binarskugga.skuggahttps.api.enums.HeaderType;
@@ -9,8 +10,7 @@ import com.binarskugga.skuggahttps.api.enums.HttpStatus;
 import com.binarskugga.skuggahttps.api.exception.ClosedEndpointException;
 import com.binarskugga.skuggahttps.api.exception.http.BadRequestException;
 import com.binarskugga.skuggahttps.api.exception.http.MethodNotAllowedException;
-import com.binarskugga.skuggahttps.api.impl.ServerProperties;
-import com.binarskugga.skuggahttps.api.impl.HttpSession;
+import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.HeaderValuesFactory;
 

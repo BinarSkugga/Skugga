@@ -1,14 +1,15 @@
 package com.binarskugga.skuggahttps.api.impl.endpoint;
 
-import com.binarskugga.skuggahttps.api.*;
+import com.binarskugga.skuggahttps.ServerProperties;
+import com.binarskugga.skuggahttps.api.AuthentifiableEntity;
+import com.binarskugga.skuggahttps.api.DataRepository;
 import com.binarskugga.skuggahttps.api.Token;
-import com.binarskugga.skuggahttps.api.annotation.*;
-import com.binarskugga.skuggahttps.api.impl.*;
-import com.binarskugga.skuggahttps.util.*;
-import lombok.*;
+import com.binarskugga.skuggahttps.api.annotation.Authenticator;
+import com.binarskugga.skuggahttps.util.ReflectionUtils;
+import lombok.Getter;
 import org.reflections.Reflections;
 
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
 public abstract class AuthController extends AbstractController {
 

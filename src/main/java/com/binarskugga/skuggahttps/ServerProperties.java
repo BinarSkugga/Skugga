@@ -1,24 +1,15 @@
-package com.binarskugga.skuggahttps.api.impl;
+package com.binarskugga.skuggahttps;
 
-import com.binarskugga.skuggahttps.api.BodyParser;
-import com.binarskugga.skuggahttps.api.ExceptionParser;
-import com.binarskugga.skuggahttps.api.Parser;
 import com.binarskugga.skuggahttps.api.Token;
-import com.binarskugga.skuggahttps.api.annotation.ContentType;
-import com.binarskugga.skuggahttps.api.annotation.IgnoreParser;
 import com.binarskugga.skuggahttps.api.enums.HttpHeader;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
-import com.binarskugga.skuggahttps.api.exception.NoDefaultBodyParserException;
-import com.binarskugga.skuggahttps.api.exception.NoDefaultExceptionParserException;
-import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
-import com.binarskugga.skuggahttps.api.impl.parse.BodyParsingHandler;
-import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import lombok.Getter;
 import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +33,7 @@ public class ServerProperties {
 
 	private static Properties properties;
 
-	private ServerProperties() {};
+	private ServerProperties() {}
 
 	@SuppressWarnings("unchecked")
 	public static void load(InputStream stream) {

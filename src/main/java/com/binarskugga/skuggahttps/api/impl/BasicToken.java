@@ -6,20 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.util.*;
-
 public abstract class BasicToken implements Token {
-
-	public BasicToken() {
-		this.setIssuedAt(new Date().getTime());
-	}
 
 	@Accessors(chain = false)
 	@Getter @Setter private String authentifier;
-
-	@Accessors(chain = false)
-	@Getter @Setter private long issuedAt;
 
 	@Accessors(chain = false)
 	@Getter @Setter private long expires;

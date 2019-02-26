@@ -1,6 +1,6 @@
 package com.binarskugga.skuggahttps.api.impl.parse;
 
-import com.binarskugga.skuggahttps.api.impl.HttpSession;
+import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -2,7 +2,7 @@ package com.binarskugga.skuggahttps.api.impl.handler;
 
 import com.binarskugga.skuggahttps.api.RequestHandler;
 import com.binarskugga.skuggahttps.api.exception.http.HttpException;
-import com.binarskugga.skuggahttps.api.impl.HttpSession;
+import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
 import com.google.common.flogger.FluentLogger;
 
 public class DefaultLoggingHandler implements RequestHandler {

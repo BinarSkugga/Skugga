@@ -1,5 +1,6 @@
-package com.binarskugga.skuggahttps.api.impl;
+package com.binarskugga.skuggahttps.api.impl.endpoint;
 
+import com.binarskugga.skuggahttps.ServerProperties;
 import com.binarskugga.skuggahttps.api.BodyParser;
 import com.binarskugga.skuggahttps.api.ExceptionParser;
 import com.binarskugga.skuggahttps.api.Token;
@@ -7,25 +8,19 @@ import com.binarskugga.skuggahttps.api.annotation.UseParser;
 import com.binarskugga.skuggahttps.api.enums.HeaderType;
 import com.binarskugga.skuggahttps.api.enums.HttpHeader;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
-import com.binarskugga.skuggahttps.api.exception.ReflectiveContructFailedException;
-import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
 import com.binarskugga.skuggahttps.api.impl.parse.BodyParsingHandler;
 import com.binarskugga.skuggahttps.api.impl.parse.ExceptionParsingHandler;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.*;
-
 import io.undertow.server.handlers.Cookie;
-import io.undertow.server.handlers.CookieImpl;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.HeaderValuesFactory;
 import io.undertow.util.HttpString;
 import lombok.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Builder
 @AllArgsConstructor @NoArgsConstructor
@@ -41,7 +36,7 @@ public class HttpSession {
 	@Getter private Map<String, Cookie> requestCookies;
 	@Getter private Map<String, Cookie> responseCookies;
 
-	@Getter private Token token;
+	@Getter @Setter private Token token;
 
 	public HttpSession(HttpServerExchange exchange) throws Exception {
 		this.exchange = exchange;
@@ -56,21 +51,6 @@ public class HttpSession {
 
 		this.responseCookies = exchange.getResponseCookies();
 		this.requestCookies = exchange.getRequestCookies();
-
-		if(this.requestCookies.containsKey("token")) {
-			try {
-				Cookie token = this.requestCookies.get("token");
-				this.token = this.createToken(token);
-			} catch (SignatureException | ExpiredJwtException | MalformedJwtException | UnsupportedJwtException e) {
-				this.token = null;
-
-				Cookie tokenCookie = new CookieImpl("token", "");
-				tokenCookie.setExpires(new Date(new Date().getTime() - 1000));
-				tokenCookie.setHttpOnly(true);
-				tokenCookie.setPath("/");
-				exchange.setResponseCookie(tokenCookie);
-			}
-		}
 	}
 
 	public void apply() {
@@ -110,15 +90,6 @@ public class HttpSession {
 		} else {
 			return (T) new ExceptionParsingHandler().getParsers().get(0);
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends Token> T createToken(Cookie cookie) throws SignatureException, ExpiredJwtException, MalformedJwtException, UnsupportedJwtException {
-		Token token = ReflectionUtils.constructOrNull(ServerProperties.getTokenClass());
-		if(token == null) return null;
-
-		token.parse(cookie.getValue());
-		return (T) token;
 	}
 
 }

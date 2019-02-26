@@ -1,7 +1,6 @@
 package com.binarskugga.skuggahttps;
 
 import com.binarskugga.skuggahttps.api.HttpServer;
-import com.binarskugga.skuggahttps.api.impl.ServerProperties;
 import com.binarskugga.skuggahttps.api.impl.handler.AccessControlHandler;
 import com.binarskugga.skuggahttps.api.impl.handler.AuthHandler;
 import com.binarskugga.skuggahttps.api.impl.handler.DefaultLoggingHandler;
@@ -9,7 +8,7 @@ import com.google.common.flogger.FluentLogger;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.predicate.Predicates;
-import io.undertow.server.handlers.*;
+import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.encoding.ContentEncodingRepository;
 import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;

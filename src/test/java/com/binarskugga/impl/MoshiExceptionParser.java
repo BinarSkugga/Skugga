@@ -1,15 +1,13 @@
 package com.binarskugga.impl;
 
 import com.binarskugga.skuggahttps.api.ExceptionParser;
-import com.binarskugga.skuggahttps.api.annotation.ContentType;
 import com.binarskugga.skuggahttps.api.exception.http.HttpException;
-import com.binarskugga.skuggahttps.api.impl.HttpSession;
 import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
+import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
 import com.google.common.base.CaseFormat;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
