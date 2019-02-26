@@ -7,3 +7,4 @@
 target/
 
 **/google-account.json
+**/*.key

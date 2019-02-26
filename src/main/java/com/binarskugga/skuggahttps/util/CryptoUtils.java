@@ -48,14 +48,14 @@ public class CryptoUtils {
 		boolean created = false;
 		for(String name : names) {
 			try {
-				File file = ResourceUtils.getResourceFile(name);
+				File file = ResourceUtils.getResourceFile(name + ".key");
 				if (!file.exists() && file.createNewFile()) {
 					created = true;
 					SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 					try (FileWriter writer = new FileWriter(file)) {
 						writer.write(new String(key.getEncoded(), Charsets.UTF_8));
 					}
-					logger.atInfo().log("Key '" + name + "' has been generated.");
+					logger.atInfo().log("Key '" + name + ".key' has been generated.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -68,6 +68,7 @@ public class CryptoUtils {
 	}
 
 	public static SecretKey getKey(String name) {
+		name += ".key";
 		if(keyCache.containsKey(name)) return keyCache.get(name);
 		else {
 			SecretKey key = null;

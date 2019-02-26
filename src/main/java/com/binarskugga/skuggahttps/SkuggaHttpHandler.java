@@ -32,7 +32,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 	private Map<Class<? extends AbstractController>, AbstractController> controllers;
 
 	public SkuggaHttpHandler() {
-		CryptoUtils.createKeysIfNotExists("token-sign.key");
+		CryptoUtils.createKeysIfNotExists("token-sign");
 
 		BodyParsingHandler.init();
 		ExceptionParsingHandler.init();
