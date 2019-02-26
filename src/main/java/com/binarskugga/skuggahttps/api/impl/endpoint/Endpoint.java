@@ -38,6 +38,7 @@ public class Endpoint {
 		return this.contentType == null ? ServerProperties.getContentType() : this.contentType;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Object> getArguments(HttpSession session) {
 		String[] brokenEndpoint = EndpointUtils.sanitizePath(session.getEndpoint().getRoute()).split("/");
 		String[] brokenRequest = EndpointUtils.sanitizePath(session.getExchange().getRequestPath()).split("/");
@@ -64,7 +65,7 @@ public class Endpoint {
 		return args;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
 	public void setBody(InputStream stream, HttpSession session) {
 		try {
 			byte[] data = ByteStreams.toByteArray(stream);

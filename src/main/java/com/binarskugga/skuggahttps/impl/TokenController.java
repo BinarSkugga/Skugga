@@ -1,22 +1,29 @@
 package com.binarskugga.skuggahttps.impl;
 
-import com.binarskugga.skuggahttps.api.*;
+import com.binarskugga.skuggahttps.api.AuthentifiableEntity;
 import com.binarskugga.skuggahttps.api.Token;
-import com.binarskugga.skuggahttps.api.annotation.*;
-import com.binarskugga.skuggahttps.api.exception.auth.*;
-import com.binarskugga.skuggahttps.api.exception.entity.*;
-import com.binarskugga.skuggahttps.api.impl.endpoint.*;
+import com.binarskugga.skuggahttps.api.annotation.Controller;
+import com.binarskugga.skuggahttps.api.annotation.Post;
+import com.binarskugga.skuggahttps.api.exception.InvalidArgumentException;
+import com.binarskugga.skuggahttps.api.exception.auth.InvalidTokenException;
+import com.binarskugga.skuggahttps.api.exception.auth.LoginException;
+import com.binarskugga.skuggahttps.api.exception.entity.EntityInexistantException;
+import com.binarskugga.skuggahttps.api.impl.endpoint.AuthController;
 import com.binarskugga.skuggahttps.api.impl.parse.MapParser;
-import com.binarskugga.skuggahttps.util.*;
+import com.binarskugga.skuggahttps.util.ReflectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
 
 @Controller("token")
 public class TokenController extends AuthController {
 
-	@Post
+	@SuppressWarnings("unchecked") @Post
 	public String ltt(Map<String, Object> loginMap) {
 		Login login = (Login) MapParser.parse(Arrays.asList(Login.class.getDeclaredFields()), loginMap);
+		if(login == null)
+			throw new InvalidArgumentException();
+
 		AuthentifiableEntity entity = (AuthentifiableEntity) this.getAuthRepository().load("authentifier", login.getAuthentifier());
 
 		if(entity == null)
@@ -30,11 +37,13 @@ public class TokenController extends AuthController {
 		return token.generate();
 	}
 
-	@Post
+	@SuppressWarnings("unchecked") @Post
 	public String stt(String ltt) {
 		Token token = ReflectionUtils.constructOrNull(this.getTokenClass());
-		token.parse(ltt);
+		if(token == null)
+			throw new InvalidTokenException();
 
+		token.parse(ltt);
 		if(!token.isLTT())
 			throw new InvalidTokenException();
 
