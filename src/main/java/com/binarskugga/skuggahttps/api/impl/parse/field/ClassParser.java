@@ -10,9 +10,9 @@ public class ClassParser implements FieldParser<Class, Object> {
 
 	@Override
 	public Class parse(Field field, Object value) throws CannotMapFieldException {
-		if(value.getClass().equals(Class.class))
+		if (value.getClass().equals(Class.class))
 			return (Class) value;
-		else if(CharSequence.class.isAssignableFrom(value.getClass()))
+		else if (CharSequence.class.isAssignableFrom(value.getClass()))
 			return ReflectionUtils.forNameOrNull((String) value);
 		else
 			throw new CannotMapFieldException();

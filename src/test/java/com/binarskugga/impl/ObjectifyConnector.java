@@ -1,18 +1,18 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.*;
 import com.binarskugga.skuggahttps.api.BaseEntity;
-import com.binarskugga.skuggahttps.util.*;
+import com.binarskugga.skuggahttps.api.DataConnector;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
-import com.google.auth.*;
-import com.google.auth.oauth2.*;
-import com.google.cloud.datastore.*;
-import com.google.common.flogger.*;
-import com.googlecode.objectify.*;
+import com.google.auth.Credentials;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.common.flogger.FluentLogger;
+import com.googlecode.objectify.ObjectifyFactory;
+import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
-import org.reflections.*;
+import org.reflections.Reflections;
 
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
 public class ObjectifyConnector implements DataConnector<Datastore> {
 
@@ -36,9 +36,9 @@ public class ObjectifyConnector implements DataConnector<Datastore> {
 		reflections.getSubTypesOf(BaseEntity.class).stream()
 				.filter(c -> ReflectionUtils.getClassAnnotationOrNull(c, Entity.class) != null)
 				.collect(Collectors.toList()).forEach(c -> {
-					ObjectifyService.register(c);
-					logger.atFine().log("Entity class " + c.getSimpleName() + " has been registered !");
-				});
+			ObjectifyService.register(c);
+			logger.atFine().log("Entity class " + c.getSimpleName() + " has been registered !");
+		});
 		return null;
 	}
 

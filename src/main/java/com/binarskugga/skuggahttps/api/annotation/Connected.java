@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Connected {
 
 	// Defaults to allow every connected user regardless of their roles.
-	String[] roles() default { "*" };
+	String[] roles() default {"*"};
 
 }

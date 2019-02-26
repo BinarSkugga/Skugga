@@ -26,8 +26,8 @@ public abstract class ParsingHandler<P extends Parser, T> {
 						ServerProperties.getRootPackage()
 				)
 		);
-		for(Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
-			if(!parserClass.isAnnotationPresent(IgnoreParser.class))
+		for (Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
+			if (!parserClass.isAnnotationPresent(IgnoreParser.class))
 				parsers.add(ReflectionUtils.constructOrNull(parserClass));
 		}
 	}
@@ -37,13 +37,13 @@ public abstract class ParsingHandler<P extends Parser, T> {
 	@SuppressWarnings("unchecked")
 	public P getParser(T context, UseParser useParserAnnotation) {
 		P defaultParser = null;
-		for(P parser : this.getParsers())
-			if(parser.predicate(context)) defaultParser = parser;
+		for (P parser : this.getParsers())
+			if (parser.predicate(context)) defaultParser = parser;
 
 		P parser = defaultParser;
-		if(useParserAnnotation != null) {
+		if (useParserAnnotation != null) {
 			Class clazz = useParserAnnotation.value();
-			if(this.parserClass.isAssignableFrom(clazz)) {
+			if (this.parserClass.isAssignableFrom(clazz)) {
 				parser = (P) ReflectionUtils.constructOrNull(clazz);
 				if (parser == null) parser = defaultParser;
 			}

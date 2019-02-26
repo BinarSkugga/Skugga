@@ -5,13 +5,17 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ReflectionUtils {
 
-	private ReflectionUtils() {}
+	private ReflectionUtils() {
+	}
 
 	public static Class forNameOrNull(String str) {
 		try {
@@ -23,7 +27,7 @@ public class ReflectionUtils {
 
 	public static List<Field> getAllFields(Class clazz) {
 		List<Field> fields = new ArrayList<>();
-		while(clazz.getSuperclass() != null) {
+		while (clazz.getSuperclass() != null) {
 			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
 			clazz = clazz.getSuperclass();
 		}
@@ -32,7 +36,7 @@ public class ReflectionUtils {
 
 	public static List<Method> getAllMethods(Class clazz) {
 		List<Method> methods = new ArrayList<>();
-		while(clazz.getSuperclass() != null) {
+		while (clazz.getSuperclass() != null) {
 			methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 			clazz = clazz.getSuperclass();
 		}
@@ -41,33 +45,33 @@ public class ReflectionUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation> T getClassAnnotationOrNull(Class clazz, Class<T> annotation) {
-		if(!clazz.isAnnotationPresent(annotation)) return null;
+		if (!clazz.isAnnotationPresent(annotation)) return null;
 		else return (T) clazz.getAnnotation(annotation);
 	}
 
 	public static <T extends Annotation> T getMethodAnnotationOrNull(Method method, Class<T> annotation) {
-		if(!method.isAnnotationPresent(annotation)) return null;
+		if (!method.isAnnotationPresent(annotation)) return null;
 		else return method.getAnnotation(annotation);
 	}
 
 	public static <T extends Annotation> T getFieldAnnotationOrNull(Field field, Class<T> annotation) {
-		if(!field.isAnnotationPresent(annotation)) return null;
+		if (!field.isAnnotationPresent(annotation)) return null;
 		else return field.getAnnotation(annotation);
 	}
 
 	public static <T extends Annotation> T getParamAnnotationOrNull(Parameter param, Class<T> annotation) {
-		if(!param.isAnnotationPresent(annotation)) return null;
+		if (!param.isAnnotationPresent(annotation)) return null;
 		else return param.getAnnotation(annotation);
 	}
 
 	public static <T extends Annotation> T getAnnotationOrNull(Object reflect, Class<T> annotation) {
-		if(Class.class.isAssignableFrom(reflect.getClass()))
+		if (Class.class.isAssignableFrom(reflect.getClass()))
 			return ReflectionUtils.getClassAnnotationOrNull((Class) reflect, annotation);
-		else if(Method.class.isAssignableFrom(reflect.getClass()))
+		else if (Method.class.isAssignableFrom(reflect.getClass()))
 			return ReflectionUtils.getMethodAnnotationOrNull((Method) reflect, annotation);
-		else if(Field.class.isAssignableFrom(reflect.getClass()))
+		else if (Field.class.isAssignableFrom(reflect.getClass()))
 			return ReflectionUtils.getFieldAnnotationOrNull((Field) reflect, annotation);
-		else if(Parameter.class.isAssignableFrom(reflect.getClass()))
+		else if (Parameter.class.isAssignableFrom(reflect.getClass()))
 			return ReflectionUtils.getParamAnnotationOrNull((Parameter) reflect, annotation);
 		return null;
 	}
@@ -84,7 +88,7 @@ public class ReflectionUtils {
 	public static <T> T safeConstruct(Class<T> declaring, Object... arguments) throws ReflectiveContructFailedException {
 		try {
 			Constructor<T> constructor = null;
-			if(arguments == null || arguments.length == 0)
+			if (arguments == null || arguments.length == 0)
 				constructor = declaring.getConstructor();
 			else {
 				constructor = declaring.getConstructor(Arrays.asList(arguments).stream()
@@ -98,9 +102,10 @@ public class ReflectionUtils {
 
 	public static void setField(Field field, Object instance, Object value, boolean force) {
 		try {
-			if(force) field.setAccessible(true);
+			if (force) field.setAccessible(true);
 			field.set(instance, value);
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 	}
 
 	public static void setField(Field field, Object instance, Object value) {
@@ -109,7 +114,7 @@ public class ReflectionUtils {
 
 	public static Object getField(Field field, Object instance, boolean force) {
 		try {
-			if(force) field.setAccessible(true);
+			if (force) field.setAccessible(true);
 			return field.get(instance);
 		} catch (Exception ignored) {
 			return null;
@@ -139,7 +144,7 @@ public class ReflectionUtils {
 	}
 
 	public static Class getInnerArrayType(Class arrayClass) {
-		if(arrayClass.isArray())
+		if (arrayClass.isArray())
 			return arrayClass.getComponentType();
 		return arrayClass;
 	}
@@ -193,7 +198,7 @@ public class ReflectionUtils {
 	}
 
 	public static Object stringToPrimitive(String str, Class c) {
-		if(isPrimitiveOrBoxed(c)) {
+		if (isPrimitiveOrBoxed(c)) {
 			if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Byte.class, byte.class))
 				return Byte.parseByte(str);
 			else if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Short.class, short.class))
@@ -212,8 +217,7 @@ public class ReflectionUtils {
 				return str.charAt(0);
 			else
 				return str;
-		}
-		else return str;
+		} else return str;
 	}
 
 	public static Object stringToPrimitiveArray(String str, String separator, Class c) {

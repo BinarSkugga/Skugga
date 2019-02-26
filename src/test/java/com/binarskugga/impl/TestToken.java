@@ -3,8 +3,8 @@ package com.binarskugga.impl;
 import com.binarskugga.skuggahttps.api.annotation.Token;
 import com.binarskugga.skuggahttps.api.impl.BasicToken;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Token
 public class TestToken extends BasicToken {
@@ -18,7 +18,7 @@ public class TestToken extends BasicToken {
 
 	public void setLTT(boolean ltt) {
 		super.setLTT(ltt);
-		if(ltt) this.setExpires(LTT_EXPIRES);
+		if (ltt) this.setExpires(LTT_EXPIRES);
 		else this.setExpires(STT_EXPIRES);
 	}
 

@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
 public @interface CreateField {
 
 	// Defaults to the creatable value of the entity.
-	String[] roles() default { "*" };
+	String[] roles() default {"*"};
+
 	InclusionMode inclusion() default InclusionMode.INCLUDE;
 
 }

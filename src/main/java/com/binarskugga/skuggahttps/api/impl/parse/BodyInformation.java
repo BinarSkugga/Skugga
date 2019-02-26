@@ -9,8 +9,11 @@ import java.lang.reflect.Type;
 @AllArgsConstructor
 public class BodyInformation {
 
-	@Getter private Type[] innerTypes;
-	@Getter private Class collectionClass;
-	@Getter private HttpSession session;
+	@Getter
+	private Type[] innerTypes;
+	@Getter
+	private Class collectionClass;
+	@Getter
+	private HttpSession session;
 
 }

@@ -35,7 +35,7 @@ public class MoshiBodyParser implements BodyParser<String> {
 	@SuppressWarnings("unchecked")
 	private JsonAdapter createAdapter(Type[] clazz, Class collectionClazz) {
 		Moshi moshi = MoshiProvider.get();
-		if(collectionClazz == null)
+		if (collectionClazz == null)
 			return moshi.adapter(clazz[0]);
 		else {
 			return moshi.adapter(Types.newParameterizedType(collectionClazz, clazz));

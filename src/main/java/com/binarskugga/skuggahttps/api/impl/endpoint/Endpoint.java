@@ -21,18 +21,31 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Builder
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class Endpoint {
 
-	@Getter @Setter private Method action;
-	@Getter @Setter private HttpMethod method;
-	@Getter @Setter private String route;
-	@Setter private String contentType;
+	@Getter
+	@Setter
+	private Method action;
+	@Getter
+	@Setter
+	private HttpMethod method;
+	@Getter
+	@Setter
+	private String route;
+	@Setter
+	private String contentType;
 
-	@Getter @Setter private Type bodyType;
-	@Getter @Setter private Type returnType;
+	@Getter
+	@Setter
+	private Type bodyType;
+	@Getter
+	@Setter
+	private Type returnType;
 
-	@Getter private Object body;
+	@Getter
+	private Object body;
 
 	public String getContentType() {
 		return this.contentType == null ? ServerProperties.getContentType() : this.contentType;
@@ -47,15 +60,15 @@ public class Endpoint {
 
 		int argumentCount = (int) Stream.of(brokenEndpoint).filter(b -> b.equals("$")).count();
 		Parameter[] parameters = session.getEndpoint().getAction().getParameters();
-		if(parameters.length > argumentCount) {
-			if(parameters.length - argumentCount > 1)
+		if (parameters.length > argumentCount) {
+			if (parameters.length - argumentCount > 1)
 				throw new InvalidArgumentCountException("Too much argument are specified for endpoint: '" + session.getEndpoint().getRoute() + "'");
 			parameters = Arrays.copyOfRange(parameters, 1, parameters.length);
 		}
 
 		ParameterParsingHandler parsingHandler = new ParameterParsingHandler();
-		for(int i = 0, p = 0; i < brokenEndpoint.length; i++) {
-			if(brokenEndpoint[i].equals("$")) {
+		for (int i = 0, p = 0; i < brokenEndpoint.length; i++) {
+			if (brokenEndpoint[i].equals("$")) {
 				Parameter parameter = parameters[p++];
 				ParameterParser parser = parsingHandler.getParser(parameter, ReflectionUtils.getParamAnnotationOrNull(parameter, UseParser.class));
 				args.add(parser.parse(parameter, brokenRequest[i]));

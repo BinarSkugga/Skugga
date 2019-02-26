@@ -28,17 +28,17 @@ public class AuthHandler implements RequestHandler {
 	public boolean handle(HttpSession session) throws RuntimeException {
 		Endpoint endpoint = session.getEndpoint();
 		Class controller = endpoint.getAction().getDeclaringClass();
-		if(ReflectionUtils.getMethodAnnotationOrNull(endpoint.getAction(), NotConnected.class) != null)
+		if (ReflectionUtils.getMethodAnnotationOrNull(endpoint.getAction(), NotConnected.class) != null)
 			return true;
 
 		Connected connected = ReflectionUtils.getMethodAnnotationOrNull(endpoint.getAction(), Connected.class);
-		if(connected == null) connected = ReflectionUtils.getClassAnnotationOrNull(controller, Connected.class);
-		if(connected == null) return true;
+		if (connected == null) connected = ReflectionUtils.getClassAnnotationOrNull(controller, Connected.class);
+		if (connected == null) return true;
 
 		List<String> roles = Arrays.stream(connected.roles()).map(String::toUpperCase).collect(Collectors.toList());
 
 		Token token = null;
-		if(session.getRequestCookies().containsKey("token")) {
+		if (session.getRequestCookies().containsKey("token")) {
 			try {
 				Cookie cookie = session.getRequestCookies().get("token");
 				token = this.createToken(cookie);
@@ -52,13 +52,13 @@ public class AuthHandler implements RequestHandler {
 			}
 		}
 
-		if(token == null)
+		if (token == null)
 			throw new InsufficientRoleException();
 
-		if(token.isLTT())
+		if (token.isLTT())
 			throw new InvalidTokenException();
 
-		if(!roles.contains("*") && !roles.contains(token.getRole().name().toUpperCase()))
+		if (!roles.contains("*") && !roles.contains(token.getRole().name().toUpperCase()))
 			throw new InsufficientRoleException();
 
 		session.setToken(token);
@@ -68,7 +68,7 @@ public class AuthHandler implements RequestHandler {
 	@SuppressWarnings("unchecked")
 	private <T extends Token> T createToken(Cookie cookie) throws SignatureException, ExpiredJwtException, MalformedJwtException, UnsupportedJwtException {
 		Token token = ReflectionUtils.constructOrNull(ServerProperties.getTokenClass());
-		if(token == null) return null;
+		if (token == null) return null;
 
 		token.parse(cookie.getValue());
 		return (T) token;

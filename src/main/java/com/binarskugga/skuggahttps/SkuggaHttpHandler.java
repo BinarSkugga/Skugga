@@ -44,14 +44,14 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) {
-		if(exchange.isInIoThread()) {
+		if (exchange.isInIoThread()) {
 			exchange.dispatch(() -> {
 				exchange.startBlocking();
 				HttpSession session = null;
 				try {
 					session = new HttpSession(exchange);
 					session.setEndpoint(this.endpointResolver.getEndpoint(exchange.getRequestPath(), HttpMethod.fromMethodString(exchange.getRequestMethod().toString())));
-					if(session.getRequestMethod().acceptBody() && session.getEndpoint() != null)
+					if (session.getRequestMethod().acceptBody() && session.getEndpoint() != null)
 						session.getEndpoint().setBody(exchange.getInputStream(), session);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -59,7 +59,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 				}
 
 				try {
-					if(this.chain(session)) {
+					if (this.chain(session)) {
 						byte[] output = this.invokeAction(session);
 						if (output != null && output.length > 0) {
 							session.getExchange().getOutputStream().write(output);
@@ -73,7 +73,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 					this.handleExceptionExchange(session, e, e.getStatus().getCode());
 				} catch (Exception e) {
 					Throwable cause = e.getCause();
-					if(cause != null && HttpException.class.isAssignableFrom(cause.getClass())) {
+					if (cause != null && HttpException.class.isAssignableFrom(cause.getClass())) {
 						HttpException exception = (HttpException) e.getCause();
 						this.handleExceptionExchange(session, exception, exception.getStatus().getCode());
 					} else {
@@ -120,7 +120,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 		Method action = endpoint.getAction();
 
 		AbstractController controller;
-		if(this.controllers.containsKey(action.getDeclaringClass()))
+		if (this.controllers.containsKey(action.getDeclaringClass()))
 			controller = this.controllers.get(action.getDeclaringClass());
 		else {
 			controller = (AbstractController) ReflectionUtils.safeConstruct(action.getDeclaringClass());
@@ -130,7 +130,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 
 		List<Object> params = session.getEndpoint().getArguments(session);
 		if (endpoint.getMethod().acceptBody() && endpoint.getBodyType() != null) params.add(0, endpoint.getBody());
-		Object result =  action.invoke(controller, params.toArray());
+		Object result = action.invoke(controller, params.toArray());
 
 		if (endpoint.getReturnType().equals(byte[].class)) {
 			return (byte[]) result;
@@ -143,7 +143,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 			BodyInformation information = new BodyInformation(pType.getActualTypeArguments(), (Class) pType.getRawType(), session);
 			return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
 		} else {
-			BodyInformation information = new BodyInformation(new Type[] { endpoint.getReturnType() }, null, session);
+			BodyInformation information = new BodyInformation(new Type[]{endpoint.getReturnType()}, null, session);
 			return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
 		}
 	}
@@ -152,11 +152,12 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 	private void handleExceptionExchange(HttpSession session, Exception e, int code) {
 		try {
 			session.getExchange().setStatusCode(code);
-			if(session.getRequestMethod().acceptBody()) {
+			if (session.getRequestMethod().acceptBody()) {
 				session.getExchange().getOutputStream().write(((String) session.getExceptionParser().unparse(session, e)).getBytes(Charsets.UTF_8));
 			}
 			this.chainException(session, e);
-		} catch (IOException ignored) {}
+		} catch (IOException ignored) {
+		}
 	}
 
 }

@@ -1,24 +1,31 @@
 package com.binarskugga.skuggahttps.api.impl.endpoint;
 
-import com.binarskugga.skuggahttps.api.annotation.*;
+import com.binarskugga.skuggahttps.api.annotation.ContentType;
+import com.binarskugga.skuggahttps.api.annotation.Controller;
+import com.binarskugga.skuggahttps.api.annotation.Get;
+import com.binarskugga.skuggahttps.api.annotation.Post;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
-import com.binarskugga.skuggahttps.impl.*;
+import com.binarskugga.skuggahttps.impl.TokenController;
 import com.binarskugga.skuggahttps.util.EndpointUtils;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import com.google.common.flogger.FluentLogger;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import org.reflections.Reflections;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EndpointResolver {
 
 	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
-	@Getter private List<Endpoint> endpoints;
-	@Getter private List<Endpoint> socketCallbacks;
+	@Getter
+	private List<Endpoint> endpoints;
+	@Getter
+	private List<Endpoint> socketCallbacks;
 
 	@SuppressWarnings("unchecked")
 	public EndpointResolver(String controllerPackage, String root) {
@@ -27,21 +34,21 @@ public class EndpointResolver {
 
 		Reflections reflections = new Reflections(controllerPackage);
 		Set<Class<? extends AbstractController>> controllers = reflections.getTypesAnnotatedWith(Controller.class).stream()
-				.filter(AbstractController.class::isAssignableFrom).map(c -> (Class<? extends AbstractController>)c)
+				.filter(AbstractController.class::isAssignableFrom).map(c -> (Class<? extends AbstractController>) c)
 				.collect(Collectors.toSet());
 
 		this.registerController(root, TokenController.class);
-		for(Class<? extends AbstractController> controller : controllers) {
+		for (Class<? extends AbstractController> controller : controllers) {
 			this.registerController(root, controller);
 		}
 	}
 
 	public Endpoint getEndpoint(String search, HttpMethod method) {
 		String sanitizedSearch = EndpointUtils.sanitizePath(search);
-		for(Endpoint entry : this.endpoints) {
-			if(entry.getMethod() != method && method != HttpMethod.OPTIONS) continue;
-			if(this.matchEndpoint(entry.getRoute(), sanitizedSearch)) {
-				return  entry;
+		for (Endpoint entry : this.endpoints) {
+			if (entry.getMethod() != method && method != HttpMethod.OPTIONS) continue;
+			if (this.matchEndpoint(entry.getRoute(), sanitizedSearch)) {
+				return entry;
 			}
 		}
 		return null;
@@ -51,14 +58,14 @@ public class EndpointResolver {
 		String[] brokenEndpoint = endpoint.split("/");
 		String[] brokenRequest = request.split("/");
 
-		if(brokenEndpoint.length != brokenRequest.length) {
+		if (brokenEndpoint.length != brokenRequest.length) {
 			return false;
 		}
 
-		for(int i = 0; i < brokenEndpoint.length; i++) {
+		for (int i = 0; i < brokenEndpoint.length; i++) {
 			String part = brokenEndpoint[i];
-			if(!part.equals("$"))
-				if(!part.equals(brokenRequest[i]))
+			if (!part.equals("$"))
+				if (!part.equals(brokenRequest[i]))
 					return false;
 		}
 		return true;
@@ -69,10 +76,10 @@ public class EndpointResolver {
 
 		List<Method> methods = ReflectionUtils.getAllMethods(controller).stream().filter(m ->
 				(m.isAnnotationPresent(Get.class) || m.isAnnotationPresent(Post.class))
-				&& !Modifier.isVolatile(m.getModifiers())
+						&& !Modifier.isVolatile(m.getModifiers())
 		).collect(Collectors.toList());
 
-		for(Method method : methods) {
+		for (Method method : methods) {
 			method.setAccessible(true);
 
 			Endpoint endpoint = new Endpoint();
@@ -84,7 +91,7 @@ public class EndpointResolver {
 								: method.getAnnotation(Get.class).value());
 				endpoint.setMethod(HttpMethod.GET);
 				endpoint.setReturnType(method.getGenericReturnType());
-			} else if(method.isAnnotationPresent(Post.class)) {
+			} else if (method.isAnnotationPresent(Post.class)) {
 				methodPath =
 						controllerPath + "/" + (method.getAnnotation(Post.class).value().equals("")
 								? method.getName().replaceAll("_", "/")
@@ -98,7 +105,7 @@ public class EndpointResolver {
 					logger.atWarning().log("POST endpoint without body ! (" + methodPath + ")");
 			}
 
-			if(method.isAnnotationPresent(ContentType.class)) {
+			if (method.isAnnotationPresent(ContentType.class)) {
 				ContentType contentType = method.getAnnotation(ContentType.class);
 				endpoint.setContentType(contentType.value());
 			}

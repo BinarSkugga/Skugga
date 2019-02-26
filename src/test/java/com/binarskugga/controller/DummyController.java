@@ -1,7 +1,9 @@
 package com.binarskugga.controller;
 
 import com.binarskugga.model.TestModel;
-import com.binarskugga.skuggahttps.api.annotation.*;
+import com.binarskugga.skuggahttps.api.annotation.Controller;
+import com.binarskugga.skuggahttps.api.annotation.Get;
+import com.binarskugga.skuggahttps.api.annotation.Post;
 import com.binarskugga.skuggahttps.api.impl.endpoint.AbstractController;
 import com.binarskugga.skuggahttps.api.impl.parse.MapParser;
 import com.binarskugga.skuggahttps.util.EntityUtils;

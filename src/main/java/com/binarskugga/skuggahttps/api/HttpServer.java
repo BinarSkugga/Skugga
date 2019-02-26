@@ -3,6 +3,7 @@ package com.binarskugga.skuggahttps.api;
 public interface HttpServer {
 
 	void start();
+
 	int stop();
 
 	default int restart() {

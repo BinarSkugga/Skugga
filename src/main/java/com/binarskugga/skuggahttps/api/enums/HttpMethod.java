@@ -19,18 +19,18 @@ public enum HttpMethod {
 		this.acceptBody = acceptBody;
 	}
 
-	public boolean acceptBody() {
-		return acceptBody;
-	}
-
 	public static HttpMethod fromMethodString(String str) {
-		for(HttpMethod m : HttpMethod.values())
-			if(m.name().equalsIgnoreCase(str)) return m;
+		for (HttpMethod m : HttpMethod.values())
+			if (m.name().equalsIgnoreCase(str)) return m;
 		return null;
 	}
 
 	public static String toHeaderListString(List<HttpMethod> headers) {
 		return Joiner.on(",").join(headers.stream().map(HttpMethod::name).collect(Collectors.toList()));
+	}
+
+	public boolean acceptBody() {
+		return acceptBody;
 	}
 
 }

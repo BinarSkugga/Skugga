@@ -15,25 +15,39 @@ import java.util.stream.Stream;
 
 public class ServerProperties {
 
-	@Getter private static String protocol;
-	@Getter private static String ip;
-	@Getter private static int port;
-	@Getter private static String root;
+	@Getter
+	private static String protocol;
+	@Getter
+	private static String ip;
+	@Getter
+	private static int port;
+	@Getter
+	private static String root;
 
-	@Getter private static String rootPackage;
-	@Getter private static String controllerPackage;
-	@Getter private static String modelPackage;
-	@Getter private static Class<? extends Token> tokenClass;
+	@Getter
+	private static String rootPackage;
+	@Getter
+	private static String controllerPackage;
+	@Getter
+	private static String modelPackage;
+	@Getter
+	private static Class<? extends Token> tokenClass;
 
-	@Getter private static String contentType;
-	@Getter private static String allowedOrigin;
-	@Getter private static boolean allowedCredentials;
-	@Getter private static List<HttpMethod> allowedMethods;
-	@Getter private static List<HttpHeader> allowedHeaders;
+	@Getter
+	private static String contentType;
+	@Getter
+	private static String allowedOrigin;
+	@Getter
+	private static boolean allowedCredentials;
+	@Getter
+	private static List<HttpMethod> allowedMethods;
+	@Getter
+	private static List<HttpHeader> allowedHeaders;
 
 	private static Properties properties;
 
-	private ServerProperties() {}
+	private ServerProperties() {
+	}
 
 	@SuppressWarnings("unchecked")
 	public static void load(InputStream stream) {
@@ -51,8 +65,8 @@ public class ServerProperties {
 			modelPackage = getString("server.config.model-package", "");
 
 			Reflections reflections = new Reflections(rootPackage);
-			for(Class<? extends Token> token : reflections.getSubTypesOf(Token.class)) {
-				if(token.isAnnotationPresent(com.binarskugga.skuggahttps.api.annotation.Token.class))
+			for (Class<? extends Token> token : reflections.getSubTypesOf(Token.class)) {
+				if (token.isAnnotationPresent(com.binarskugga.skuggahttps.api.annotation.Token.class))
 					tokenClass = token;
 			}
 
@@ -61,12 +75,14 @@ public class ServerProperties {
 			allowedCredentials = Boolean.parseBoolean(getString("server.cors.allowed-credentials", "false"));
 
 			String methods = getString("server.cors.allowed-methods", "*");
-			if(methods.equalsIgnoreCase("*")) allowedMethods = new ArrayList<>();
-			else allowedMethods = Stream.of(methods.split(",")).map(s -> HttpMethod.fromMethodString(s.trim())).collect(Collectors.toList());
+			if (methods.equalsIgnoreCase("*")) allowedMethods = new ArrayList<>();
+			else
+				allowedMethods = Stream.of(methods.split(",")).map(s -> HttpMethod.fromMethodString(s.trim())).collect(Collectors.toList());
 
 			String headers = getString("server.cors.allowed-headers", "*");
-			if(headers.equalsIgnoreCase("*")) allowedHeaders = new ArrayList<>();
-			else allowedHeaders = Stream.of(headers.split(",")).map(s -> HttpHeader.fromHeaderString(s.trim())).collect(Collectors.toList());
+			if (headers.equalsIgnoreCase("*")) allowedHeaders = new ArrayList<>();
+			else
+				allowedHeaders = Stream.of(headers.split(",")).map(s -> HttpHeader.fromHeaderString(s.trim())).collect(Collectors.toList());
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(-1);

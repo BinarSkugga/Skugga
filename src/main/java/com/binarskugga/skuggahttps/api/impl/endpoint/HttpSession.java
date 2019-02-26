@@ -23,29 +23,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Builder
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class HttpSession {
 
-	@Getter private HttpServerExchange exchange;
+	@Getter
+	private HttpServerExchange exchange;
 
-	@Getter @Setter private Endpoint endpoint;
+	@Getter
+	@Setter
+	private Endpoint endpoint;
 
-	@Getter private Map<HttpHeader, HeaderValues> requestHeaders;
-	@Getter private Map<HttpHeader, HeaderValues> responseHeaders;
+	@Getter
+	private Map<HttpHeader, HeaderValues> requestHeaders;
+	@Getter
+	private Map<HttpHeader, HeaderValues> responseHeaders;
 
-	@Getter private Map<String, Cookie> requestCookies;
-	@Getter private Map<String, Cookie> responseCookies;
+	@Getter
+	private Map<String, Cookie> requestCookies;
+	@Getter
+	private Map<String, Cookie> responseCookies;
 
-	@Getter @Setter private Token token;
+	@Getter
+	@Setter
+	private Token token;
 
 	public HttpSession(HttpServerExchange exchange) throws Exception {
 		this.exchange = exchange;
 
 		this.responseHeaders = new HashMap<>();
 		this.requestHeaders = new HashMap<>();
-		for(HeaderValues hv : exchange.getRequestHeaders()) {
+		for (HeaderValues hv : exchange.getRequestHeaders()) {
 			HttpHeader header = HttpHeader.fromHeaderString(hv.getHeaderName().toString());
-			if(header != null && header.getType() != HeaderType.RESPONSE)
+			if (header != null && header.getType() != HeaderType.RESPONSE)
 				this.requestHeaders.put(header, hv);
 		}
 
@@ -55,18 +65,18 @@ public class HttpSession {
 
 	public void apply() {
 		this.responseHeaders.put(HttpHeader.CONTENT_TYPE, HeaderValuesFactory.create(HttpHeader.CONTENT_TYPE.getHeader(), this.getContentType()));
-		for(Map.Entry<HttpHeader, HeaderValues> header : this.responseHeaders.entrySet()) {
+		for (Map.Entry<HttpHeader, HeaderValues> header : this.responseHeaders.entrySet()) {
 			String[] values = header.getValue().toArray();
 			exchange.getResponseHeaders().addAll(new HttpString(header.getKey().getHeader()), Arrays.asList(values));
 		}
 
-		for(Map.Entry<String, Cookie> cookie : this.responseCookies.entrySet()) {
+		for (Map.Entry<String, Cookie> cookie : this.responseCookies.entrySet()) {
 			exchange.getResponseCookies().put(cookie.getKey(), cookie.getValue());
 		}
 	}
 
 	public String getContentType() {
-		if(endpoint == null) return ServerProperties.getContentType();
+		if (endpoint == null) return ServerProperties.getContentType();
 		return this.endpoint.getContentType();
 	}
 
@@ -76,7 +86,7 @@ public class HttpSession {
 
 	@SuppressWarnings("unchecked")
 	public <T extends BodyParser> T getBodyParser() {
-		if(this.endpoint != null) {
+		if (this.endpoint != null) {
 			return (T) new BodyParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
 		} else {
 			return (T) new ExceptionParsingHandler().getParsers().get(0);
@@ -85,7 +95,7 @@ public class HttpSession {
 
 	@SuppressWarnings("unchecked")
 	public <T extends ExceptionParser> T getExceptionParser() {
-		if(this.endpoint != null) {
+		if (this.endpoint != null) {
 			return (T) new ExceptionParsingHandler().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
 		} else {
 			return (T) new ExceptionParsingHandler().getParsers().get(0);

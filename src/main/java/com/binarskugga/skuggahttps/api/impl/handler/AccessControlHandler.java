@@ -24,33 +24,33 @@ public class AccessControlHandler implements RequestHandler {
 		Map<HttpHeader, HeaderValues> resHeaders = session.getResponseHeaders();
 
 		// NO ENDPOINT
-		if(session.getEndpoint() == null)
+		if (session.getEndpoint() == null)
 			throw new BadRequestException("Endpoint doesn't exists.");
 
 		// CLOSED ENDPOINT
-		if(session.getEndpoint().getAction().isAnnotationPresent(Closed.class))
+		if (session.getEndpoint().getAction().isAnnotationPresent(Closed.class))
 			throw new ClosedEndpointException();
 
 		// CORS
 		resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_ORIGIN,
 				HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_ORIGIN.getHeader(), ServerProperties.getAllowedOrigin()));
 
-		if(ServerProperties.isAllowedCredentials()) {
+		if (ServerProperties.isAllowedCredentials()) {
 			resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_CREDENTIALS,
 					HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_CREDENTIALS.getHeader(), ServerProperties.isAllowedCredentials()));
 		}
 
 		// UN-ALLOWED METHOD
-		if(session.getRequestMethod() != HttpMethod.OPTIONS
+		if (session.getRequestMethod() != HttpMethod.OPTIONS
 				&& ServerProperties.getAllowedMethods().size() > 0 && !ServerProperties.getAllowedMethods().contains(session.getRequestMethod()))
 			throw new MethodNotAllowedException("Http method " + session.getRequestMethod().name() + " not allowed.");
 
-		if(session.getRequestMethod() != HttpMethod.OPTIONS && session.getRequestMethod() != session.getEndpoint().getMethod())
+		if (session.getRequestMethod() != HttpMethod.OPTIONS && session.getRequestMethod() != session.getEndpoint().getMethod())
 			throw new MethodNotAllowedException("Http method " + session.getRequestMethod().name() + " not allowed for this endpoint.");
 
 		// OPTIONS RESPONSE
-		if(session.getRequestMethod() == HttpMethod.OPTIONS) {
-			if(ServerProperties.getAllowedMethods().size() > 0) {
+		if (session.getRequestMethod() == HttpMethod.OPTIONS) {
+			if (ServerProperties.getAllowedMethods().size() > 0) {
 				resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_METHODS,
 						HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_METHODS.getHeader(),
 								HttpMethod.toHeaderListString(ServerProperties.getAllowedMethods())));
@@ -60,7 +60,7 @@ public class AccessControlHandler implements RequestHandler {
 								HttpMethod.toHeaderListString(Arrays.asList(HttpMethod.values()))));
 			}
 
-			if(ServerProperties.getAllowedHeaders().size() > 0) {
+			if (ServerProperties.getAllowedHeaders().size() > 0) {
 				resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_HEADERS,
 						HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_METHODS.getHeader(),
 								HttpHeader.toHeaderListString(ServerProperties.getAllowedHeaders())));

@@ -27,7 +27,7 @@ public class MoshiExceptionParser implements ExceptionParser<String> {
 		data.put("code", session.getExchange().getStatusCode());
 		data.put("type", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, throwable.getClass().getSimpleName()));
 
-		if(HttpException.class.isAssignableFrom(throwable.getClass())) {
+		if (HttpException.class.isAssignableFrom(throwable.getClass())) {
 			HttpException exception = (HttpException) throwable;
 			data.put("caption", exception.getMessage());
 		}

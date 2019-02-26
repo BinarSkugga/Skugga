@@ -13,7 +13,7 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 
 	@Override
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
-		if(Collection.class.isAssignableFrom(value.getClass())) {
+		if (Collection.class.isAssignableFrom(value.getClass())) {
 			if (field.getType().equals(byte[].class))
 				return ArrayUtils.toPrimitive(((Collection<Byte>) value).toArray(new Byte[0]));
 			else if (field.getType().equals(short[].class))

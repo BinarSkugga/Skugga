@@ -11,11 +11,11 @@ public class StringArrayParser implements FieldParser<CharSequence[], Object> {
 
 	@Override
 	public CharSequence[] parse(Field field, Object value) throws CannotMapFieldException {
-		if(value.getClass().equals(CharSequence[].class))
+		if (value.getClass().equals(CharSequence[].class))
 			return (CharSequence[]) value;
-		else if(Collection.class.isAssignableFrom(value.getClass()))
+		else if (Collection.class.isAssignableFrom(value.getClass()))
 			return (CharSequence[]) ((Collection) value).stream().map(Object::toString).toArray(String[]::new);
-		else if(CharSequence.class.isAssignableFrom(value.getClass()))
+		else if (CharSequence.class.isAssignableFrom(value.getClass()))
 			return ((CharSequence) value).toString().split(",");
 		else
 			throw new CannotMapFieldException();

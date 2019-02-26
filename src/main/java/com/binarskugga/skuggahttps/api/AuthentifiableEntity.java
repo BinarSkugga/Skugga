@@ -8,9 +8,11 @@ import java.util.Date;
 public interface AuthentifiableEntity<E extends AuthentifiableEntity, I extends Serializable> extends BaseEntity<I> {
 
 	String getAuthentifier();
+
 	E setAuthentifier(String authentifier);
 
 	Role getRole();
+
 	E setRole(Role role);
 
 	default String getRoleName() {
@@ -18,12 +20,15 @@ public interface AuthentifiableEntity<E extends AuthentifiableEntity, I extends 
 	}
 
 	String getPasswordHash();
+
 	E setPasswordHash(String paswordHash);
 
 	String getPasswordSalt();
+
 	E setPasswordSalt(String salt);
 
 	long getLastPasswordChange();
+
 	E setLastPasswordChange(long newDate);
 
 	@SuppressWarnings("unchecked")

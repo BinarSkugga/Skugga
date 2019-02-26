@@ -1,15 +1,17 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.*;
-import com.googlecode.objectify.*;
-import com.googlecode.objectify.cmd.*;
-import org.bson.types.*;
+import com.binarskugga.skuggahttps.api.BaseEntity;
+import com.binarskugga.skuggahttps.api.DataRepository;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.LoadType;
+import com.googlecode.objectify.cmd.QueryExecute;
+import org.bson.types.ObjectId;
 
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static com.googlecode.objectify.ObjectifyService.*;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 public class ObjectifyRepository<T extends BaseEntity<String>> implements DataRepository<String, String, T, LoadType<T>> {
 
@@ -27,28 +29,28 @@ public class ObjectifyRepository<T extends BaseEntity<String>> implements DataRe
 	@Override
 	public T load(String id) {
 		T entity = ofy().load().key(Key.create(this.clazz, id)).now();
-		if(entity != null) entity.onLoaded();
+		if (entity != null) entity.onLoaded();
 		return entity;
 	}
 
 	@Override
 	public T load(String column, Object value) {
 		T entity = ofy().load().type(this.clazz).filter(column, value).first().now();
-		if(entity != null) entity.onLoaded();
+		if (entity != null) entity.onLoaded();
 		return entity;
 	}
 
 	@Override
 	public T load(Function<LoadType<T>, T> filter) {
 		T entity = filter.apply(ofy().load().type(this.clazz));
-		if(entity != null) entity.onLoaded();
+		if (entity != null) entity.onLoaded();
 		return entity;
 	}
 
 	@Override
 	public List<T> loadList(Function<LoadType<T>, List<T>> filter) {
 		List<T> entities = filter.apply(ofy().load().type(this.clazz));
-		if(entities.size() > 0) entities.forEach(BaseEntity::onLoaded);
+		if (entities.size() > 0) entities.forEach(BaseEntity::onLoaded);
 		return entities;
 	}
 
@@ -56,7 +58,7 @@ public class ObjectifyRepository<T extends BaseEntity<String>> implements DataRe
 	public List<T> loadIdsList(List<String> ids) {
 		List<Key<T>> keys = ids.stream().map(i -> Key.create(this.clazz, i)).collect(Collectors.toList());
 		List<T> entities = (List<T>) ofy().load().keys(keys).values();
-		if(entities.size() > 0) entities.forEach(BaseEntity::onLoaded);
+		if (entities.size() > 0) entities.forEach(BaseEntity::onLoaded);
 		return entities;
 	}
 
@@ -67,24 +69,24 @@ public class ObjectifyRepository<T extends BaseEntity<String>> implements DataRe
 
 	@Override
 	public T save(boolean update, T entity) {
-		if(update) entity.onUpdate();
+		if (update) entity.onUpdate();
 		else entity.onCreate();
 
 		ofy().save().entity(entity).now();
 
-		if(update) entity.onUpdated();
+		if (update) entity.onUpdated();
 		else entity.onCreated();
 		return entity;
 	}
 
 	@Override
 	public List<T> saveList(boolean update, List<T> entities) {
-		if(update) entities.forEach(BaseEntity::onUpdate);
+		if (update) entities.forEach(BaseEntity::onUpdate);
 		else entities.forEach(BaseEntity::onCreate);
 
 		ofy().save().entities(entities).now();
 
-		if(update) entities.forEach(BaseEntity::onUpdated);
+		if (update) entities.forEach(BaseEntity::onUpdated);
 		else entities.forEach(BaseEntity::onCreated);
 		return entities;
 	}

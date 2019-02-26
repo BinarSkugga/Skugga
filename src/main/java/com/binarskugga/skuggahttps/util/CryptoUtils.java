@@ -13,7 +13,7 @@ import javax.crypto.SecretKey;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
-import java.security.*;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,14 +21,15 @@ public class CryptoUtils {
 
 	private static final String SALT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!/$%?&*()_-+=[]{}";
 	private static final SecureRandom SRAND = new SecureRandom();
-	private static Map<String, SecretKey> keyCache = new HashMap<>();
 	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+	private static Map<String, SecretKey> keyCache = new HashMap<>();
 
-	private CryptoUtils() {}
+	private CryptoUtils() {
+	}
 
 	public static String salt(int length) {
 		StringBuilder sb = new StringBuilder(length);
-		for(int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++) {
 			int index = SRAND.nextInt(SALT_CHARACTERS.length());
 			sb.append(SALT_CHARACTERS.charAt(index));
 		}
@@ -46,7 +47,7 @@ public class CryptoUtils {
 
 	public static void createKeysIfNotExists(String... names) {
 		boolean created = false;
-		for(String name : names) {
+		for (String name : names) {
 			try {
 				File file = ResourceUtils.getResourceFile(name + ".key");
 				if (!file.exists() && file.createNewFile()) {
@@ -61,7 +62,7 @@ public class CryptoUtils {
 				e.printStackTrace();
 			}
 		}
-		if(created) {
+		if (created) {
 			logger.atInfo().log("Signing keys were generated restart needed.");
 			System.exit(0);
 		}
@@ -69,7 +70,7 @@ public class CryptoUtils {
 
 	public static SecretKey getKey(String name) {
 		name += ".key";
-		if(keyCache.containsKey(name)) return keyCache.get(name);
+		if (keyCache.containsKey(name)) return keyCache.get(name);
 		else {
 			SecretKey key = null;
 

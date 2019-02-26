@@ -31,9 +31,12 @@ public enum HttpStatus {
 	NOT_IMPLEMENTED(true, 501, "501 Not Implemented"),
 	UNAVAILABLE(true, 503, "503 Service Unavailable");
 
-	@Getter private boolean error;
-	@Getter private int code;
-	@Getter private String caption;
+	@Getter
+	private boolean error;
+	@Getter
+	private int code;
+	@Getter
+	private String caption;
 
 	HttpStatus(boolean error, int code, String caption) {
 		this.error = error;
@@ -42,8 +45,8 @@ public enum HttpStatus {
 	}
 
 	public static HttpStatus fromCode(int code) {
-		for(HttpStatus status: HttpStatus.values()) {
-			if(status.getCode() == code) return status;
+		for (HttpStatus status : HttpStatus.values()) {
+			if (status.getCode() == code) return status;
 		}
 		return null;
 	}

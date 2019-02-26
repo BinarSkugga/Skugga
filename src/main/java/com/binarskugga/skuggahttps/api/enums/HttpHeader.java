@@ -64,8 +64,10 @@ public enum HttpHeader {
 	ALT_SVC("Alt-Svc"), DATE("Date"), LARGE_ALLOCATION("Large-Allocation", RESPONSE),
 	RETRY_AFTER("Retry-After", RESPONSE), SERVER_TIMING("Server-Timing", RESPONSE), SOURCEMAP("SourceMap", RESPONSE);
 
-	@Getter private String header;
-	@Getter private HeaderType type;
+	@Getter
+	private String header;
+	@Getter
+	private HeaderType type;
 
 	HttpHeader(String header, HeaderType type) {
 		this.header = header;
@@ -78,16 +80,16 @@ public enum HttpHeader {
 	}
 
 	public static HttpHeader fromHeaderString(String str) {
-		for(HttpHeader hh : HttpHeader.values())
-			if(hh.getHeader().equalsIgnoreCase(str)) return hh;
+		for (HttpHeader hh : HttpHeader.values())
+			if (hh.getHeader().equalsIgnoreCase(str)) return hh;
 		return null;
 	}
 
 	public static List<HttpHeader> fromHeaderTypes(HeaderType... types) {
 		List<HttpHeader> headers = new ArrayList<>();
 		List<HeaderType> lstTypes = Arrays.asList(types);
-		for(HttpHeader hh : HttpHeader.values())
-			if(lstTypes.contains(hh.getType())) headers.add(hh);
+		for (HttpHeader hh : HttpHeader.values())
+			if (lstTypes.contains(hh.getType())) headers.add(hh);
 		return headers;
 	}
 

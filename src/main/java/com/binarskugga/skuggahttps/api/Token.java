@@ -34,15 +34,23 @@ public interface Token {
 	}
 
 	String getAuthentifier();
+
 	void setAuthentifier(String authentifier);
+
 	long getExpires();
+
 	void setExpires(long expires);
+
 	String getIssuer();
+
 	void setIssuer(String issuer);
-	void setLTT(boolean ltt);
+
 	boolean isLTT();
 
+	void setLTT(boolean ltt);
+
 	Role getRole();
+
 	<AR extends Role> void setRole(AR role);
 
 }

@@ -5,7 +5,8 @@ import java.io.InputStream;
 
 public class ResourceUtils {
 
-	private ResourceUtils() {}
+	private ResourceUtils() {
+	}
 
 	public static File getResourceFile(String name) {
 		File file = new File("src/main/java/resources/" + name);

@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 
 public abstract class AuthController extends AbstractController {
 
-	@Getter private DataRepository authRepository;
-	@Getter private Class<? extends Token> tokenClass;
+	@Getter
+	private DataRepository authRepository;
+	@Getter
+	private Class<? extends Token> tokenClass;
 
 	@Override
 	public AbstractController setSession(HttpSession session) {
@@ -23,8 +25,8 @@ public abstract class AuthController extends AbstractController {
 		Class<? extends AuthentifiableEntity> authenticatorClass = reflections.getSubTypesOf(AuthentifiableEntity.class).stream()
 				.filter(c -> ReflectionUtils.getClassAnnotationOrNull(c, Authenticator.class) != null)
 				.collect(Collectors.toList()).get(0);
-		if(authenticatorClass != null) {
-			Class<? extends DataRepository> repositoryClass = ReflectionUtils.getClassAnnotationOrNull(authenticatorClass, Authenticator.class).repository();
+		if (authenticatorClass != null) {
+			Class<? extends DataRepository> repositoryClass = authenticatorClass.getAnnotation(Authenticator.class).value();
 			this.authRepository = ReflectionUtils.constructOrNull(repositoryClass, authenticatorClass);
 			this.tokenClass = ServerProperties.getTokenClass();
 		}

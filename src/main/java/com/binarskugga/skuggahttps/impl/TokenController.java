@@ -18,17 +18,18 @@ import java.util.Map;
 @Controller("token")
 public class TokenController extends AuthController {
 
-	@SuppressWarnings("unchecked") @Post
+	@SuppressWarnings("unchecked")
+	@Post
 	public String ltt(Map<String, Object> loginMap) {
 		Login login = (Login) MapParser.parse(Arrays.asList(Login.class.getDeclaredFields()), loginMap);
-		if(login == null)
+		if (login == null)
 			throw new InvalidArgumentException();
 
 		AuthentifiableEntity entity = (AuthentifiableEntity) this.getAuthRepository().load("authentifier", login.getAuthentifier());
 
-		if(entity == null)
+		if (entity == null)
 			throw new EntityInexistantException();
-		if(!entity.validatePassword(login.getPassword()))
+		if (!entity.validatePassword(login.getPassword()))
 			throw new LoginException();
 
 		Token token = ReflectionUtils.constructOrNull(this.getTokenClass());
@@ -37,18 +38,19 @@ public class TokenController extends AuthController {
 		return token.generate();
 	}
 
-	@SuppressWarnings("unchecked") @Post
+	@SuppressWarnings("unchecked")
+	@Post
 	public String stt(String ltt) {
 		Token token = ReflectionUtils.constructOrNull(this.getTokenClass());
-		if(token == null)
+		if (token == null)
 			throw new InvalidTokenException();
 
 		token.parse(ltt);
-		if(!token.isLTT())
+		if (!token.isLTT())
 			throw new InvalidTokenException();
 
 		AuthentifiableEntity entity = (AuthentifiableEntity) this.getAuthRepository().load("authentifier", token.getAuthentifier());
-		if(entity == null)
+		if (entity == null)
 			throw new EntityInexistantException();
 
 		token.setAuthentifier(entity.getAuthentifier());

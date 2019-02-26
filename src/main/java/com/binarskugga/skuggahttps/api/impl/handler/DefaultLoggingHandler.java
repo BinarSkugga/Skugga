@@ -23,7 +23,7 @@ public class DefaultLoggingHandler implements RequestHandler {
 
 	@Override
 	public void handleException(HttpSession session, Exception e) {
-		if(HttpException.class.isAssignableFrom(e.getClass())) {
+		if (HttpException.class.isAssignableFrom(e.getClass())) {
 			logger.atWarning().log(session.getRequestMethod() + " " + session.getExchange().getRequestPath() + ": " + e.getMessage());
 		} else {
 			if (e.getMessage() != null)

@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
 public @interface Creatable {
 
 	// Defaults to the connected value of the endpoint.
-	String[] roles() default { "*" };
+	String[] roles() default {"*"};
+
 	InclusionMode inclusion() default InclusionMode.INCLUDE;
 
 }
