@@ -8,100 +8,76 @@ import com.binarskugga.skuggahttps.api.enums.HttpHeader;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
 import com.binarskugga.skuggahttps.api.exception.NoDefaultBodyParserException;
 import com.binarskugga.skuggahttps.api.exception.NoDefaultExceptionParserException;
+import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
+import com.binarskugga.skuggahttps.api.impl.parse.BodyParsingHandler;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
-import com.binarskugga.skuggahttps.util.ResourceUtils;
 import lombok.Getter;
 
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ServerProperties {
 
-	@Getter private String protocol;
-	@Getter private String ip;
-	@Getter private int port;
-	@Getter private String root;
+	@Getter private static String protocol;
+	@Getter private static String ip;
+	@Getter private static int port;
+	@Getter private static String root;
 
-	@Getter private String modelPackage;
-	@Getter private String controllerPackage;
-	@Getter private Class<? extends Token> tokenClass;
+	@Getter private static String controllerPackage;
+	@Getter private static String modelPackage;
+	@Getter private static Class<? extends Token> tokenClass;
 
-	@Getter private String defaultContentType;
-	@Getter private Map<String, Class<? extends BodyParser>> parsers;
-	@Getter private Map<String, Class<? extends ExceptionParser>> exceptionParsers;
+	@Getter private static String contentType;
+	@Getter private static String allowedOrigin;
+	@Getter private static boolean allowedCredentials;
+	@Getter private static List<HttpMethod> allowedMethods;
+	@Getter private static List<HttpHeader> allowedHeaders;
 
-	@Getter private String allowedOrigin;
-	@Getter private boolean allowedCredentials;
-	@Getter private List<HttpMethod> allowedMethods;
-	@Getter private List<HttpHeader> allowedHeaders;
+	private static Properties properties;
 
-	private Properties properties;
+	private ServerProperties() {};
 
 	@SuppressWarnings("unchecked")
-	public ServerProperties() {
+	public static void load(InputStream stream) {
 		try {
-			this.properties = new Properties();
-			this.properties.load(ResourceUtils.getCompiledResource("server.properties"));
+			properties = new Properties();
+			properties.load(stream);
 
-			this.protocol = (String) properties.getOrDefault("server.protocol", "http");
-			this.ip = (String) properties.getOrDefault("server.ip", "0.0.0.0");
-			this.port = Integer.parseInt((String) properties.getOrDefault("server.port", "8080"));
-			this.root = (String) properties.getOrDefault("server.root", "api");
+			protocol = getString("server.protocol", "http");
+			ip = getString("server.ip", "0.0.0.0");
+			port = Integer.parseInt(getString("server.port", "8080"));
+			root = getString("server.root", "api");
 
-			this.modelPackage = (String) properties.getOrDefault("server.config.model-package", "");
-			this.controllerPackage = (String) properties.getOrDefault("server.config.controller-package", "");
-			this.tokenClass = (Class<? extends Token>) Class.forName((String) properties.getOrDefault("server.config.token", ""));
-			this.defaultContentType = (String) properties.getOrDefault("server.config.default-content-type", "application/json");
+			tokenClass = (Class<? extends Token>) Class.forName(getString("server.config.token", ""));
+			controllerPackage =getString("server.config.controller-package", "");
+			modelPackage =getString("server.config.model-package", "");
 
-			this.parsers = new HashMap<>();
-			List<Class<? extends BodyParser>> parsersClass = Arrays.stream(((String)properties.getOrDefault("server.config.parsers", "")).split(","))
-					.map(ReflectionUtils::forNameOrNull).map(c -> (Class<? extends BodyParser>)c).collect(Collectors.toList());
-			for(Class<? extends BodyParser> clazz : parsersClass) {
-				ContentType contentType = ReflectionUtils.getClassAnnotationOrNull(clazz, ContentType.class);
-				String strCT = contentType == null ? this.defaultContentType : contentType.value();
-				if(!this.parsers.containsKey(strCT)) this.parsers.put(strCT, clazz);
-			}
-			if(this.getBodyParserClass(this.defaultContentType) == null)
-				throw new NoDefaultBodyParserException();
+			contentType = getString("server.config.content-type", "application/json");
 
-			this.exceptionParsers = new HashMap<>();
-			List<Class<? extends ExceptionParser>> exceptionParsersClass = Arrays.stream(((String)properties.getOrDefault("server.config.exception-parsers", "")).split(","))
-					.map(ReflectionUtils::forNameOrNull).map(c -> (Class<? extends ExceptionParser>)c).collect(Collectors.toList());
-			for(Class<? extends ExceptionParser> clazz : exceptionParsersClass) {
-				ContentType contentType = ReflectionUtils.getClassAnnotationOrNull(clazz, ContentType.class);
-				String strCT = contentType == null ? this.defaultContentType : contentType.value();
-				if(!this.exceptionParsers.containsKey(strCT)) this.exceptionParsers.put(strCT, clazz);
-			}
-			if(this.getExceptionParserClass(this.defaultContentType) == null)
-				throw new NoDefaultExceptionParserException();
+			allowedOrigin = getString("server.cors.allowed-origin", "*");
+			allowedCredentials = Boolean.parseBoolean(getString("server.cors.allowed-credentials", "false"));
 
-			this.allowedOrigin = (String) properties.getOrDefault("server.cors.allowed-origin", "*");
-			this.allowedCredentials = Boolean.parseBoolean((String) properties.getOrDefault("server.cors.allowed-credentials", "false"));
+			String methods = getString("server.cors.allowed-methods", "*");
+			if(methods.equalsIgnoreCase("*")) allowedMethods = new ArrayList<>();
+			else allowedMethods = Stream.of(methods.split(",")).map(s -> HttpMethod.fromMethodString(s.trim())).collect(Collectors.toList());
 
-			String methods = (String) properties.getOrDefault("server.cors.allowed-methods", "*");
-			if(methods.equalsIgnoreCase("*")) this.allowedMethods = new ArrayList<>();
-			else this.allowedMethods = Stream.of(methods.split(",")).map(s -> HttpMethod.fromMethodString(s.trim())).collect(Collectors.toList());
-
-			String headers = (String) properties.getOrDefault("server.cors.allowed-headers", "*");
-			if(headers.equalsIgnoreCase("*")) this.allowedHeaders = new ArrayList<>();
-			else this.allowedHeaders = Stream.of(headers.split(",")).map(s -> HttpHeader.fromHeaderString(s.trim())).collect(Collectors.toList());
+			String headers = getString("server.cors.allowed-headers", "*");
+			if(headers.equalsIgnoreCase("*")) allowedHeaders = new ArrayList<>();
+			else allowedHeaders = Stream.of(headers.split(",")).map(s -> HttpHeader.fromHeaderString(s.trim())).collect(Collectors.toList());
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
 	}
 
-	public Class<? extends BodyParser> getBodyParserClass(String contentType) {
-		return this.parsers.containsKey(contentType) ? this.parsers.get(contentType) : this.parsers.get(this.defaultContentType);
+	private static String getString(String key, Object def) {
+		return (String) properties.getOrDefault(key, def);
 	}
 
-	public Class<? extends ExceptionParser> getExceptionParserClass(String contentType) {
-		return this.exceptionParsers.containsKey(contentType) ? this.exceptionParsers.get(contentType) : this.exceptionParsers.get(this.defaultContentType);
-	}
-
-	public Object getOrDefault(String key, Object def) {
-		return this.properties.getOrDefault(key, def);
+	public static Object getOrDefault(String key, Object def) {
+		return properties.getOrDefault(key, def);
 	}
 
 }

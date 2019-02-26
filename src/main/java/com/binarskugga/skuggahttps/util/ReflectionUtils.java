@@ -60,6 +60,18 @@ public class ReflectionUtils {
 		else return param.getAnnotation(annotation);
 	}
 
+	public static <T extends Annotation> T getAnnotationOrNull(Object reflect, Class<T> annotation) {
+		if(Class.class.isAssignableFrom(reflect.getClass()))
+			return ReflectionUtils.getClassAnnotationOrNull((Class) reflect, annotation);
+		else if(Method.class.isAssignableFrom(reflect.getClass()))
+			return ReflectionUtils.getMethodAnnotationOrNull((Method) reflect, annotation);
+		else if(Field.class.isAssignableFrom(reflect.getClass()))
+			return ReflectionUtils.getFieldAnnotationOrNull((Field) reflect, annotation);
+		else if(Parameter.class.isAssignableFrom(reflect.getClass()))
+			return ReflectionUtils.getParamAnnotationOrNull((Parameter) reflect, annotation);
+		return null;
+	}
+
 	public static <T> T constructOrNull(Class<T> declaring, Object... arguments) {
 		try {
 			return safeConstruct(declaring, arguments);

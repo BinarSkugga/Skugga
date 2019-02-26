@@ -22,7 +22,6 @@ public class AccessControlHandler implements RequestHandler {
 	@Override
 	public boolean handle(HttpSession session) throws RuntimeException {
 		Map<HttpHeader, HeaderValues> resHeaders = session.getResponseHeaders();
-		ServerProperties properties = session.getServerProperties();
 
 		// NO ENDPOINT
 		if(session.getEndpoint() == null)
@@ -34,16 +33,16 @@ public class AccessControlHandler implements RequestHandler {
 
 		// CORS
 		resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_ORIGIN,
-				HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_ORIGIN.getHeader(), properties.getAllowedOrigin()));
+				HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_ORIGIN.getHeader(), ServerProperties.getAllowedOrigin()));
 
-		if(properties.isAllowedCredentials()) {
+		if(ServerProperties.isAllowedCredentials()) {
 			resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_CREDENTIALS,
-					HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_CREDENTIALS.getHeader(), properties.isAllowedCredentials()));
+					HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_CREDENTIALS.getHeader(), ServerProperties.isAllowedCredentials()));
 		}
 
 		// UN-ALLOWED METHOD
 		if(session.getRequestMethod() != HttpMethod.OPTIONS
-				&& properties.getAllowedMethods().size() > 0 && !properties.getAllowedMethods().contains(session.getRequestMethod()))
+				&& ServerProperties.getAllowedMethods().size() > 0 && !ServerProperties.getAllowedMethods().contains(session.getRequestMethod()))
 			throw new MethodNotAllowedException("Http method " + session.getRequestMethod().name() + " not allowed.");
 
 		if(session.getRequestMethod() != HttpMethod.OPTIONS && session.getRequestMethod() != session.getEndpoint().getMethod())
@@ -51,20 +50,20 @@ public class AccessControlHandler implements RequestHandler {
 
 		// OPTIONS RESPONSE
 		if(session.getRequestMethod() == HttpMethod.OPTIONS) {
-			if(properties.getAllowedMethods().size() > 0) {
+			if(ServerProperties.getAllowedMethods().size() > 0) {
 				resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_METHODS,
 						HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_METHODS.getHeader(),
-								HttpMethod.toHeaderListString(properties.getAllowedMethods())));
+								HttpMethod.toHeaderListString(ServerProperties.getAllowedMethods())));
 			} else {
 				resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_METHODS,
 						HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_METHODS.getHeader(),
 								HttpMethod.toHeaderListString(Arrays.asList(HttpMethod.values()))));
 			}
 
-			if(properties.getAllowedHeaders().size() > 0) {
+			if(ServerProperties.getAllowedHeaders().size() > 0) {
 				resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_HEADERS,
 						HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_METHODS.getHeader(),
-								HttpHeader.toHeaderListString(properties.getAllowedHeaders())));
+								HttpHeader.toHeaderListString(ServerProperties.getAllowedHeaders())));
 			} else {
 				resHeaders.putIfAbsent(HttpHeader.CORS_ALLOW_HEADERS,
 						HeaderValuesFactory.create(HttpHeader.CORS_ALLOW_METHODS.getHeader(),

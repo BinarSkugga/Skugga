@@ -5,6 +5,7 @@ import com.binarskugga.skuggahttps.api.Token;
 import com.binarskugga.skuggahttps.api.annotation.Connected;
 import com.binarskugga.skuggahttps.api.annotation.NotConnected;
 import com.binarskugga.skuggahttps.api.exception.auth.InsufficientRoleException;
+import com.binarskugga.skuggahttps.api.exception.auth.InvalidTokenException;
 import com.binarskugga.skuggahttps.api.impl.HttpSession;
 import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
@@ -28,8 +29,12 @@ public class AuthHandler implements RequestHandler {
 
 		List<String> roles = Arrays.stream(connected.roles()).map(String::toUpperCase).collect(Collectors.toList());
 		Token token = session.getToken();
+
 		if(token == null)
 			throw new InsufficientRoleException();
+
+		if(token.isLTT())
+			throw new InvalidTokenException();
 
 		if(!roles.contains("*") && !roles.contains(token.getRole().name().toUpperCase()))
 			throw new InsufficientRoleException();

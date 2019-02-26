@@ -2,9 +2,4 @@ package com.binarskugga.skuggahttps.api;
 
 import java.lang.reflect.Parameter;
 
-@FunctionalInterface
-public interface ParameterParser<T> {
-
-	T parse(Parameter parameter, String argument);
-
-}
+public interface ParameterParser<T, U> extends Parser<T, Parameter, U, Parameter> {}

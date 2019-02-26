@@ -8,12 +8,13 @@ import io.jsonwebtoken.Jwts;
 import java.io.Serializable;
 import java.util.Date;
 
-public interface Token<I extends Serializable> {
+public interface Token {
 
 	default String generate() {
 		return Jwts.builder()
 				.setHeaderParam("typ", "JWS")
-				.setSubject(this.getStringAuthentifier())
+				.claim("ltt", Boolean.toString(this.isLTT()))
+				.setSubject(this.getAuthentifier())
 				.setIssuer(this.getIssuer())
 				.setIssuedAt(new Date(this.getIssuedAt()))
 				.setExpiration(new Date(this.getExpires()))
@@ -27,16 +28,15 @@ public interface Token<I extends Serializable> {
 				.setSigningKey(CryptoUtils.getKey("token-sign.key"))
 				.parseClaimsJws(token);
 
-		this.setStringAuthentifier(data.getBody().getSubject());
+		this.setLTT(Boolean.parseBoolean((String) data.getBody().get("ltt")));
+		this.setAuthentifier(data.getBody().getSubject());
 		this.setIssuedAt(data.getBody().getIssuedAt().getTime());
 		this.setExpires(data.getBody().getExpiration().getTime());
 		this.setIssuer(data.getBody().getIssuer());
 	}
 
-	I getAuthentifier();
-	String getStringAuthentifier();
-	void setAuthentifier(I authentifier);
-	void setStringAuthentifier(String authentifier);
+	String getAuthentifier();
+	void setAuthentifier(String authentifier);
 	long getIssuedAt();
 	void setIssuedAt(long issuedAt);
 	long getExpires();
@@ -44,6 +44,7 @@ public interface Token<I extends Serializable> {
 	String getIssuer();
 	void setIssuer(String issuer);
 	void setLTT(boolean ltt);
+	boolean isLTT();
 
 	Role getRole();
 	<AR extends Role> void setRole(AR role);

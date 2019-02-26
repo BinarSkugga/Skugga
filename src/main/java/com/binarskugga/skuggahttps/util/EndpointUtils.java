@@ -1,5 +1,8 @@
 package com.binarskugga.skuggahttps.util;
 
+import com.binarskugga.skuggahttps.api.annotation.Controller;
+import com.binarskugga.skuggahttps.api.impl.endpoint.AbstractController;
+
 public class EndpointUtils {
 
 	private EndpointUtils() {}
@@ -12,6 +15,16 @@ public class EndpointUtils {
 			path = path.substring(1);
 		}
 		return path;
+	}
+
+	public static String getControllerPath(String root, Class<? extends AbstractController> controller) {
+		String controllerPath = controller.getAnnotation(Controller.class).value();
+		if(controllerPath.equals(""))
+			return root + "/" + controller.getSimpleName().toLowerCase();
+		else if(controllerPath.equals("."))
+			return "";
+		else
+			return root + "/" + controllerPath;
 	}
 
 }

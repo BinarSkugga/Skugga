@@ -1,6 +1,7 @@
 package com.binarskugga.skuggahttps.api.impl.handler;
 
 import com.binarskugga.skuggahttps.api.RequestHandler;
+import com.binarskugga.skuggahttps.api.exception.http.HttpException;
 import com.binarskugga.skuggahttps.api.impl.HttpSession;
 import com.google.common.flogger.FluentLogger;
 
@@ -17,15 +18,19 @@ public class DefaultLoggingHandler implements RequestHandler {
 
 	@Override
 	public void handlePostRequest(HttpSession session) {
-		logger.atInfo().log(session.getExchange().getRequestMethod() + " " + session.getExchange().getRequestPath() + ": Processed in " + (System.currentTimeMillis() - time) + "ms");
+		logger.atInfo().log(session.getRequestMethod() + " " + session.getExchange().getRequestPath() + ": Processed in " + (System.currentTimeMillis() - time) + "ms");
 	}
 
 	@Override
 	public void handleException(HttpSession session, Exception e) {
-		if(e.getMessage() != null)
-			logger.atInfo().log(session.getExchange().getRequestMethod() + " " + session.getExchange().getRequestPath() + ":" + e.getMessage());
-		else
-			logger.atSevere().withCause(e).log();
+		if(HttpException.class.isAssignableFrom(e.getClass())) {
+			logger.atWarning().log(session.getRequestMethod() + " " + session.getExchange().getRequestPath() + ": " + e.getMessage());
+		} else {
+			if (e.getMessage() != null)
+				logger.atSevere().withCause(e).log(session.getRequestMethod() + " " + session.getExchange().getRequestPath() + ": " + e.getMessage());
+			else
+				logger.atSevere().withCause(e).log();
+		}
 	}
 
 }

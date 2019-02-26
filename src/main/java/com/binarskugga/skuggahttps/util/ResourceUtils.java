@@ -21,4 +21,12 @@ public class ResourceUtils {
 		return ClassLoader.getSystemResourceAsStream(name);
 	}
 
+	public static InputStream getLoggingProperties() {
+		return ClassLoader.getSystemResourceAsStream("logging.properties");
+	}
+
+	public static InputStream getServerProperties() {
+		return ClassLoader.getSystemResourceAsStream("server.properties");
+	}
+
 }

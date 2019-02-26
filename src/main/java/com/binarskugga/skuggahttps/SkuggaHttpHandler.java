@@ -5,6 +5,9 @@ import com.binarskugga.skuggahttps.api.enums.HttpMethod;
 import com.binarskugga.skuggahttps.api.enums.HttpStatus;
 import com.binarskugga.skuggahttps.api.impl.ServerProperties;
 import com.binarskugga.skuggahttps.api.impl.HttpSession;
+import com.binarskugga.skuggahttps.api.impl.parse.BodyInformation;
+import com.binarskugga.skuggahttps.api.impl.parse.FieldParsingHandler;
+import com.binarskugga.skuggahttps.api.impl.parse.ParameterParsingHandler;
 import com.binarskugga.skuggahttps.util.CryptoUtils;
 import com.binarskugga.skuggahttps.api.impl.endpoint.AbstractController;
 import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
@@ -14,9 +17,7 @@ import com.binarskugga.skuggahttps.util.ReflectionUtils;
 import com.google.common.base.Charsets;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import lombok.Getter;
 
-import javax.xml.ws.spi.http.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -26,32 +27,19 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements HttpHandler {
 
-	@Getter private ServerProperties serverProperties;
 	private final EndpointResolver endpointResolver;
 	private Map<Class<? extends AbstractController>, AbstractController> controllers;
 
 	public SkuggaHttpHandler() {
 		CryptoUtils.createKeysIfNotExists("token-sign.key");
+		FieldParsingHandler.init();
+		ParameterParsingHandler.init();
 
-		this.serverProperties = new ServerProperties();
-		this.endpointResolver = new EndpointResolver(this.serverProperties.getControllerPackage(), this.serverProperties.getRoot());
+		this.endpointResolver = new EndpointResolver(ServerProperties.getControllerPackage(), ServerProperties.getRoot());
 		this.controllers = new HashMap<>();
-	}
-
-	public String getHost() {
-		return this.serverProperties.getIp();
-	}
-
-	public int getPort() {
-		return this.serverProperties.getPort();
-	}
-
-	public String getRoot() {
-		return this.serverProperties.getRoot();
 	}
 
 	@Override
@@ -61,12 +49,12 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 				exchange.startBlocking();
 				HttpSession session = null;
 				try {
-					session = new HttpSession(exchange, this.serverProperties);
-
-					Endpoint endpoint = this.endpointResolver.getEndpoint(exchange.getRequestPath(), HttpMethod.fromMethodString(exchange.getRequestMethod().toString()));
-					session.setEndpoint(endpoint);
+					session = new HttpSession(exchange);
+					session.setEndpoint(this.endpointResolver.getEndpoint(exchange.getRequestPath(), HttpMethod.fromMethodString(exchange.getRequestMethod().toString())));
+					if(session.getRequestMethod().acceptBody()) session.getEndpoint().setBody(exchange.getInputStream(), session);
 				} catch (Exception e) {
 					e.printStackTrace();
+					System.exit(-1);
 				}
 
 				try {
@@ -140,7 +128,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 		controller.setSession(session);
 
 		List<Object> params = session.getEndpoint().getArguments(session);
-		if (endpoint.getMethod().acceptBody() && endpoint.getBodyType() != null) params.add(0, session.getBody());
+		if (endpoint.getMethod().acceptBody() && endpoint.getBodyType() != null) params.add(0, endpoint.getBody());
 		Object result =  action.invoke(controller, params.toArray());
 
 		if (endpoint.getReturnType().equals(byte[].class)) {
@@ -150,22 +138,21 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 			if (endpoint.getReturnType() instanceof TypeVariable)
 				pType = ((ParameterizedType) (((TypeVariable) endpoint.getReturnType()).getBounds()[0]));
 			else pType = (ParameterizedType) endpoint.getReturnType();
-			return session.getParser(endpoint)
-					.toString(session, result, pType.getActualTypeArguments(), (Class) pType.getRawType())
-					.getBytes(Charsets.UTF_8);
+
+			BodyInformation information = new BodyInformation(pType.getActualTypeArguments(), (Class) pType.getRawType(), session);
+			return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
 		} else {
-			return session.getParser(endpoint)
-					.toString(session, result, new Type[] { endpoint.getReturnType() }, null)
-					.getBytes(Charsets.UTF_8);
+			BodyInformation information = new BodyInformation(new Type[] { endpoint.getReturnType() }, null, session);
+			return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void handleExceptionExchange(HttpSession session, Exception e, int code) {
 		try {
 			session.getExchange().setStatusCode(code);
 			if(session.getRequestMethod().acceptBody()) {
-				session.getExchange().getOutputStream().write(session.getExceptionParser(session.getEndpoint())
-						.toString(session, e).getBytes(Charsets.UTF_8));
+				session.getExchange().getOutputStream().write(((String) session.getExceptionParser().unparse(session, e)).getBytes(Charsets.UTF_8));
 			}
 			this.chainException(session, e);
 		} catch (IOException ignored) {}
