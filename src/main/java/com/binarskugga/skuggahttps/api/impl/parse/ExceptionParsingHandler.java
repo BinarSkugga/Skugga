@@ -1,6 +1,5 @@
 package com.binarskugga.skuggahttps.api.impl.parse;
 
-import com.binarskugga.skuggahttps.api.BodyParser;
 import com.binarskugga.skuggahttps.api.ExceptionParser;
 import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
 
@@ -21,7 +20,7 @@ public class ExceptionParsingHandler extends ParsingHandler<ExceptionParser, End
 
 	public static void init() {
 		parsers = new ArrayList<>();
-		ParsingHandler.init(BodyParser.class, parsers);
+		ParsingHandler.init(ExceptionParser.class, parsers);
 	}
 
 	@Override

@@ -152,9 +152,7 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 	private void handleExceptionExchange(HttpSession session, Exception e, int code) {
 		try {
 			session.getExchange().setStatusCode(code);
-			if (session.getRequestMethod().acceptBody()) {
-				session.getExchange().getOutputStream().write(((String) session.getExceptionParser().unparse(session, e)).getBytes(Charsets.UTF_8));
-			}
+			session.getExchange().getOutputStream().write(((String) session.getExceptionParser().unparse(session, e)).getBytes(Charsets.UTF_8));
 			this.chainException(session, e);
 		} catch (IOException ignored) {
 		}
