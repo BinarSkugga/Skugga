@@ -1,9 +1,6 @@
 package com.binarskugga.skuggahttps.api.impl.endpoint;
 
-import com.binarskugga.skuggahttps.api.annotation.ContentType;
-import com.binarskugga.skuggahttps.api.annotation.Controller;
-import com.binarskugga.skuggahttps.api.annotation.Get;
-import com.binarskugga.skuggahttps.api.annotation.Post;
+import com.binarskugga.skuggahttps.api.annotation.*;
 import com.binarskugga.skuggahttps.api.enums.HttpMethod;
 import com.binarskugga.skuggahttps.impl.TokenController;
 import com.binarskugga.skuggahttps.util.EndpointUtils;
@@ -15,6 +12,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,10 +70,22 @@ public class EndpointResolver {
 	public void registerController(String root, Class<? extends AbstractController> controller) {
 		String controllerPath = EndpointUtils.getControllerPath(root, controller);
 
-		List<Method> methods = ReflectionUtils.getAllMethods(controller).stream().filter(m ->
+		Set<Method> methods = ReflectionUtils.getAllMethods(controller).stream().filter(m ->
 				(m.isAnnotationPresent(Get.class) || m.isAnnotationPresent(Post.class))
 						&& !Modifier.isVolatile(m.getModifiers())
-		).collect(Collectors.toList());
+		).collect(Collectors.toSet());
+
+		List<Method> overriden = methods.stream().filter(m -> m.isAnnotationPresent(EndpointOverride.class)).collect(Collectors.toList());
+		List<Method> toRemove = methods.stream().filter(m -> {
+			Method chosen = null;
+			for(Method me : overriden) {
+				if(m.isAnnotationPresent(EndpointOverride.class)) return false;
+				if(m.getName().equalsIgnoreCase(me.getName()) && Arrays.equals(me.getParameterTypes(), m.getParameterTypes()))
+					return true;
+			}
+			return false;
+		}).collect(Collectors.toList());
+		methods.removeAll(toRemove);
 
 		for (Method method : methods) {
 			method.setAccessible(true);
