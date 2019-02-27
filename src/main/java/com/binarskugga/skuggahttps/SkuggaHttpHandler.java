@@ -120,11 +120,11 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 		Method action = endpoint.getAction();
 
 		AbstractController controller;
-		if (this.controllers.containsKey(action.getDeclaringClass()))
-			controller = this.controllers.get(action.getDeclaringClass());
+		if (this.controllers.containsKey(endpoint.getController()))
+			controller = this.controllers.get(endpoint.getController());
 		else {
-			controller = (AbstractController) ReflectionUtils.safeConstruct(action.getDeclaringClass());
-			this.controllers.putIfAbsent((Class<? extends AbstractController>) action.getDeclaringClass(), controller);
+			controller = ReflectionUtils.safeConstruct(endpoint.getController());
+			this.controllers.putIfAbsent(endpoint.getController(), controller);
 		}
 		controller.setSession(session);
 

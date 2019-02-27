@@ -9,7 +9,7 @@
     <version>2.1</version>
 
     <name>skuggahttps</name>
-    <url>http://binarskugga.com</url>
+    <url>https://binarskugga.com</url>
 
     <developers>
         <developer>
@@ -218,12 +218,5 @@
             <version>${versions.googlecode.objectify}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.squareup.moshi</groupId>
-            <artifactId>moshi</artifactId>
-            <version>1.8.0</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 </project>

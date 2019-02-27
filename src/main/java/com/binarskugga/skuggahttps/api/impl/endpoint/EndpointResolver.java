@@ -109,6 +109,7 @@ public class EndpointResolver {
 			}
 
 			endpoint.setAction(method);
+			endpoint.setController(controller);
 			endpoint.setRoute(EndpointUtils.sanitizePath(methodPath));
 
 			this.endpoints.add(endpoint);

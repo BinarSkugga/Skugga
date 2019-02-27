@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 public class Endpoint {
 
 	@Getter @Setter private Method action;
+	@Getter @Setter private Class<? extends AbstractController> controller;
+
 	@Getter @Setter private HttpMethod method;
 	@Getter @Setter private String route;
 	@Setter private String contentType;

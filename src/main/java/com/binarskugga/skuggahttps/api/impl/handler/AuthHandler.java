@@ -27,7 +27,7 @@ public class AuthHandler implements RequestHandler {
 	@Override
 	public boolean handle(HttpSession session) throws RuntimeException {
 		Endpoint endpoint = session.getEndpoint();
-		Class controller = endpoint.getAction().getDeclaringClass();
+		Class controller = endpoint.getController();
 		if (ReflectionUtils.getMethodAnnotationOrNull(endpoint.getAction(), NotConnected.class) != null)
 			return true;
 
