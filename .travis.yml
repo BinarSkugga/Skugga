@@ -1,14 +1,18 @@
 language: java
-jdk:
-- oraclejdk8
-- oraclejdk11
+
+matrix:
+  include:
+    - jdk: oraclejdk8
+      env: MVN_PROFILE=j8
+    - jdk: oraclejdk11
+      env: MVN_PROFILE=j11
 
 cache:
   directories:
     - "$HOME/.m2"
 
 install:
-  - "mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install"
+  - "mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install -P $MAVEN_PROFILE"
 
 script:
   - "mvn resources:testResources compiler:testCompile surefire:test"
@@ -16,13 +20,6 @@ script:
 deploy:
   -
     provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P j8"
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P $MAVEN_PROFILE"
     on:
       all_branches: true
-      jdk: oraclejdk8
-  -
-    provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P j11"
-    on:
-      all_branches: true
-      jdk: oraclejdk11
