@@ -7,11 +7,12 @@ public class MoshiProvider {
 
 	private static Moshi instance;
 
-	private MoshiProvider() {}
+	private MoshiProvider() {
+	}
 
 	@Synchronized
 	public static Moshi get() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new Moshi.Builder()
 					.build();
 		}

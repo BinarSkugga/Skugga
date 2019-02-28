@@ -1,19 +1,25 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.impl.token.BasicToken;
+import com.binarskugga.skugga.api.annotation.Token;
+import com.binarskugga.skugga.api.impl.BasicToken;
 
-import java.util.UUID;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
-public class TestToken extends BasicToken<UUID> {
+@Token
+public class TestToken extends BasicToken {
 
-	@Override
-	public String getStringAuthentifier() {
-		return this.getAuthentifier().toString();
+	private static final long LTT_EXPIRES = new Date().getTime() + TimeUnit.DAYS.toMillis(365);
+	private static final long STT_EXPIRES = new Date().getTime() + TimeUnit.HOURS.toMillis(2);
+
+	public TestToken() {
+		setExpires(STT_EXPIRES);
 	}
 
-	@Override
-	public void setStringAuthentifier(String authentifier) {
-		this.setAuthentifier(UUID.fromString(authentifier));
+	public void setLTT(boolean ltt) {
+		super.setLTT(ltt);
+		if (ltt) this.setExpires(LTT_EXPIRES);
+		else this.setExpires(STT_EXPIRES);
 	}
 
 }
