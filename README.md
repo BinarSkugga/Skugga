@@ -6,17 +6,26 @@ inheritance of behavior. Using simple annotations and basic implementations it c
 data with your controllers, your http exchange and your session handlers.
 
 ## Install
+### Maven
 ```xml
-<repositories>
-    <repository>
-        <id>skugga.repo</id>
-        <url>https://rawgit.com/binarskugga/skugga/maven</url>
-    </repository>
-</repositories>
-
+<repository>
+	<id>skugga.repo</id>
+	<url>https://rawgit.com/binarskugga/skugga/maven</url>
+</repository>
+```
+#### JDK 11
+```xml
 <dependency>
 	<groupId>com.binarskugga</groupId>
 	<artifactId>skugga</artifactId>
 	<version>2.1</version>
+</dependency>
+```
+#### JDK 8
+```xml
+<dependency>
+	<groupId>com.binarskugga</groupId>
+	<artifactId>skugga</artifactId>
+	<version>2.1-j8</version>
 </dependency>
 ```
