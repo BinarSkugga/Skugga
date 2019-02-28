@@ -1,7 +1,23 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Deploy-J8" type="MavenRunConfiguration" factoryName="Maven" singleton="true">
     <MavenSettings>
-      <option name="myGeneralSettings" />
+      <option name="myGeneralSettings">
+        <MavenGeneralSettings>
+          <option name="alwaysUpdateSnapshots" value="false" />
+          <option name="checksumPolicy" value="NOT_SET" />
+          <option name="failureBehavior" value="NOT_SET" />
+          <option name="localRepository" value="" />
+          <option name="mavenHome" value="Bundled (Maven 3)" />
+          <option name="nonRecursive" value="false" />
+          <option name="outputLevel" value="INFO" />
+          <option name="pluginUpdatePolicy" value="DEFAULT" />
+          <option name="printErrorStackTraces" value="true" />
+          <option name="threads" value="4" />
+          <option name="usePluginRegistry" value="false" />
+          <option name="userSettingsFile" value="" />
+          <option name="workOffline" value="false" />
+        </MavenGeneralSettings>
+      </option>
       <option name="myRunnerSettings">
         <MavenRunnerSettings>
           <option name="delegateBuildToMaven" value="false" />
@@ -27,6 +43,7 @@
             <list>
               <option value="clean" />
               <option value="deploy" />
+              <option value="-e" />
             </list>
           </option>
           <option name="pomFileName" />
