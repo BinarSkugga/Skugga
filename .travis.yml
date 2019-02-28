@@ -4,15 +4,15 @@ jdk:
 - oraclejdk11
 
 cache:
-	directories:
-	- $HOME/.m2
+  directories:
+  - $HOME/.m2
 
 jobs:
-	include:
-	-   stage: install
-		script: mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
-	-   stage: test
-		script: mvn resources:testResources compiler:testCompile surefire:test
-	-   stage: deploy
-		script: mvn clean deploy -P j8
-	-   script: mvn clean deploy -P j11
+  include:
+    - stage: install
+      script: mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
+    - stage: test
+      script: mvn resources:testResources compiler:testCompile surefire:test
+    - stage: deploy
+      script: mvn clean deploy -P j8
+    - script: mvn clean deploy -P j11
