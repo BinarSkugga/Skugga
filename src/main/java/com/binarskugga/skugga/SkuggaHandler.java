@@ -153,6 +153,8 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 
 		if (endpoint.getReturnType().equals(byte[].class)) {
 			return (byte[]) result;
+		} else if (endpoint.getReturnType().equals(void.class)) {
+			return new byte[0];
 		} else if (endpoint.getReturnType() instanceof ParameterizedType || endpoint.getReturnType() instanceof TypeVariable) {
 			ParameterizedType pType;
 			if (endpoint.getReturnType() instanceof TypeVariable)
