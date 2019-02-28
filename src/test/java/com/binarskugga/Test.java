@@ -22,7 +22,6 @@ public class Test {
 
 		SkuggaHttpHandler handler = new SkuggaHttpHandler();
 		handler.append(new ObjectifyHandler());
-
 		SkuggaHttp server = new SkuggaHttp(handler);
 		server.start();
 	}
