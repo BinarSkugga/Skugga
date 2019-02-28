@@ -12,14 +12,14 @@ cache:
     - "$HOME/.m2"
 
 install:
-  - "mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install -P $MAVEN_PROFILE"
+  - mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install -P $MAVEN_PROFILE
 
 script:
-  - "mvn resources:testResources compiler:testCompile surefire:test"
+  - mvn resources:testResources compiler:testCompile surefire:test -P $MAVEN_PROFILE
 
 deploy:
   -
     provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P $MAVEN_PROFILE"
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P $MAVEN_PROFILE
     on:
       all_branches: true
