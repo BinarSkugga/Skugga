@@ -10,22 +10,17 @@ import com.binarskugga.skuggahttps.api.exception.auth.LoginException;
 import com.binarskugga.skuggahttps.api.exception.auth.NoAuthException;
 import com.binarskugga.skuggahttps.api.exception.entity.EntityInexistantException;
 import com.binarskugga.skuggahttps.api.impl.endpoint.AuthController;
-import com.binarskugga.skuggahttps.api.impl.parse.MapParser;
 import com.binarskugga.skuggahttps.util.ReflectionUtils;
-
-import java.util.Arrays;
-import java.util.Map;
 
 @Controller("token")
 public class TokenController extends AuthController {
 
 	@SuppressWarnings("unchecked")
 	@Post
-	public String ltt(Map<String, Object> loginMap) {
+	public String ltt(Login login) {
 		if(this.getAuthRepository() == null)
 			throw new NoAuthException();
 
-		Login login = (Login) MapParser.parse(Arrays.asList(Login.class.getDeclaredFields()), loginMap);
 		if (login == null)
 			throw new InvalidArgumentException();
 
