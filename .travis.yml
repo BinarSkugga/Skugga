@@ -19,10 +19,12 @@ deploy:
     script: mvn deploy -P j8
     skip_cleanup: true
     on:
+      all_branches: true
       jdk: oraclejdk8
   -
     provider: script
     script: mvn deploy -P j11
     skip_cleanup: true
     on:
+      all_branches: true
       jdk: oraclejdk8
