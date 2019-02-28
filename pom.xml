@@ -6,14 +6,16 @@
 
 	<properties>
 		<!-- DEPLOYMENT -->
-		<deployment.java.version>1.8</deployment.java.version>
+		<deployment.artifact.id>skugga</deployment.artifact.id>
+		<deployment.artifact.owner>binarskugga</deployment.artifact.owner>
 		<deployment.artifact.version>2.1-j8</deployment.artifact.version>
+		<deployment.java.version>1.8</deployment.java.version>
 
 		<!-- MAVEN -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<github.global.server>github</github.global.server>
 		<maven.compiler.source>${deployment.java.version}</maven.compiler.source>
 		<maven.compiler.target>${deployment.java.version}</maven.compiler.target>
-		<github.global.server>github</github.global.server>
 
 		<!-- UTILS -->
 		<versions.google.guava>27.0.1-jre</versions.google.guava>
@@ -55,10 +57,10 @@
 	</profiles>
 
 	<groupId>com.binarskugga</groupId>
-	<artifactId>skugga</artifactId>
+	<artifactId>${deployment.artifact.id}</artifactId>
 	<version>${deployment.artifact.version}</version>
 
-	<name>skugga</name>
+	<name>${deployment.artifact.id}</name>
 	<url>https://binarskugga.com</url>
 
 	<developers>
@@ -77,31 +79,29 @@
 		</license>
 	</licenses>
 
+	<distributionManagement>
+		<repository>
+			<id>${deployment.artifact.id}.repo</id>
+			<url>file://${project.build.directory}/maven</url>
+		</repository>
+	</distributionManagement>
+
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.1</version>
-				<configuration>
-					<altDeploymentRepository>skugga.repo::default::file://${project.build.directory}/maven
-					</altDeploymentRepository>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
 				<version>0.12</version>
 				<configuration>
-					<merge>true</merge>
-					<message>Maven artifacts for ${project.version}</message>
-					<noJekyll>true</noJekyll>
-					<outputDirectory>${project.build.directory}/maven</outputDirectory>
 					<branch>refs/heads/maven</branch>
+					<merge>true</merge> <noJekyll>true</noJekyll>
+					<outputDirectory>${project.build.directory}/maven</outputDirectory>
+					<message>Maven artifacts for ${project.version}</message>
 					<includes>
 						<include>**/*</include>
 					</includes>
-					<repositoryName>skugga</repositoryName>
-					<repositoryOwner>binarskugga</repositoryOwner>
+					<repositoryName>${deployment.artifact.id}</repositoryName>
+					<repositoryOwner>${deployment.artifact.owner}</repositoryOwner>
 				</configuration>
 				<executions>
 					<execution>
@@ -109,6 +109,30 @@
 							<goal>site</goal>
 						</goals>
 						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.1</version>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<phase>package</phase>
 					</execution>
 				</executions>
 			</plugin>

@@ -9,3 +9,4 @@ target/
 
 **/google-account.json
 **/*.key
+dependency-reduced-pom.xml

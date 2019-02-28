@@ -1,0 +1,26 @@
+language: java
+
+matrix:
+  include:
+    - jdk: oraclejdk8
+      env: MVN_PROFILE=j8
+    - jdk: oraclejdk11
+      env: MVN_PROFILE=j11
+
+cache:
+  directories:
+    - $HOME/.m2
+
+install:
+  - mvn clean:clean resources:resources compiler:compile jar:jar install:install -P $MVN_PROFILE
+
+script:
+  - mvn resources:testResources compiler:testCompile surefire:test -P $MVN_PROFILE
+
+deploy:
+  -
+    provider: script
+    skip_cleanup: true
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn jar:jar shade:shade deploy:deploy site:site -P $MVN_PROFILE
+    on:
+	  branch: master
