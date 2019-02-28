@@ -55,10 +55,10 @@
     </properties>
 
     <groupId>com.binarskugga</groupId>
-    <artifactId>skuggahttps</artifactId>
+    <artifactId>skugga</artifactId>
     <version>${deployment.artifact.version}</version>
 
-    <name>skuggahttps</name>
+    <name>skugga</name>
     <url>https://binarskugga.com</url>
 
     <developers>
