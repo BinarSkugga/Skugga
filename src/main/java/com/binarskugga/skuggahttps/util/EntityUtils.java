@@ -37,7 +37,7 @@ public class EntityUtils {
 		return false;
 	}
 
-	public static boolean isLoadable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
+	public static boolean isObtainable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
 		String role = logged == null ? null : logged.getRoleName();
 		Obtainable obtainable = ReflectionUtils.getClassAnnotationOrNull(entityClass, Obtainable.class);
 		if (obtainable != null) {
@@ -105,7 +105,7 @@ public class EntityUtils {
 	}
 
 	public static List<Field> getObtainFields(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
-		if (!isLoadable(entityClass, logged))
+		if (!isObtainable(entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
 		Obtainable obtainable = entityClass.getAnnotation(Obtainable.class);
