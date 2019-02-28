@@ -7,29 +7,20 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 public class MoshiBodyParser implements BodyParser<String> {
 
 	@Override
-	public Object parse(BodyInformation information, String body) {
-		try {
-			return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).fromJson(body);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	public Object parse(BodyInformation information, String body) throws IOException {
+		return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).fromJson(body);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public String unparse(BodyInformation information, Object body) {
-		try {
-			return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).toJson(body);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	public String unparse(BodyInformation information, Object body) throws IOException {
+		return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).toJson(body);
 	}
 
 	private JsonAdapter createAdapter(Type[] clazz, Class collectionClazz) {

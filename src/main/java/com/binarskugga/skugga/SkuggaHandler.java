@@ -1,6 +1,7 @@
 package com.binarskugga.skugga;
 
-import com.binarskugga.skugga.api.*;
+import com.binarskugga.skugga.api.DataConnector;
+import com.binarskugga.skugga.api.RequestHandler;
 import com.binarskugga.skugga.api.enums.HttpMethod;
 import com.binarskugga.skugga.api.enums.HttpStatus;
 import com.binarskugga.skugga.api.exception.http.HttpException;
@@ -9,12 +10,13 @@ import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
 import com.binarskugga.skugga.api.impl.endpoint.EndpointResolver;
 import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
 import com.binarskugga.skugga.api.impl.parse.*;
-import com.binarskugga.skugga.util.*;
+import com.binarskugga.skugga.util.CryptoUtils;
+import com.binarskugga.skugga.util.ReflectionUtils;
+import com.binarskugga.skugga.util.ResourceUtils;
 import com.google.common.base.Charsets;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -61,14 +63,14 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 				try {
 					session = new HttpSession(exchange);
 					session.setEndpoint(this.endpointResolver.getEndpoint(exchange.getRequestPath(), HttpMethod.fromMethodString(exchange.getRequestMethod().toString())));
-					if (session.getRequestMethod().acceptBody() && session.getEndpoint() != null)
-						session.getEndpoint().setBody(exchange.getInputStream(), session);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.exit(-1);
 				}
 
 				try {
+					if (session.getRequestMethod().acceptBody() && session.getEndpoint() != null)
+						session.getEndpoint().setBody(exchange.getInputStream(), session);
 					if (this.chain(session)) {
 						byte[] output = this.invokeAction(session);
 						if (output != null && output.length > 0) {
@@ -166,7 +168,8 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 			session.getExchange().setStatusCode(code);
 			session.getExchange().getOutputStream().write(((String) session.getExceptionParser().unparse(session, e)).getBytes(Charsets.UTF_8));
 			this.chainException(session, e);
-		} catch (IOException ignored) {
+		} catch (Exception ignored) {
+			// We have to believe it works here because this is the last net.
 		}
 	}
 

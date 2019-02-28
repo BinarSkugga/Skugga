@@ -5,6 +5,8 @@ import com.binarskugga.skugga.api.ParameterParser;
 import com.binarskugga.skugga.api.annotation.UseParser;
 import com.binarskugga.skugga.api.enums.HttpMethod;
 import com.binarskugga.skugga.api.exception.InvalidArgumentCountException;
+import com.binarskugga.skugga.api.exception.InvalidArgumentException;
+import com.binarskugga.skugga.api.exception.InvalidBodyException;
 import com.binarskugga.skugga.api.impl.parse.BodyInformation;
 import com.binarskugga.skugga.api.impl.parse.ParameterParsingHandler;
 import com.binarskugga.skugga.util.EndpointUtils;
@@ -56,13 +58,17 @@ public class Endpoint {
 			parameters = Arrays.copyOfRange(parameters, 1, parameters.length);
 		}
 
-		ParameterParsingHandler parsingHandler = ParameterParsingHandler.get();
-		for (int i = 0, p = 0; i < brokenEndpoint.length; i++) {
-			if (brokenEndpoint[i].equals("$")) {
-				Parameter parameter = parameters[p++];
-				ParameterParser parser = parsingHandler.getParser(parameter, ReflectionUtils.getParamAnnotationOrNull(parameter, UseParser.class));
-				args.add(parser.parse(parameter, brokenRequest[i]));
+		try {
+			ParameterParsingHandler parsingHandler = ParameterParsingHandler.get();
+			for (int i = 0, p = 0; i < brokenEndpoint.length; i++) {
+				if (brokenEndpoint[i].equals("$")) {
+					Parameter parameter = parameters[p++];
+					ParameterParser parser = parsingHandler.getParser(parameter, ReflectionUtils.getParamAnnotationOrNull(parameter, UseParser.class));
+					args.add(parser.parse(parameter, brokenRequest[i]));
+				}
 			}
+		} catch (Exception e) {
+			throw new InvalidArgumentException();
 		}
 
 		return args;
@@ -88,7 +94,7 @@ public class Endpoint {
 				this.body = session.getBodyParser().parse(information, new String(data, Charsets.UTF_8));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new InvalidBodyException();
 		}
 	}
 

@@ -9,7 +9,7 @@ public class InvalidArgumentException extends BadRequestException {
 	}
 
 	public InvalidArgumentException() {
-		super("One or more of the arguments passed are invalid are using the wrong format.");
+		super("One or more of the arguments passed are invalid or using the wrong format.");
 	}
 
 }
