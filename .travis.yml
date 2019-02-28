@@ -1,7 +1,14 @@
 language: java
 jdk:
   - oraclejdk8
+cache:
+	directories:
+		- $HOME/.m2
+
 install:
   - mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
 script:
   - mvn resources:testResources compiler:testCompile surefire:test
+after_success:
+  - mvn clean deploy -P j8
+  - mvn clean deploy -P j11
