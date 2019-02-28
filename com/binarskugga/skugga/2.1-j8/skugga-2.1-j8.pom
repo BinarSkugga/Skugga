@@ -73,10 +73,10 @@
         <configuration>
           <filters>
             <filter>
-              <artifact>org.bouncycastle:bcprov-jdk15on</artifact>
+              <artifact>*:*</artifact>
               <excludes>
-                <exclude>**/*.SF</exclude>
-                <exclude>**/*.DSA</exclude>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
               </excludes>
             </filter>
           </filters>
