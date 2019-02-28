@@ -1,6 +1,7 @@
 package com.binarskugga.skugga.api.impl.parse;
 
 import com.binarskugga.skugga.api.BodyParser;
+import com.binarskugga.skugga.api.exception.NoBodyParserException;
 import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class BodyParsingHandler extends ParsingHandler<BodyParser, Endpoint> {
 	public static void init() {
 		parsers = new ArrayList<>();
 		ParsingHandler.init(BodyParser.class, parsers);
+		if(parsers.size() == 0) throw new NoBodyParserException();
 	}
 
 	@Override

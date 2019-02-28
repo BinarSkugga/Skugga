@@ -48,6 +48,8 @@ public abstract class ParsingHandler<P extends Parser, T> {
 				if (parser == null) parser = defaultParser;
 			}
 		}
+
+		if(parser == null) return this.getParsers().get(0);
 		return parser;
 	}
 

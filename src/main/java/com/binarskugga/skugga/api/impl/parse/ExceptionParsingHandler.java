@@ -1,6 +1,7 @@
 package com.binarskugga.skugga.api.impl.parse;
 
 import com.binarskugga.skugga.api.ExceptionParser;
+import com.binarskugga.skugga.api.exception.NoExceptionParserException;
 import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class ExceptionParsingHandler extends ParsingHandler<ExceptionParser, End
 	public static void init() {
 		parsers = new ArrayList<>();
 		ParsingHandler.init(ExceptionParser.class, parsers);
+		if(parsers.size() == 0) throw new NoExceptionParserException();
 	}
 
 	@Override

@@ -28,25 +28,30 @@ import java.util.Map;
 
 public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHandler {
 
-	private final EndpointResolver endpointResolver;
+	private EndpointResolver endpointResolver;
 	private Map<Class<? extends AbstractController>, AbstractController> controllers;
 	private DataConnector connector;
 
 	public SkuggaHandler(DataConnector connector) {
-		CryptoUtils.createKeysIfNotExists("token-sign");
-		ServerProperties.load(ResourceUtils.getServerProperties());
+		try {
+			CryptoUtils.createKeysIfNotExists("token-sign");
+			ServerProperties.load(ResourceUtils.getServerProperties());
 
-		BodyParsingHandler.init();
-		ExceptionParsingHandler.init();
-		FieldParsingHandler.init();
-		ParameterParsingHandler.init();
+			BodyParsingHandler.init();
+			ExceptionParsingHandler.init();
+			FieldParsingHandler.init();
+			ParameterParsingHandler.init();
 
-		this.endpointResolver = new EndpointResolver(ServerProperties.getControllerPackage(), ServerProperties.getRoot());
-		this.controllers = new HashMap<>();
+			this.endpointResolver = new EndpointResolver(ServerProperties.getControllerPackage(), ServerProperties.getRoot());
+			this.controllers = new HashMap<>();
 
-		if(connector != null) {
-			this.connector = connector;
-			connector.connect(ServerProperties.getModelPackage());
+			if(connector != null) {
+				this.connector = connector;
+				connector.connect(ServerProperties.getModelPackage());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 
