@@ -4,9 +4,59 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <profiles>
+        <profile>
+            <id>j8</id>
+            <properties>
+                <deployment.java.version>1.8</deployment.java.version>
+                <deployment.artifact.version>2.1-j8</deployment.artifact.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>j11</id>
+            <properties>
+                <deployment.java.version>11</deployment.java.version>
+                <deployment.artifact.version>2.1</deployment.artifact.version>
+            </properties>
+        </profile>
+    </profiles>
+
+    <properties>
+        <!-- DEPLOYMENT -->
+        <deployment.java.version>1.8</deployment.java.version>
+        <deployment.artifact.version>2.1-j8</deployment.artifact.version>
+
+        <!-- MAVEN -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${deployment.java.version}</maven.compiler.source>
+        <maven.compiler.target>${deployment.java.version}</maven.compiler.target>
+        <github.global.server>github</github.global.server>
+
+        <!-- UTILS -->
+        <versions.google.guava>27.0.1-jre</versions.google.guava>
+        <versions.apache.commons>3.8.1</versions.apache.commons>
+        <versions.mongodb.bson>3.10.1</versions.mongodb.bson>
+        <versions.bouncycastle>1.60</versions.bouncycastle>
+        <versions.reflections>0.9.11</versions.reflections>
+        <versions.projectlombok>1.18.4</versions.projectlombok>
+        <versions.slf4j.jdk14>1.7.25</versions.slf4j.jdk14>
+        <versions.google.flogger>0.3.1</versions.google.flogger>
+
+        <!-- CORE -->
+        <versions.undertow.core>2.0.16.Final</versions.undertow.core>
+        <versions.jsonwebtoken.api>0.10.5</versions.jsonwebtoken.api>
+        <versions.jsonwebtoken.impl>0.10.5</versions.jsonwebtoken.impl>
+
+        <!-- TEST -->
+        <versions.squareup.moshi>1.6.0</versions.squareup.moshi>
+        <versions.junit.jupiter>5.3.2</versions.junit.jupiter>
+        <versions.netflix.feign>8.18.0</versions.netflix.feign>
+        <versions.googlecode.objectify>6.0.3</versions.googlecode.objectify>
+    </properties>
+
     <groupId>com.binarskugga</groupId>
     <artifactId>skuggahttps</artifactId>
-    <version>2.1-j8</version>
+    <version>${deployment.artifact.version}</version>
 
     <name>skuggahttps</name>
     <url>https://binarskugga.com</url>
@@ -78,34 +128,6 @@
             </testResource>
         </testResources>
     </build>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <github.global.server>github</github.global.server>
-
-        <!-- UTILS -->
-        <versions.google.guava>27.0.1-jre</versions.google.guava>
-        <versions.apache.commons>3.8.1</versions.apache.commons>
-        <versions.mongodb.bson>3.10.1</versions.mongodb.bson>
-        <versions.bouncycastle>1.60</versions.bouncycastle>
-        <versions.reflections>0.9.11</versions.reflections>
-        <versions.projectlombok>1.18.4</versions.projectlombok>
-        <versions.slf4j.jdk14>1.7.25</versions.slf4j.jdk14>
-        <versions.google.flogger>0.3.1</versions.google.flogger>
-
-        <!-- CORE -->
-        <versions.undertow.core>2.0.16.Final</versions.undertow.core>
-        <versions.jsonwebtoken.api>0.10.5</versions.jsonwebtoken.api>
-        <versions.jsonwebtoken.impl>0.10.5</versions.jsonwebtoken.impl>
-
-        <!-- TEST -->
-        <versions.squareup.moshi>1.6.0</versions.squareup.moshi>
-        <versions.junit.jupiter>5.3.2</versions.junit.jupiter>
-        <versions.netflix.feign>8.18.0</versions.netflix.feign>
-        <versions.googlecode.objectify>6.0.3</versions.googlecode.objectify>
-    </properties>
 
     <dependencies>
         <!-- UTILS -->

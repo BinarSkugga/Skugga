@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Deploy All" type="Multirun" factoryName="Multirun" separateTabs="true" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0">
+    <runConfiguration name="Deploy-J8" type="Maven" />
+    <runConfiguration name="Deploy-J11" type="Maven" />
+    <method v="2" />
+  </configuration>
+</component>
