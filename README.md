@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/BinarSkugga/Skugga.svg?branch=master)](https://travis-ci.com/BinarSkugga/Skugga)
 # Skugga
 Skugga is an HTTP API that helps Java developers make and publish simple yet efficient REST services.
 It provides utilities to implement controllers and endpoints that connects easily and support
