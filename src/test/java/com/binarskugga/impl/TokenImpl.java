@@ -7,12 +7,12 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Token
-public class TestToken extends BasicToken {
+public class TokenImpl extends BasicToken {
 
 	private static final long LTT_EXPIRES = new Date().getTime() + TimeUnit.DAYS.toMillis(365);
 	private static final long STT_EXPIRES = new Date().getTime() + TimeUnit.HOURS.toMillis(2);
 
-	public TestToken() {
+	public TokenImpl() {
 		setExpires(STT_EXPIRES);
 	}
 
