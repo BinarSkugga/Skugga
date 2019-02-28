@@ -10,9 +10,7 @@ import java.util.Collection;
 public class DummyController extends AbstractController {
 
 	@Post
-	public String test(String t) {
-		return t;
-	}
+	public void test(String t) { }
 
 	@Post
 	public Collection<String> testList(Collection<String> t) {
