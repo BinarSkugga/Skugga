@@ -7,6 +7,10 @@ public interface BaseEntity<I extends Serializable> {
 
 	I getId();
 
+	default boolean isUnique() {
+		return true;
+	}
+
 	default void onLoaded() {
 	}
 
