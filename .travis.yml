@@ -12,7 +12,7 @@ cache:
     - $HOME/.m2
 
 install:
-  - mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install -P $MVN_PROFILE
+  - mvn clean:clean resources:resources compiler:compile install:install -P $MVN_PROFILE
 
 script:
   - mvn resources:testResources compiler:testCompile surefire:test -P $MVN_PROFILE
@@ -21,6 +21,6 @@ deploy:
   -
     provider: script
     skip_cleanup: true
-    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy:deploy -P $MVN_PROFILE
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn jar:jar shade:shade deploy:deploy -P $MVN_PROFILE
     on:
       all_branches: true
