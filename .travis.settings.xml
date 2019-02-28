@@ -2,6 +2,7 @@
 	<servers>
 		<server>
 			<id>github</id>
+			<username>binarskugga</username>
 			<password>${env.GITHUB_KEY}</password>
 		</server>
 	</servers>
