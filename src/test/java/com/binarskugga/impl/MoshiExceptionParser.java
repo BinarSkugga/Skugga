@@ -1,9 +1,9 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.ExceptionParser;
-import com.binarskugga.skuggahttps.api.exception.http.HttpException;
-import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
-import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
+import com.binarskugga.skugga.api.ExceptionParser;
+import com.binarskugga.skugga.api.exception.http.HttpException;
+import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
+import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
 import com.google.common.base.CaseFormat;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

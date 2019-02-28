@@ -1,12 +1,12 @@
 package com.binarskugga.controller;
 
 import com.binarskugga.model.TestModel;
-import com.binarskugga.skuggahttps.api.annotation.Controller;
-import com.binarskugga.skuggahttps.api.annotation.Get;
-import com.binarskugga.skuggahttps.api.annotation.Post;
-import com.binarskugga.skuggahttps.api.impl.endpoint.AbstractController;
-import com.binarskugga.skuggahttps.api.impl.parse.MapParser;
-import com.binarskugga.skuggahttps.util.EntityUtils;
+import com.binarskugga.skugga.api.annotation.Controller;
+import com.binarskugga.skugga.api.annotation.Get;
+import com.binarskugga.skugga.api.annotation.Post;
+import com.binarskugga.skugga.api.impl.endpoint.AbstractController;
+import com.binarskugga.skugga.api.impl.parse.MapParser;
+import com.binarskugga.skugga.util.EntityUtils;
 
 import java.util.Map;
 

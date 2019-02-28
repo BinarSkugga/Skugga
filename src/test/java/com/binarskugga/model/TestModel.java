@@ -1,9 +1,9 @@
 package com.binarskugga.model;
 
 import com.binarskugga.impl.ObjectifyRepository;
-import com.binarskugga.skuggahttps.api.AuthentifiableEntity;
-import com.binarskugga.skuggahttps.api.Role;
-import com.binarskugga.skuggahttps.api.annotation.Authenticator;
+import com.binarskugga.skugga.api.AuthentifiableEntity;
+import com.binarskugga.skugga.api.Role;
+import com.binarskugga.skugga.api.annotation.Authenticator;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;

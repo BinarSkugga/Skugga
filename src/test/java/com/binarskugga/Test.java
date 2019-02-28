@@ -2,10 +2,10 @@ package com.binarskugga;
 
 import com.binarskugga.impl.ObjectifyConnector;
 import com.binarskugga.impl.ObjectifyHandler;
-import com.binarskugga.skuggahttps.ServerProperties;
-import com.binarskugga.skuggahttps.SkuggaHttp;
-import com.binarskugga.skuggahttps.SkuggaHttpHandler;
-import com.binarskugga.skuggahttps.util.ResourceUtils;
+import com.binarskugga.skugga.ServerProperties;
+import com.binarskugga.skugga.SkuggaHttp;
+import com.binarskugga.skugga.SkuggaHttpHandler;
+import com.binarskugga.skugga.util.ResourceUtils;
 import com.google.auth.oauth2.GoogleCredentials;
 
 import java.util.logging.LogManager;

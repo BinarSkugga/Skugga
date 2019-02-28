@@ -1,7 +1,7 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.BaseEntity;
-import com.binarskugga.skuggahttps.api.DataRepository;
+import com.binarskugga.skugga.api.BaseEntity;
+import com.binarskugga.skugga.api.DataRepository;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.LoadType;
 import com.googlecode.objectify.cmd.QueryExecute;

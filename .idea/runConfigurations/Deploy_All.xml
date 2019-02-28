@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Deploy All" type="Multirun" factoryName="Multirun" separateTabs="true" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0">
-    <runConfiguration name="Deploy-J8" type="Maven" />
+  <configuration default="false" name="Deploy All" type="Multirun" factoryName="Multirun" singleton="true" separateTabs="true" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0">
     <runConfiguration name="Deploy-J11" type="Maven" />
-    <method v="2" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Deploy-J8" run_configuration_type="MavenRunConfiguration" />
+    </method>
   </configuration>
 </component>

@@ -1,8 +1,8 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.BaseEntity;
-import com.binarskugga.skuggahttps.api.DataConnector;
-import com.binarskugga.skuggahttps.util.ReflectionUtils;
+import com.binarskugga.skugga.api.BaseEntity;
+import com.binarskugga.skugga.api.DataConnector;
+import com.binarskugga.skugga.util.ReflectionUtils;
 import com.google.auth.Credentials;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;

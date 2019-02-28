@@ -1,7 +1,7 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.RequestHandler;
-import com.binarskugga.skuggahttps.api.impl.endpoint.HttpSession;
+import com.binarskugga.skugga.api.RequestHandler;
+import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
 import com.googlecode.objectify.ObjectifyService;
 
 import java.io.Closeable;

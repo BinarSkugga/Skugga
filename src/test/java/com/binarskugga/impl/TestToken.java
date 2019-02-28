@@ -1,7 +1,7 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.annotation.Token;
-import com.binarskugga.skuggahttps.api.impl.BasicToken;
+import com.binarskugga.skugga.api.annotation.Token;
+import com.binarskugga.skugga.api.impl.BasicToken;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;

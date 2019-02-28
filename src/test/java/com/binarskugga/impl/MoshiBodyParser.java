@@ -1,8 +1,8 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skuggahttps.api.BodyParser;
-import com.binarskugga.skuggahttps.api.impl.endpoint.Endpoint;
-import com.binarskugga.skuggahttps.api.impl.parse.BodyInformation;
+import com.binarskugga.skugga.api.BodyParser;
+import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
+import com.binarskugga.skugga.api.impl.parse.BodyInformation;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
