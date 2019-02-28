@@ -1,3 +1,4 @@
+language: java
 jdk:
 - oraclejdk8
 - oraclejdk11
@@ -11,15 +12,14 @@ stages:
   - test
   - deploy
 
+script:
+  - mvn resources:testResources compiler:testCompile surefire:test
+
 jobs:
   include:
     -
       stage: install
-      jdk: oraclejdk8
       script: mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
-    -
-      stage: test
-      script: mvn resources:testResources compiler:testCompile surefire:test
     -
       stage: deploy
       jdk: oraclejdk8
