@@ -3,3 +3,5 @@ jdk:
   - oraclejdk8
 install:
   - mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
+script:
+  - maven clean:clean resources:testResources compiler:testCompile surefire:test
