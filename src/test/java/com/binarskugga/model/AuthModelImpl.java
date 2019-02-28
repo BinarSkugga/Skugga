@@ -11,10 +11,10 @@ import com.googlecode.objectify.annotation.Index;
 import lombok.*;
 import org.bson.types.ObjectId;
 
-@Entity(name = "test")
+@Entity(name = "auth_model")
 @Authenticator(ObjectifyRepository.class)
 @Builder @NoArgsConstructor @AllArgsConstructor
-public class TestModel implements AuthentifiableEntity<TestModel, String> {
+public class AuthModelImpl implements AuthentifiableEntity<AuthModelImpl, String> {
 
 	@Id
 	@Getter @Setter String id = new ObjectId().toHexString();

@@ -5,14 +5,27 @@ It provides utilities to implement controllers and endpoints that connects easil
 inheritance of behavior. Using simple annotations and basic implementations it can link your
 data with your controllers, your http exchange and your session handlers.
 
-## QuickStart
-(TO DO)
-
-## Controllers
-(TO DO)
-
-## Endpoints
-(TO DO)
-
-## Models
-(TO DO)
+## Install
+### Maven
+```xml
+<repository>
+	<id>skugga.repo</id>
+	<url>https://rawgit.com/binarskugga/skugga/maven</url>
+</repository>
+```
+#### JDK 11
+```xml
+<dependency>
+	<groupId>com.binarskugga</groupId>
+	<artifactId>skugga</artifactId>
+	<version>2.1</version>
+</dependency>
+```
+#### JDK 8
+```xml
+<dependency>
+	<groupId>com.binarskugga</groupId>
+	<artifactId>skugga</artifactId>
+	<version>2.1-j8</version>
+</dependency>
+```

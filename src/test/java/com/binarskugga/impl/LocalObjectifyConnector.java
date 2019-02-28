@@ -6,6 +6,7 @@ import com.binarskugga.skugga.util.ReflectionUtils;
 import com.google.auth.Credentials;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.testing.*;
 import com.google.common.flogger.FluentLogger;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
@@ -14,22 +15,15 @@ import org.reflections.Reflections;
 
 import java.util.stream.Collectors;
 
-public class ObjectifyConnector implements DataConnector<Datastore> {
+public class LocalObjectifyConnector implements DataConnector<Datastore> {
 
 	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
-	private String projectId;
-	private Credentials credentials;
-
-	public ObjectifyConnector(String projectId, Credentials credentials) {
-		this.projectId = projectId;
-		this.credentials = credentials;
-	}
 
 	@Override
 	public Datastore connect(String modelPackage) {
-		Datastore store = DatastoreOptions.newBuilder()
-				.setProjectId(this.projectId).setCredentials(this.credentials)
-				.build().getService();
+		LocalDatastoreHelper helper = LocalDatastoreHelper.create();
+		Datastore store = helper.getOptions().getService();
+
 		ObjectifyService.init(new ObjectifyFactory(store));
 
 		Reflections reflections = new Reflections(modelPackage);
@@ -39,7 +33,7 @@ public class ObjectifyConnector implements DataConnector<Datastore> {
 			ObjectifyService.register(c);
 			logger.atFine().log("Entity class " + c.getSimpleName() + " has been registered !");
 		});
-		return null;
+		return store;
 	}
 
 }

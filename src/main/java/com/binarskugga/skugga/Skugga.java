@@ -1,6 +1,6 @@
 package com.binarskugga.skugga;
 
-import com.binarskugga.skugga.api.HttpServer;
+import com.binarskugga.skugga.api.*;
 import com.binarskugga.skugga.api.impl.handler.AccessControlHandler;
 import com.binarskugga.skugga.api.impl.handler.AuthHandler;
 import com.binarskugga.skugga.api.impl.handler.DefaultLoggingHandler;
@@ -16,17 +16,25 @@ import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class SkuggaHttp implements HttpServer {
+public class Skugga implements HttpServer {
 
 	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
 	private Undertow.Builder utBuilder;
 	private Undertow ut;
 
-	private SkuggaHttpHandler handler;
+	private SkuggaHandler handler;
 
-	public SkuggaHttp(SkuggaHttpHandler handler) {
+	public Skugga(SkuggaHandler handler) {
 		this.handler = handler;
+		utBuilder = Undertow.builder();
+	}
+
+	public Skugga(DataConnector connector, RequestHandler... handlers) {
+		this.handler = new SkuggaHandler(connector);
+		for(RequestHandler handler : handlers)
+			this.handler.append(handler);
+
 		utBuilder = Undertow.builder();
 	}
 
@@ -45,7 +53,6 @@ public class SkuggaHttp implements HttpServer {
 		}
 		this.handler.prepend(new AuthHandler());
 		this.handler.prepend(new AccessControlHandler());
-		this.handler.append(new DefaultLoggingHandler());
 
 		PathHandler mainHandler = Handlers.path();
 		mainHandler.addPrefixPath(ServerProperties.getRoot(), new EncodingHandler(new ContentEncodingRepository()

@@ -1,6 +1,6 @@
 package com.binarskugga.skugga;
 
-import com.binarskugga.skugga.api.RequestHandler;
+import com.binarskugga.skugga.api.*;
 import com.binarskugga.skugga.api.enums.HttpMethod;
 import com.binarskugga.skugga.api.enums.HttpStatus;
 import com.binarskugga.skugga.api.exception.http.HttpException;
@@ -9,8 +9,7 @@ import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
 import com.binarskugga.skugga.api.impl.endpoint.EndpointResolver;
 import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
 import com.binarskugga.skugga.api.impl.parse.*;
-import com.binarskugga.skugga.util.CryptoUtils;
-import com.binarskugga.skugga.util.ReflectionUtils;
+import com.binarskugga.skugga.util.*;
 import com.google.common.base.Charsets;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -25,13 +24,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements HttpHandler {
+public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHandler {
 
 	private final EndpointResolver endpointResolver;
 	private Map<Class<? extends AbstractController>, AbstractController> controllers;
+	private DataConnector connector;
 
-	public SkuggaHttpHandler() {
+	public SkuggaHandler(DataConnector connector) {
 		CryptoUtils.createKeysIfNotExists("token-sign");
+		ServerProperties.load(ResourceUtils.getServerProperties());
 
 		BodyParsingHandler.init();
 		ExceptionParsingHandler.init();
@@ -40,6 +41,15 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 
 		this.endpointResolver = new EndpointResolver(ServerProperties.getControllerPackage(), ServerProperties.getRoot());
 		this.controllers = new HashMap<>();
+
+		if(connector != null) {
+			this.connector = connector;
+			connector.connect(ServerProperties.getModelPackage());
+		}
+	}
+
+	public SkuggaHandler() {
+		this(null);
 	}
 
 	@Override
@@ -87,12 +97,14 @@ public class SkuggaHttpHandler extends LinkedList<RequestHandler> implements Htt
 		}
 	}
 
-	public void append(RequestHandler handler) {
+	public SkuggaHandler append(RequestHandler handler) {
 		this.add(handler);
+		return this;
 	}
 
-	public void prepend(RequestHandler handler) {
+	public SkuggaHandler prepend(RequestHandler handler) {
 		this.add(0, handler);
+		return this;
 	}
 
 	private boolean chain(HttpSession session) throws Exception {
