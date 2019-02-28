@@ -1,0 +1,8 @@
+<settings>
+	<servers>
+		<server>
+			<id>github</id>
+			<password>${env.GITHUB_KEY}</password>
+		</server>
+	</servers>
+</settings>

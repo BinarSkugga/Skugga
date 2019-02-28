@@ -5,25 +5,25 @@ jdk:
 
 cache:
   directories:
-  - $HOME/.m2
+    - "$HOME/.m2"
 
 install:
-  - mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
+  - "mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install"
 
 script:
-  - mvn resources:testResources compiler:testCompile surefire:test
+  - "mvn resources:testResources compiler:testCompile surefire:test"
 
 deploy:
   -
     provider: script
-    script: mvn deploy -P j8
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P j8"
     skip_cleanup: true
     on:
       all_branches: true
       jdk: oraclejdk8
   -
     provider: script
-    script: mvn deploy -P j11
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P j11"
     skip_cleanup: true
     on:
       all_branches: true
