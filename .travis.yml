@@ -23,4 +23,4 @@ deploy:
     skip_cleanup: true
     script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn jar:jar shade:shade deploy:deploy site:site -P $MVN_PROFILE
     on:
-      all_branches: true
+	  branch: master
