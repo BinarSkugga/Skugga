@@ -7,6 +7,7 @@ import com.binarskugga.skuggahttps.api.annotation.Post;
 import com.binarskugga.skuggahttps.api.exception.InvalidArgumentException;
 import com.binarskugga.skuggahttps.api.exception.auth.InvalidTokenException;
 import com.binarskugga.skuggahttps.api.exception.auth.LoginException;
+import com.binarskugga.skuggahttps.api.exception.auth.NoAuthException;
 import com.binarskugga.skuggahttps.api.exception.entity.EntityInexistantException;
 import com.binarskugga.skuggahttps.api.impl.endpoint.AuthController;
 import com.binarskugga.skuggahttps.api.impl.parse.MapParser;
@@ -21,6 +22,9 @@ public class TokenController extends AuthController {
 	@SuppressWarnings("unchecked")
 	@Post
 	public String ltt(Map<String, Object> loginMap) {
+		if(this.getAuthRepository() == null)
+			throw new NoAuthException();
+
 		Login login = (Login) MapParser.parse(Arrays.asList(Login.class.getDeclaredFields()), loginMap);
 		if (login == null)
 			throw new InvalidArgumentException();
@@ -41,6 +45,9 @@ public class TokenController extends AuthController {
 	@SuppressWarnings("unchecked")
 	@Post
 	public String stt(String ltt) {
+		if(this.getAuthRepository() == null)
+			throw new NoAuthException();
+
 		Token token = ReflectionUtils.constructOrNull(this.getTokenClass());
 		if (token == null)
 			throw new InvalidTokenException();
