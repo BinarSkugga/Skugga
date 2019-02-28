@@ -1,4 +1,3 @@
-language: java
 jdk:
 - oraclejdk8
 - oraclejdk11
@@ -7,12 +6,24 @@ cache:
   directories:
   - $HOME/.m2
 
+stages:
+  - install
+  - test
+  - deploy
+
 jobs:
   include:
-    - stage: install
+    -
+      stage: install
+      jdk: oraclejdk8
       script: mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
-    - stage: test
+    -
+      stage: test
       script: mvn resources:testResources compiler:testCompile surefire:test
-    - stage: deploy
+    -
+      stage: deploy
+      jdk: oraclejdk8
       script: mvn clean deploy -P j8
-    - script: mvn clean deploy -P j11
+    -
+      jdk: oraclejdk11
+      script: mvn clean deploy -P j11
