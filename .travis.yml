@@ -2,4 +2,4 @@ language: java
 jdk:
   - oraclejdk8
 install:
-  - mvn -Dmaven.test.skip=true -DskipTests clean install
+  - mvn clean:clean resources:resources compiler:compile jar:jar shade:shade install:install
