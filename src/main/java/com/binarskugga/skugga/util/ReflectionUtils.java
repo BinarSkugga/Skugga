@@ -1,7 +1,7 @@
 package com.binarskugga.skugga.util;
 
 import com.binarskugga.skugga.api.exception.ReflectiveContructFailedException;
-import com.google.common.flogger.*;
+import com.google.common.flogger.FluentLogger;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.annotation.Annotation;
@@ -200,6 +200,48 @@ public class ReflectionUtils {
 	public static boolean isIntegerNumericPrimitive(Class clazz) {
 		return clazz.equals(byte.class) || clazz.equals(short.class) || clazz.equals(int.class)
 				|| clazz.equals(long.class);
+	}
+
+	public static Class unboxClass(Class clazz) {
+		if(!isBoxedPrimitive(clazz) && !isBoxedPrimitiveArray(clazz)) return null;
+		else if(clazz.equals(Boolean.class)) return boolean.class;
+		else if(clazz.equals(Character.class)) return char.class;
+		else if(clazz.equals(Double.class)) return double.class;
+		else if(clazz.equals(Float.class)) return float.class;
+		else if(clazz.equals(Long.class)) return long.class;
+		else if(clazz.equals(Integer.class)) return int.class;
+		else if(clazz.equals(Short.class)) return short.class;
+		else if(clazz.equals(Byte.class)) return byte.class;
+		else if(clazz.equals(Boolean[].class)) return boolean[].class;
+		else if(clazz.equals(Character[].class)) return char[].class;
+		else if(clazz.equals(Double[].class)) return double[].class;
+		else if(clazz.equals(Float[].class)) return float[].class;
+		else if(clazz.equals(Long[].class)) return long[].class;
+		else if(clazz.equals(Integer[].class)) return int[].class;
+		else if(clazz.equals(Short[].class)) return short[].class;
+		else if(clazz.equals(Byte[].class)) return byte[].class;
+		else return null;
+	}
+
+	public static Class boxClass(Class clazz) {
+		if(!isPrimitive(clazz) && !isPrimitiveArray(clazz)) return null;
+		if(clazz.equals(boolean.class)) return Boolean.class;
+		else if(clazz.equals(char.class)) return Character.class;
+		else if(clazz.equals(double.class)) return Double.class;
+		else if(clazz.equals(float.class)) return Float.class;
+		else if(clazz.equals(long.class)) return Long.class;
+		else if(clazz.equals(int.class)) return Integer.class;
+		else if(clazz.equals(short.class)) return Short.class;
+		else if(clazz.equals(byte.class)) return Byte.class;
+		else if(clazz.equals(boolean[].class)) return Boolean[].class;
+		else if(clazz.equals(char[].class)) return Character[].class;
+		else if(clazz.equals(double[].class)) return Double[].class;
+		else if(clazz.equals(float[].class)) return Float[].class;
+		else if(clazz.equals(long[].class)) return Long[].class;
+		else if(clazz.equals(int[].class)) return Integer[].class;
+		else if(clazz.equals(short[].class)) return Short[].class;
+		else if(clazz.equals(byte[].class)) return Byte[].class;
+		else return null;
 	}
 
 	public static Object stringToPrimitive(String str, Class c) {

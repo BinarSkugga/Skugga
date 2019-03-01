@@ -16,15 +16,15 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
 		if (Collection.class.isAssignableFrom(value.getClass())) {
 			if (field.getType().equals(byte[].class))
-				return ArrayUtils.toPrimitive(((Collection<Byte>) value).toArray(new Byte[0]));
+				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Byte[0]));
 			else if (field.getType().equals(short[].class))
-				return ArrayUtils.toPrimitive(((Collection<Short>) value).toArray(new Short[0]));
+				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Short[0]));
 			else if (field.getType().equals(int[].class))
-				return ArrayUtils.toPrimitive(((Collection<Integer>) value).toArray(new Integer[0]));
+				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Integer[0]));
 			else if (field.getType().equals(long[].class))
-				return ArrayUtils.toPrimitive(((Collection<Long>) value).toArray(new Long[0]));
+				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Long[0]));
 			else if (field.getType().equals(float[].class))
-				return ArrayUtils.toPrimitive(((Collection<Float>) value).toArray(new Float[0]));
+				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Float[0]));
 			else if (field.getType().equals(double[].class))
 				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Double[0]));
 			else if (field.getType().equals(boolean[].class))
