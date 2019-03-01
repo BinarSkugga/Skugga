@@ -1,6 +1,7 @@
 package com.binarskugga.skugga.util;
 
 import com.binarskugga.skugga.api.exception.ReflectiveContructFailedException;
+import com.google.common.flogger.*;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.annotation.Annotation;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ReflectionUtils {
+
+	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
 	private ReflectionUtils() {
 	}
@@ -213,11 +216,15 @@ public class ReflectionUtils {
 				return Float.parseFloat(str);
 			else if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Double.class, double.class))
 				return Double.parseDouble(str);
-			else if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Boolean.class, boolean.class))
+			else if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Boolean.class, boolean.class)) {
+				if(!str.equalsIgnoreCase("true") && !str.equalsIgnoreCase("false"))
+					logger.atWarning().log("Sending a value other than true or false to boolean type, assuming false.");
 				return str.equalsIgnoreCase("true");
-			else if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Character.class, char.class))
+			} else if (ReflectionUtils.typeEqualsIgnoreBoxing(c, Character.class, char.class)) {
+				if(str.length() > 1)
+					logger.atWarning().log("Sending a string with more that one character to a char type.");
 				return str.charAt(0);
-			else
+			} else
 				return str;
 		} else return str;
 	}
@@ -236,9 +243,17 @@ public class ReflectionUtils {
 		else if (c.equals(double[].class))
 			return ArrayUtils.toPrimitive(Stream.of(str.split(separator)).map(Double::parseDouble).toArray(Double[]::new));
 		else if (c.equals(boolean[].class))
-			return ArrayUtils.toPrimitive(Stream.of(str.split(separator)).map(b -> b.equalsIgnoreCase("true")).toArray(Boolean[]::new));
+			return ArrayUtils.toPrimitive(Stream.of(str.split(separator)).map(b -> {
+				if(!b.equalsIgnoreCase("true") && !b.equalsIgnoreCase("false"))
+					logger.atWarning().log("Sending a value other than true or false to boolean type, assuming false.");
+				return b.equalsIgnoreCase("true");
+			}).toArray(Boolean[]::new));
 		else if (c.equals(char[].class))
-			return ArrayUtils.toPrimitive(Stream.of(str.split(separator)).map(ch -> ch.charAt(0)).toArray(Character[]::new));
+			return ArrayUtils.toPrimitive(Stream.of(str.split(separator)).map(ch -> {
+				if(ch.length() > 1)
+					logger.atWarning().log("Sending a string with more that one character to a char type.");
+				return ch.charAt(0);
+			}).toArray(Character[]::new));
 		else if (c.equals(Byte[].class))
 			return Stream.of(str.split(separator)).map(Byte::parseByte).toArray(Byte[]::new);
 		else if (c.equals(Short[].class))
@@ -252,9 +267,17 @@ public class ReflectionUtils {
 		else if (c.equals(Double[].class))
 			return Stream.of(str.split(separator)).map(Double::parseDouble).toArray(Double[]::new);
 		else if (c.equals(Boolean[].class))
-			return Stream.of(str.split(separator)).map(b -> b.equalsIgnoreCase("true")).toArray(Boolean[]::new);
+			return Stream.of(str.split(separator)).map(b -> {
+				if(!b.equalsIgnoreCase("true") && !b.equalsIgnoreCase("false"))
+					logger.atWarning().log("Sending a value other than true or false to boolean type, assuming false.");
+				return b.equalsIgnoreCase("true");
+			}).toArray(Boolean[]::new);
 		else if (c.equals(Character[].class))
-			return Stream.of(str.split(separator)).map(ch -> ch.charAt(0)).toArray(Character[]::new);
+			return Stream.of(str.split(separator)).map(ch -> {
+				if(ch.length() > 1)
+					logger.atWarning().log("Sending a string with more that one character to a char type.");
+				return ch.charAt(0);
+			}).toArray(Character[]::new);
 		else
 			return str;
 	}

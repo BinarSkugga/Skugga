@@ -68,7 +68,11 @@ public class HttpSession {
 
 	public String getContentType() {
 		if (endpoint == null) return ServerProperties.getContentType();
-		return this.endpoint.getContentType();
+		String contentType = this.endpoint.getContentType();
+		if(ReflectionUtils.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)
+				|| ReflectionUtils.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class))
+			contentType = "application/octet-stream";
+		return contentType;
 	}
 
 	public HttpMethod getRequestMethod() {

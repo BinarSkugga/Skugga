@@ -16,6 +16,8 @@ import com.binarskugga.skugga.util.ResourceUtils;
 import com.google.common.base.Charsets;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import org.apache.commons.lang3.*;
+import org.reflections.*;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -151,8 +153,12 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		if (endpoint.getMethod().acceptBody() && endpoint.getBodyType() != null) params.add(0, endpoint.getBody());
 		Object result = action.invoke(controller, params.toArray());
 
-		if (endpoint.getReturnType().equals(byte[].class)) {
+		if (ReflectionUtils.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class)) {
+			if(endpoint.getReturnType().equals(Byte[].class))
+				return ArrayUtils.toPrimitive((Byte[])result);
 			return (byte[]) result;
+		} else if (ReflectionUtils.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)) {
+			return new byte[]{ (byte) result };
 		} else if (endpoint.getReturnType().equals(void.class)) {
 			return new byte[0];
 		} else if (endpoint.getReturnType() instanceof ParameterizedType || endpoint.getReturnType() instanceof TypeVariable) {
