@@ -3,6 +3,7 @@ package com.binarskugga.skugga.api.impl.parse.field;
 import com.binarskugga.skugga.api.FieldParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 import com.binarskugga.skugga.util.ReflectionUtils;
+import com.binarskugga.skugga.util.conversion.PrimitiveConversionUtils;
 
 import java.lang.reflect.Field;
 
@@ -15,21 +16,10 @@ public class PrimitiveParser implements FieldParser<Object, Object> {
 		else if (CharSequence.class.isAssignableFrom(value.getClass())) {
 			CharSequence str = (CharSequence) value;
 			return ReflectionUtils.stringToPrimitive(str.toString(), field.getType());
-		} else if (Number.class.isAssignableFrom(value.getClass())) {
-			Number number = (Number) value;
-			if (ReflectionUtils.isNumericPrimitiveOrBoxed(field.getType()))
-				return value;
-			else if (ReflectionUtils.typeEqualsIgnoreBoxing(field.getType(), Boolean.class, boolean.class))
-				return number.intValue() == 1;
-			else if (ReflectionUtils.typeEqualsIgnoreBoxing(field.getType(), Character.class, char.class))
-				return (char) (number.intValue() + '0');
-		} else if (ReflectionUtils.typeEqualsIgnoreBoxing(value.getClass(), field.getType(), Boolean.class, boolean.class)) {
-			return value;
-		} else if (ReflectionUtils.typeEqualsIgnoreBoxing(value.getClass(), field.getType(), Character.class, char.class)) {
-			return value;
-		}
-
-		throw new CannotMapFieldException();
+		} else if (ReflectionUtils.isPrimitiveOrBoxed(value.getClass()))
+			return PrimitiveConversionUtils.single(value.getClass()).convertTo(field.getType(), value);
+		else
+			throw new CannotMapFieldException();
 	}
 
 	@Override

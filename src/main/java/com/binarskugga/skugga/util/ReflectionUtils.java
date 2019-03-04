@@ -90,7 +90,7 @@ public class ReflectionUtils {
 
 	public static <T> T safeConstruct(Class<T> declaring, Object... arguments) throws ReflectiveContructFailedException {
 		try {
-			Constructor<T> constructor = null;
+			Constructor<T> constructor;
 			if (arguments == null || arguments.length == 0)
 				constructor = declaring.getConstructor();
 			else {

@@ -16,7 +16,7 @@ public class Test {
 		LogManager.getLogManager().readConfiguration(ResourceUtils.getLoggingProperties());
 
 		Boolean[] data = new Boolean[] { true, false, false, false };
-		byte[] l = PrimitiveConversionUtils.of(Boolean[].class).convertTo(byte[].class, data);
+		byte[] l = PrimitiveConversionUtils.array(Boolean[].class).convertTo(byte[].class, data);
 
 		LocalObjectifyConnector connector = new LocalObjectifyConnector(LocalDatastoreHelper.create());
 		Skugga server = new Skugga(connector, new ObjectifyHandler(), new DefaultLoggingHandler());

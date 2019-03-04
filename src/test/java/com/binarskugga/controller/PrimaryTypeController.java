@@ -1,9 +1,9 @@
 package com.binarskugga.controller;
 
-import com.binarskugga.skugga.*;
-import com.binarskugga.skugga.api.annotation.*;
-import com.binarskugga.skugga.api.impl.endpoint.*;
-import org.bson.types.*;
+import com.binarskugga.skugga.api.annotation.Controller;
+import com.binarskugga.skugga.api.annotation.Get;
+import com.binarskugga.skugga.api.impl.endpoint.AbstractController;
+import org.bson.types.ObjectId;
 
 @Controller("primary-type")
 public class PrimaryTypeController extends AbstractController {

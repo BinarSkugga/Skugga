@@ -17,7 +17,7 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
 		if (Collection.class.isAssignableFrom(value.getClass())) {
 			Object array = ReflectionUtils.primitiveCollectionToArray((Collection) value);
-			return PrimitiveConversionUtils.of(array.getClass()).convertTo(field.getType(), array);
+			return PrimitiveConversionUtils.array(array.getClass()).convertTo(field.getType(), array);
 		}
 
 		throw new CannotMapFieldException();
