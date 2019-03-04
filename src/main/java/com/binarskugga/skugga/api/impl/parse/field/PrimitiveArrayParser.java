@@ -3,6 +3,7 @@ package com.binarskugga.skugga.api.impl.parse.field;
 import com.binarskugga.skugga.api.FieldParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 import com.binarskugga.skugga.util.ReflectionUtils;
+import com.binarskugga.skugga.util.conversion.PrimitiveConversionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -15,38 +16,8 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 	@SuppressWarnings("unchecked")
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
 		if (Collection.class.isAssignableFrom(value.getClass())) {
-			if (field.getType().equals(byte[].class))
-				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Byte[0]));
-			else if (field.getType().equals(short[].class))
-				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Short[0]));
-			else if (field.getType().equals(int[].class))
-				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Integer[0]));
-			else if (field.getType().equals(long[].class))
-				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Long[0]));
-			else if (field.getType().equals(float[].class))
-				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Float[0]));
-			else if (field.getType().equals(double[].class))
-				return ArrayUtils.toPrimitive(((Collection<Double>) value).toArray(new Double[0]));
-			else if (field.getType().equals(boolean[].class))
-				return ArrayUtils.toPrimitive(((Collection<Boolean>) value).toArray(new Boolean[0]));
-			else if (field.getType().equals(char[].class))
-				return ArrayUtils.toPrimitive(((Collection<Character>) value).toArray(new Character[0]));
-			else if (field.getType().equals(Byte[].class))
-				return ((Collection<Byte>) value).toArray(new Byte[0]);
-			else if (field.getType().equals(Short[].class))
-				return ((Collection<Short>) value).toArray(new Short[0]);
-			else if (field.getType().equals(Integer[].class))
-				return ((Collection<Integer>) value).toArray(new Integer[0]);
-			else if (field.getType().equals(Long[].class))
-				return ((Collection<Long>) value).toArray(new Long[0]);
-			else if (field.getType().equals(Float[].class))
-				return ((Collection<Float>) value).toArray(new Float[0]);
-			else if (field.getType().equals(Double[].class))
-				return ((Collection<Double>) value).toArray(new Double[0]);
-			else if (field.getType().equals(Boolean[].class))
-				return ((Collection<Boolean>) value).toArray(new Boolean[0]);
-			else if (field.getType().equals(Character[].class))
-				return ((Collection<Character>) value).toArray(new Character[0]);
+			Object array = ReflectionUtils.primitiveCollectionToArray((Collection) value);
+			return PrimitiveConversionUtils.of(array.getClass()).convertTo(field.getType(), array);
 		}
 
 		throw new CannotMapFieldException();

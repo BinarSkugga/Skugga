@@ -1,10 +1,21 @@
 package com.binarskugga.controller;
 
-import com.binarskugga.skugga.api.annotation.*;
+import com.binarskugga.model.SimpleModelImpl;
+import com.binarskugga.skugga.api.annotation.Controller;
+import com.binarskugga.skugga.api.annotation.Get;
+import com.binarskugga.skugga.api.annotation.Post;
 import com.binarskugga.skugga.api.impl.endpoint.AbstractController;
+import com.binarskugga.skugga.util.EntityUtils;
+
+import java.util.Map;
 
 @Controller("primitive-type")
 public class PrimitiveTypeController extends AbstractController {
+
+	@Post("body-conversion")
+	public void body_conversion(Map<String, Object> convert) {
+		EntityUtils.create(SimpleModelImpl.class, convert);
+	}
 
 	@Get("test-void")
 	public void test_get_void() {}

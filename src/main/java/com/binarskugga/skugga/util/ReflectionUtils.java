@@ -202,6 +202,34 @@ public class ReflectionUtils {
 				|| clazz.equals(long.class);
 	}
 
+	public static Class findPrimitiveCollectionType(Collection collection) {
+		Object zero = collection.stream().findFirst().orElse(null);
+		if(zero == null) return null;
+		return zero.getClass();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Object primitiveCollectionToArray(Collection collection) {
+		Class inner = findPrimitiveCollectionType(collection);
+		if(inner.equals(Boolean.class))
+			return collection.toArray(new Boolean[collection.size()]);
+		else if(inner.equals(Character.class))
+			return collection.toArray(new Character[collection.size()]);
+		else if(inner.equals(Double.class))
+			return collection.toArray(new Double[collection.size()]);
+		else if(inner.equals(Float.class))
+			return collection.toArray(new Float[collection.size()]);
+		else if(inner.equals(Long.class))
+			return collection.toArray(new Long[collection.size()]);
+		else if(inner.equals(Integer.class))
+			return collection.toArray(new Integer[collection.size()]);
+		else if(inner.equals(Short.class))
+			return collection.toArray(new Short[collection.size()]);
+		else if(inner.equals(Byte.class))
+			return collection.toArray(new Byte[collection.size()]);
+		else return null;
+	}
+
 	public static Class unboxClass(Class clazz) {
 		if(!isBoxedPrimitive(clazz) && !isBoxedPrimitiveArray(clazz)) return null;
 		else if(clazz.equals(Boolean.class)) return boolean.class;
