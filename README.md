@@ -10,7 +10,11 @@ data with your controllers, your http exchange and your session handlers.
 ```xml
 <repository>
 	<id>skugga.repo</id>
-	<url>https://rawgit.com/binarskugga/skugga/maven</url>
+	<url>https://raw.github.com/binarskugga/skugga/maven</url>
+	<snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+    </snapshots>
 </repository>
 ```
 #### JDK 11

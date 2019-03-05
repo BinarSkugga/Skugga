@@ -30,6 +30,8 @@ public class MapParser {
 							value = MapParser.parse(PrimitivaReflection.getAllFields(f.getType()), (Map<String, Object>) value);
 						else if (parser != null)
 							value = parser.parse(f, value);
+						else
+							throw new InvalidFieldException();
 					}
 
 					PrimitivaReflection.setField(f, instance, value);
