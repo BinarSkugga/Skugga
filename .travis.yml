@@ -7,9 +7,9 @@ matrix:
     - jdk: oraclejdk11
       env: MVN_PROFILE=j11
 
-#cache:
-  #directories:
-    #- $HOME/.m2
+cache:
+  directories:
+    - $HOME/.m2
 
 install:
   - mvn clean:clean resources:resources compiler:compile jar:jar install:install -P $MVN_PROFILE
