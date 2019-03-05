@@ -17,7 +17,7 @@ public class PrimitiveParser implements FieldParser<Object, Object> {
 			return value;
 		else if (CharSequence.class.isAssignableFrom(value.getClass())) {
 			CharSequence str = (CharSequence) value;
-			return PrimitivaReflection.stringToPrimitive(str.toString(), field.getType());
+			return PrimitivaConversion.single(String.class).convertTo(field.getType(), str.toString());
 		} else if (PrimitivaReflection.isPrimitiveOrBoxed(value.getClass())) {
 			PrimitivaConverter<Object> primitiveConverter = PrimitivaConversion.single((Class<Object>) value.getClass());
 			return primitiveConverter.convertTo(field.getType(), value);

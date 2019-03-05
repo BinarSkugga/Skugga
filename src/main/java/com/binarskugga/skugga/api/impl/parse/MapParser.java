@@ -12,8 +12,7 @@ import java.util.Map;
 
 public class MapParser {
 
-	private MapParser() {
-	}
+	private MapParser() {}
 
 	@SuppressWarnings("unchecked")
 	public static Object parse(List<Field> fields, Map<String, Object> input) {
@@ -25,8 +24,13 @@ public class MapParser {
 					FieldParser parser = parsingHandler.getParser(f, PrimitivaReflection.getFieldAnnotationOrNull(f, UseParser.class));
 
 					Object value = input.get(f.getName());
-					if (value != null && parser != null)
-						value = parser.parse(f, value);
+
+					if(value != null) {
+						if (Map.class.isAssignableFrom(value.getClass()) && !Map.class.isAssignableFrom(f.getType()))
+							value = MapParser.parse(PrimitivaReflection.getAllFields(f.getType()), (Map<String, Object>) value);
+						else if (parser != null)
+							value = parser.parse(f, value);
+					}
 
 					PrimitivaReflection.setField(f, instance, value);
 				}
