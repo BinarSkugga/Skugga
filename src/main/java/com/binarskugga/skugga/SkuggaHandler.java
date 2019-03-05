@@ -152,24 +152,26 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		if (endpoint.getMethod().acceptBody() && endpoint.getBodyType() != null) params.add(0, endpoint.getBody());
 		Object result = action.invoke(controller, params.toArray());
 
-		if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class)) {
-			if(endpoint.getReturnType().equals(Byte[].class))
-				return ArrayUtils.toPrimitive((Byte[])result);
-			return (byte[]) result;
-		} else if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)) {
-			return new byte[]{ (byte) result };
-		} else if (endpoint.getReturnType().equals(void.class)) {
-			return new byte[0];
-		} else if (endpoint.getReturnType() instanceof ParameterizedType || endpoint.getReturnType() instanceof TypeVariable) {
+		if(!(endpoint.getReturnType() instanceof ParameterizedType) && !(endpoint.getReturnType() instanceof TypeVariable)) {
+			if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class)) {
+				if (endpoint.getReturnType().equals(Byte[].class))
+					return ArrayUtils.toPrimitive((Byte[]) result);
+				return (byte[]) result;
+			} else if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)) {
+				return new byte[]{(byte) result};
+			} else if (endpoint.getReturnType().equals(void.class)) {
+				return new byte[0];
+			} else {
+				BodyInformation information = new BodyInformation(new Type[]{endpoint.getReturnType()}, null, session);
+				return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
+			}
+		} else {
 			ParameterizedType pType;
 			if (endpoint.getReturnType() instanceof TypeVariable)
 				pType = ((ParameterizedType) (((TypeVariable) endpoint.getReturnType()).getBounds()[0]));
 			else pType = (ParameterizedType) endpoint.getReturnType();
 
 			BodyInformation information = new BodyInformation(pType.getActualTypeArguments(), (Class) pType.getRawType(), session);
-			return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
-		} else {
-			BodyInformation information = new BodyInformation(new Type[]{endpoint.getReturnType()}, null, session);
 			return ((String) session.getBodyParser().unparse(information, result)).getBytes(Charsets.UTF_8);
 		}
 	}
