@@ -1,10 +1,10 @@
 package com.binarskugga.skugga.api.impl.parse;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.Parser;
 import com.binarskugga.skugga.api.annotation.IgnoreParser;
 import com.binarskugga.skugga.api.annotation.UseParser;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -28,7 +28,7 @@ public abstract class ParsingHandler<P extends Parser, T> {
 		);
 		for (Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
 			if (!parserClass.isAnnotationPresent(IgnoreParser.class))
-				parsers.add(ReflectionUtils.constructOrNull(parserClass));
+				parsers.add(PrimitivaReflection.constructOrNull(parserClass));
 		}
 	}
 
@@ -44,7 +44,7 @@ public abstract class ParsingHandler<P extends Parser, T> {
 		if (useParserAnnotation != null) {
 			Class clazz = useParserAnnotation.value();
 			if (this.parserClass.isAssignableFrom(clazz)) {
-				parser = (P) ReflectionUtils.constructOrNull(clazz);
+				parser = (P) PrimitivaReflection.constructOrNull(clazz);
 				if (parser == null) parser = defaultParser;
 			}
 		}

@@ -1,5 +1,6 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.BodyParser;
 import com.binarskugga.skugga.api.ExceptionParser;
@@ -10,7 +11,6 @@ import com.binarskugga.skugga.api.enums.HttpHeader;
 import com.binarskugga.skugga.api.enums.HttpMethod;
 import com.binarskugga.skugga.api.impl.parse.BodyParsingHandler;
 import com.binarskugga.skugga.api.impl.parse.ExceptionParsingHandler;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.HeaderValues;
@@ -69,8 +69,8 @@ public class HttpSession {
 	public String getContentType() {
 		if (endpoint == null) return ServerProperties.getContentType();
 		String contentType = this.endpoint.getContentType();
-		if(ReflectionUtils.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)
-				|| ReflectionUtils.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class))
+		if(PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)
+				|| PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class))
 			contentType = "application/octet-stream";
 		return contentType;
 	}
@@ -82,7 +82,7 @@ public class HttpSession {
 	@SuppressWarnings("unchecked")
 	public <T extends BodyParser> T getBodyParser() {
 		if (this.endpoint != null) {
-			return (T) BodyParsingHandler.get().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+			return (T) BodyParsingHandler.get().getParser(this.endpoint, PrimitivaReflection.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
 		} else {
 			return (T) BodyParsingHandler.get().getParsers().get(0);
 		}
@@ -91,7 +91,7 @@ public class HttpSession {
 	@SuppressWarnings("unchecked")
 	public <T extends ExceptionParser> T getExceptionParser() {
 		if (this.endpoint != null) {
-			return (T) ExceptionParsingHandler.get().getParser(this.endpoint, ReflectionUtils.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+			return (T) ExceptionParsingHandler.get().getParser(this.endpoint, PrimitivaReflection.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
 		} else {
 			return (T) ExceptionParsingHandler.get().getParsers().get(0);
 		}

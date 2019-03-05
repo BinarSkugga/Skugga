@@ -1,9 +1,10 @@
 package com.binarskugga.skugga.api.impl.parse.field;
 
+import com.binarskugga.primitiva.conversion.PrimitivaArrayConverter;
+import com.binarskugga.primitiva.conversion.PrimitivaConversion;
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.FieldParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
-import com.binarskugga.skugga.util.ReflectionUtils;
-import com.binarskugga.skugga.util.conversion.PrimitiveConversionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -16,8 +17,9 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 	@SuppressWarnings("unchecked")
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
 		if (Collection.class.isAssignableFrom(value.getClass())) {
-			Object array = ReflectionUtils.primitiveCollectionToArray((Collection) value);
-			return PrimitiveConversionUtils.array(array.getClass()).convertTo(field.getType(), array);
+			Object array = PrimitivaReflection.primitiveCollectionToArray((Collection) value);
+			PrimitivaArrayConverter<Object> arrayParser = PrimitivaConversion.array((Class<Object>) array.getClass());
+			return arrayParser.convertTo(field.getType(), array);
 		}
 
 		throw new CannotMapFieldException();
@@ -63,7 +65,7 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 
 	@Override
 	public boolean predicate(Field c) {
-		return ReflectionUtils.isPrimitiveArrayOrBoxed(c.getType());
+		return PrimitivaReflection.isPrimitiveArrayOrBoxed(c.getType());
 	}
 
 }

@@ -1,10 +1,13 @@
 package com.binarskugga.skugga.util;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.AuthentifiableEntity;
 import com.binarskugga.skugga.api.BaseEntity;
 import com.binarskugga.skugga.api.annotation.*;
 import com.binarskugga.skugga.api.enums.InclusionMode;
-import com.binarskugga.skugga.api.exception.entity.*;
+import com.binarskugga.skugga.api.exception.entity.EntityNotCreatableException;
+import com.binarskugga.skugga.api.exception.entity.EntityNotObtainableException;
+import com.binarskugga.skugga.api.exception.entity.EntityNotUpdatableException;
 import com.binarskugga.skugga.api.impl.parse.MapParser;
 
 import java.lang.reflect.Field;
@@ -19,7 +22,7 @@ public class EntityUtils {
 
 	public static boolean isCreatable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
 		String role = logged == null ? null : logged.getRoleName();
-		Creatable creatable = ReflectionUtils.getClassAnnotationOrNull(entityClass, Creatable.class);
+		Creatable creatable = PrimitivaReflection.getClassAnnotationOrNull(entityClass, Creatable.class);
 		if (creatable != null) {
 			List<String> roles = Arrays.asList(creatable.roles());
 			return roles.contains("*") || roles.contains(role);
@@ -29,7 +32,7 @@ public class EntityUtils {
 
 	public static boolean isUpdatable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
 		String role = logged == null ? null : logged.getRoleName();
-		Updatable updatable = ReflectionUtils.getClassAnnotationOrNull(entityClass, Updatable.class);
+		Updatable updatable = PrimitivaReflection.getClassAnnotationOrNull(entityClass, Updatable.class);
 		if (updatable != null) {
 			List<String> roles = Arrays.asList(updatable.roles());
 			return roles.contains("*") || roles.contains(role);
@@ -39,7 +42,7 @@ public class EntityUtils {
 
 	public static boolean isObtainable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
 		String role = logged == null ? null : logged.getRoleName();
-		Obtainable obtainable = ReflectionUtils.getClassAnnotationOrNull(entityClass, Obtainable.class);
+		Obtainable obtainable = PrimitivaReflection.getClassAnnotationOrNull(entityClass, Obtainable.class);
 		if (obtainable != null) {
 			List<String> roles = Arrays.asList(obtainable.roles());
 			return roles.contains("*") || roles.contains(role);
