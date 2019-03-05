@@ -18,6 +18,8 @@ import io.undertow.util.HeaderValuesFactory;
 import io.undertow.util.HttpString;
 import lombok.*;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,9 +71,11 @@ public class HttpSession {
 	public String getContentType() {
 		if (endpoint == null) return ServerProperties.getContentType();
 		String contentType = this.endpoint.getContentType();
-		if(PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)
-				|| PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class))
-			contentType = "application/octet-stream";
+		if(!(endpoint.getReturnType() instanceof  ParameterizedType) && !(endpoint.getReturnType() instanceof TypeVariable)) {
+			if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)
+					|| PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class))
+				contentType = "application/octet-stream";
+		}
 		return contentType;
 	}
 
