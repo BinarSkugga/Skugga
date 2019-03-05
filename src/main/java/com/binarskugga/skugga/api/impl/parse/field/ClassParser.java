@@ -1,8 +1,8 @@
 package com.binarskugga.skugga.api.impl.parse.field;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.FieldParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
-import com.binarskugga.skugga.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
@@ -13,7 +13,7 @@ public class ClassParser implements FieldParser<Class, Object> {
 		if (value.getClass().equals(Class.class))
 			return (Class) value;
 		else if (CharSequence.class.isAssignableFrom(value.getClass()))
-			return ReflectionUtils.forNameOrNull((String) value);
+			return PrimitivaReflection.forNameOrNull((String) value);
 		else
 			throw new CannotMapFieldException();
 	}

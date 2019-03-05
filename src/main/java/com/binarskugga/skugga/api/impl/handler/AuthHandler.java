@@ -1,5 +1,6 @@
 package com.binarskugga.skugga.api.impl.handler;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.RequestHandler;
 import com.binarskugga.skugga.api.Token;
@@ -9,7 +10,6 @@ import com.binarskugga.skugga.api.exception.auth.InsufficientRoleException;
 import com.binarskugga.skugga.api.exception.auth.InvalidTokenException;
 import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
 import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -28,11 +28,11 @@ public class AuthHandler implements RequestHandler {
 	public boolean handle(HttpSession session) throws RuntimeException {
 		Endpoint endpoint = session.getEndpoint();
 		Class controller = endpoint.getController();
-		if (ReflectionUtils.getMethodAnnotationOrNull(endpoint.getAction(), NotConnected.class) != null)
+		if (PrimitivaReflection.getMethodAnnotationOrNull(endpoint.getAction(), NotConnected.class) != null)
 			return true;
 
-		Connected connected = ReflectionUtils.getMethodAnnotationOrNull(endpoint.getAction(), Connected.class);
-		if (connected == null) connected = ReflectionUtils.getClassAnnotationOrNull(controller, Connected.class);
+		Connected connected = PrimitivaReflection.getMethodAnnotationOrNull(endpoint.getAction(), Connected.class);
+		if (connected == null) connected = PrimitivaReflection.getClassAnnotationOrNull(controller, Connected.class);
 		if (connected == null) return true;
 
 		List<String> roles = Arrays.stream(connected.roles()).map(String::toUpperCase).collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class AuthHandler implements RequestHandler {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Token> T createToken(Cookie cookie) throws SignatureException, ExpiredJwtException, MalformedJwtException, UnsupportedJwtException {
-		Token token = ReflectionUtils.constructOrNull(ServerProperties.getTokenClass());
+		Token token = PrimitivaReflection.constructOrNull(ServerProperties.getTokenClass());
 		if (token == null) return null;
 
 		token.parse(cookie.getValue());

@@ -1,11 +1,11 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.AuthentifiableEntity;
 import com.binarskugga.skugga.api.DataRepository;
 import com.binarskugga.skugga.api.Token;
 import com.binarskugga.skugga.api.annotation.Authenticator;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import lombok.Getter;
 import org.reflections.Reflections;
 
@@ -22,12 +22,12 @@ public abstract class AuthController extends AbstractController {
 		super.setSession(session);
 		Reflections reflections = new Reflections(ServerProperties.getModelPackage());
 		List<Class<? extends AuthentifiableEntity>> authenticatorClasses = reflections.getSubTypesOf(AuthentifiableEntity.class).stream()
-				.filter(c -> ReflectionUtils.getClassAnnotationOrNull(c, Authenticator.class) != null)
+				.filter(c -> PrimitivaReflection.getClassAnnotationOrNull(c, Authenticator.class) != null)
 				.collect(Collectors.toList());
 		if (authenticatorClasses.size() > 0) {
 			Class<? extends AuthentifiableEntity> authenticatorClass = authenticatorClasses.get(0);
 			Class<? extends DataRepository> repositoryClass = authenticatorClass.getAnnotation(Authenticator.class).value();
-			this.authRepository = ReflectionUtils.constructOrNull(repositoryClass, authenticatorClass);
+			this.authRepository = PrimitivaReflection.constructOrNull(repositoryClass, authenticatorClass);
 			this.tokenClass = ServerProperties.getTokenClass();
 		}
 		return this;

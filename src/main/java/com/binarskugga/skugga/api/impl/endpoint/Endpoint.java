@@ -1,5 +1,6 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.ParameterParser;
 import com.binarskugga.skugga.api.annotation.UseParser;
@@ -10,7 +11,6 @@ import com.binarskugga.skugga.api.exception.InvalidBodyException;
 import com.binarskugga.skugga.api.impl.parse.BodyInformation;
 import com.binarskugga.skugga.api.impl.parse.ParameterParsingHandler;
 import com.binarskugga.skugga.util.EndpointUtils;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import lombok.*;
@@ -63,7 +63,7 @@ public class Endpoint {
 			for (int i = 0, p = 0; i < brokenEndpoint.length; i++) {
 				if (brokenEndpoint[i].equals("$")) {
 					Parameter parameter = parameters[p++];
-					ParameterParser parser = parsingHandler.getParser(parameter, ReflectionUtils.getParamAnnotationOrNull(parameter, UseParser.class));
+					ParameterParser parser = parsingHandler.getParser(parameter, PrimitivaReflection.getParamAnnotationOrNull(parameter, UseParser.class));
 					args.add(parser.parse(parameter, brokenRequest[i]));
 				}
 			}

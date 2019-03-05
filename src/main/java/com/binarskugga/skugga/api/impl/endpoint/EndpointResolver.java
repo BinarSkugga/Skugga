@@ -1,10 +1,10 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.annotation.*;
 import com.binarskugga.skugga.api.enums.HttpMethod;
 import com.binarskugga.skugga.impl.TokenController;
 import com.binarskugga.skugga.util.EndpointUtils;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import com.google.common.flogger.FluentLogger;
 import lombok.Getter;
 import org.reflections.Reflections;
@@ -70,7 +70,7 @@ public class EndpointResolver {
 	public void registerController(String root, Class<? extends AbstractController> controller) {
 		String controllerPath = EndpointUtils.getControllerPath(root, controller);
 
-		Set<Method> methods = ReflectionUtils.getAllMethods(controller).stream().filter(m ->
+		Set<Method> methods = PrimitivaReflection.getAllMethods(controller).stream().filter(m ->
 				(m.isAnnotationPresent(Get.class) || m.isAnnotationPresent(Post.class))
 						&& !Modifier.isVolatile(m.getModifiers())
 		).collect(Collectors.toSet());

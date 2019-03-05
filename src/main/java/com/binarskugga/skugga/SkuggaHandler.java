@@ -1,5 +1,6 @@
 package com.binarskugga.skugga;
 
+import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.DataConnector;
 import com.binarskugga.skugga.api.RequestHandler;
 import com.binarskugga.skugga.api.enums.HttpMethod;
@@ -11,11 +12,11 @@ import com.binarskugga.skugga.api.impl.endpoint.EndpointResolver;
 import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
 import com.binarskugga.skugga.api.impl.parse.*;
 import com.binarskugga.skugga.util.CryptoUtils;
-import com.binarskugga.skugga.util.ReflectionUtils;
 import com.binarskugga.skugga.util.ResourceUtils;
 import com.google.common.base.Charsets;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -142,7 +143,7 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		if (this.controllers.containsKey(endpoint.getController()))
 			controller = this.controllers.get(endpoint.getController());
 		else {
-			controller = ReflectionUtils.safeConstruct(endpoint.getController());
+			controller = PrimitivaReflection.safeConstruct(endpoint.getController());
 			this.controllers.putIfAbsent(endpoint.getController(), controller);
 		}
 		controller.setSession(session);
@@ -151,8 +152,12 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		if (endpoint.getMethod().acceptBody() && endpoint.getBodyType() != null) params.add(0, endpoint.getBody());
 		Object result = action.invoke(controller, params.toArray());
 
-		if (endpoint.getReturnType().equals(byte[].class)) {
+		if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class)) {
+			if(endpoint.getReturnType().equals(Byte[].class))
+				return ArrayUtils.toPrimitive((Byte[])result);
 			return (byte[]) result;
+		} else if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)) {
+			return new byte[]{ (byte) result };
 		} else if (endpoint.getReturnType().equals(void.class)) {
 			return new byte[0];
 		} else if (endpoint.getReturnType() instanceof ParameterizedType || endpoint.getReturnType() instanceof TypeVariable) {

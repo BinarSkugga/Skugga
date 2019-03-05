@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -13,9 +12,9 @@
 
 		<!-- MAVEN -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<github.global.server>github</github.global.server>
 		<maven.compiler.source>${deployment.java.version}</maven.compiler.source>
 		<maven.compiler.target>${deployment.java.version}</maven.compiler.target>
+		<github.global.server>github</github.global.server>
 
 		<!-- UTILS -->
 		<versions.google.guava>27.0.1-jre</versions.google.guava>
@@ -26,6 +25,7 @@
 		<versions.projectlombok>1.18.4</versions.projectlombok>
 		<versions.slf4j.jdk14>1.7.25</versions.slf4j.jdk14>
 		<versions.google.flogger>0.3.1</versions.google.flogger>
+		<versions.binarskugga.primitiva>1.0</versions.binarskugga.primitiva>
 
 		<!-- CORE -->
 		<versions.undertow.core>2.0.16.Final</versions.undertow.core>
@@ -80,15 +80,33 @@
 		</license>
 	</licenses>
 
+	<repositories>
+		<repository>
+			<id>primitiva.repo</id>
+			<url>https://raw.github.com/binarskugga/primitiva/maven</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<distributionManagement>
 		<repository>
-			<id>${deployment.artifact.id}.repo</id>
+			<id>internal.repo</id>
 			<url>file://${project.build.directory}/maven</url>
 		</repository>
 	</distributionManagement>
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/maven</altDeploymentRepository>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
@@ -184,6 +202,11 @@
 					<groupId>com.google.code.findbugs</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.binarskugga</groupId>
+			<artifactId>primitiva</artifactId>
+			<version>${versions.binarskugga.primitiva}</version>
 		</dependency>
 
 		<!-- CORE -->
