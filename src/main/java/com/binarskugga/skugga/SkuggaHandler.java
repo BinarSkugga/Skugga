@@ -38,10 +38,10 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 			CryptoUtils.createKeysIfNotExists("token-sign");
 			ServerProperties.load(ResourceUtils.getServerProperties());
 
-			BodyParsingHandler.init();
-			ExceptionParsingHandler.init();
-			FieldParsingHandler.init();
-			ParameterParsingHandler.init();
+			BodyParsingHandler.get();
+			ExceptionParsingHandler.get();
+			FieldParsingHandler.get();
+			ParameterParsingHandler.get();
 
 			this.endpointResolver = new EndpointResolver(ServerProperties.getControllerPackage(), ServerProperties.getRoot());
 			this.controllers = new HashMap<>();

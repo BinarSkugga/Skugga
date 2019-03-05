@@ -8,6 +8,7 @@ import com.binarskugga.skugga.api.annotation.UseParser;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ParsingHandler<P extends Parser, T> {
@@ -16,10 +17,12 @@ public abstract class ParsingHandler<P extends Parser, T> {
 
 	public ParsingHandler(Class<? extends Parser> parserClass) {
 		this.parserClass = parserClass;
+		this.init(parserClass);
 	}
 
 	@SuppressWarnings("unchecked")
-	static void init(Class<? extends Parser> parserType, List parsers) {
+	private void init(Class<? extends Parser> parserType) {
+		List<P> parsers = new ArrayList<>();
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().forPackages(
 						"com.binarskugga.skugga",
@@ -28,11 +31,13 @@ public abstract class ParsingHandler<P extends Parser, T> {
 		);
 		for (Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
 			if (!parserClass.isAnnotationPresent(IgnoreParser.class))
-				parsers.add(PrimitivaReflection.constructOrNull(parserClass));
+				parsers.add((P) PrimitivaReflection.constructOrNull(parserClass));
 		}
+		this.setParsers(parsers);
 	}
 
 	public abstract List<P> getParsers();
+	public abstract void setParsers(List<P> parsers);
 
 	@SuppressWarnings("unchecked")
 	public P getParser(T context, UseParser useParserAnnotation) {

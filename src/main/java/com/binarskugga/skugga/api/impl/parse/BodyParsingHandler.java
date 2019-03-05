@@ -1,33 +1,31 @@
 package com.binarskugga.skugga.api.impl.parse;
 
 import com.binarskugga.skugga.api.BodyParser;
-import com.binarskugga.skugga.api.exception.NoBodyParserException;
 import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Synchronized;
+import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BodyParsingHandler extends ParsingHandler<BodyParser, Endpoint> {
 
-	private static List<BodyParser> parsers;
+	private static BodyParsingHandler instance;
+
+	@Accessors(chain = false)
+	@Getter @Setter private List<BodyParser> parsers;
 
 	private BodyParsingHandler() {
 		super(BodyParser.class);
 	}
 
+	@Synchronized
 	public static BodyParsingHandler get() {
-		return new BodyParsingHandler();
-	}
+		if(instance == null)
+			instance = new BodyParsingHandler();
 
-	public static void init() {
-		parsers = new ArrayList<>();
-		ParsingHandler.init(BodyParser.class, parsers);
-		if(parsers.size() == 0) throw new NoBodyParserException();
-	}
-
-	@Override
-	public List<BodyParser> getParsers() {
-		return parsers;
+		return instance;
 	}
 
 }

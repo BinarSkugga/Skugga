@@ -1,31 +1,31 @@
 package com.binarskugga.skugga.api.impl.parse;
 
 import com.binarskugga.skugga.api.FieldParser;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Synchronized;
+import lombok.experimental.Accessors;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FieldParsingHandler extends ParsingHandler<FieldParser, Field> {
 
-	private static List<FieldParser> parsers;
+	private static FieldParsingHandler instance;
+
+	@Accessors(chain = false)
+	@Getter @Setter private List<FieldParser> parsers;
 
 	private FieldParsingHandler() {
 		super(FieldParser.class);
 	}
 
+	@Synchronized
 	public static FieldParsingHandler get() {
-		return new FieldParsingHandler();
-	}
+		if(instance == null)
+			instance = new FieldParsingHandler();
 
-	public static void init() {
-		parsers = new ArrayList<>();
-		ParsingHandler.init(FieldParser.class, parsers);
-	}
-
-	@Override
-	public List<FieldParser> getParsers() {
-		return parsers;
+		return instance;
 	}
 
 }
