@@ -26,7 +26,7 @@ public class MapParser {
 					Object value = input.get(f.getName());
 
 					if(value != null) {
-						if (Map.class.isAssignableFrom(value.getClass()) && !Map.class.isAssignableFrom(f.getType()))
+						if (Map.class.isAssignableFrom(value.getClass()) && !Map.class.isAssignableFrom(f.getType()) && parser == null)
 							value = MapParser.parse(PrimitivaReflection.getAllFields(f.getType()), (Map<String, Object>) value);
 						else if (parser != null)
 							value = parser.parse(f, value);
