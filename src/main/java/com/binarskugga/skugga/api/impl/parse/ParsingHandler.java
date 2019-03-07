@@ -25,14 +25,16 @@ public abstract class ParsingHandler<P extends Parser, T> {
 		List<P> parsers = new ArrayList<>();
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().forPackages(
-						"com.binarskugga.skugga",
-						ServerProperties.getRootPackage()
+						ServerProperties.getRootPackage(),
+						"com.binarskugga.skugga"
 				)
 		);
+
 		for (Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
 			if (!parserClass.isAnnotationPresent(IgnoreParser.class))
 				parsers.add((P) PrimitivaReflection.constructOrNull(parserClass));
 		}
+
 		this.setParsers(parsers);
 	}
 
