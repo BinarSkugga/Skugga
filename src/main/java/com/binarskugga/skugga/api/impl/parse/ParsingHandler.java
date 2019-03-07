@@ -48,8 +48,10 @@ public abstract class ParsingHandler<P extends Parser, T> {
 	@SuppressWarnings("unchecked")
 	public P getParser(T context, UseParser useParserAnnotation) {
 		P defaultParser = null;
-		for (P parser : this.getParsers())
+		for (P parser : this.getParsers()) {
+			if (defaultParser != null) continue;
 			if (parser.predicate(context)) defaultParser = parser;
+		}
 
 		P parser = defaultParser;
 		if (useParserAnnotation != null) {
