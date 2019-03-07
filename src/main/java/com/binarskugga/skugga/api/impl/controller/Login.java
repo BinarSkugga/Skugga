@@ -1,4 +1,4 @@
-package com.binarskugga.skugga.impl;
+package com.binarskugga.skugga.api.impl.controller;
 
 import lombok.*;
 

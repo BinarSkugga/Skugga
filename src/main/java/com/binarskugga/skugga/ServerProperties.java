@@ -20,6 +20,7 @@ public class ServerProperties {
 	@Getter private static int port;
 	@Getter private static String root;
 
+	@Getter private static String skuggaPackage = "com.binarskugga.skugga";
 	@Getter private static String rootPackage;
 	@Getter private static String controllerPackage;
 	@Getter private static String modelPackage;

@@ -26,13 +26,13 @@ public abstract class ParsingHandler<P extends Parser, T> {
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().forPackages(
 						ServerProperties.getRootPackage(),
-						"com.binarskugga.skugga"
+						ServerProperties.getSkuggaPackage()
 				)
 		);
 
 		List<P> defaultParsers = new LinkedList<>();
 		for (Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
-			if(parserClass.getName().startsWith("com.binarskugga.skugga"))
+			if(parserClass.getName().startsWith(ServerProperties.getSkuggaPackage()))
 				defaultParsers.add((P) PrimitivaReflection.constructOrNull(parserClass));
 			else if (!parserClass.isAnnotationPresent(IgnoreParser.class))
 				parsers.add((P) PrimitivaReflection.constructOrNull(parserClass));

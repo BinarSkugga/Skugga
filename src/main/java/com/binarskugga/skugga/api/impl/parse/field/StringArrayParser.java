@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class StringArrayParser implements FieldParser<CharSequence[], Object> {
+public class StringArrayParser implements FieldParser<CharSequence[]> {
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -15,11 +15,11 @@ public class StringArrayParser implements FieldParser<CharSequence[], Object> {
 		if (value.getClass().equals(CharSequence[].class))
 			return (CharSequence[]) value;
 		else if (Collection.class.isAssignableFrom(value.getClass()))
-			return (CharSequence[]) ((Collection) value).stream().map(Object::toString).toArray(String[]::new);
+			return (CharSequence[]) ((Collection) value).stream().map(Object::toString).toArray(CharSequence[]::new);
 		else if (CharSequence.class.isAssignableFrom(value.getClass()))
 			return ((CharSequence) value).toString().split(",");
-		else
-			throw new CannotMapFieldException();
+
+		throw new CannotMapFieldException();
 	}
 
 	@Override

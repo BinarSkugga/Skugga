@@ -5,7 +5,7 @@ import com.binarskugga.skugga.api.Role;
 
 import java.lang.reflect.Parameter;
 
-public class RoleParser implements ParameterParser<Role, String> {
+public class RoleParser implements ParameterParser<Role> {
 
 	@Override public Role parse(Parameter param, String s) throws Exception {
 		return () -> s;

@@ -10,16 +10,16 @@ import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-public class MoshiBodyParser implements BodyParser<String> {
+public class MoshiBodyParser implements BodyParser {
 
 	@Override
-	public Object parse(BodyInformation information, String body) throws IOException {
-		return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).fromJson(body);
+	public Object parse(BodyInformation information, Object body) throws IOException {
+		return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).fromJson((String) body);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public String unparse(BodyInformation information, Object body) throws IOException {
+	public Object unparse(BodyInformation information, Object body) throws IOException {
 		return this.createAdapter(information.getInnerTypes(), information.getCollectionClass()).toJson(body);
 	}
 

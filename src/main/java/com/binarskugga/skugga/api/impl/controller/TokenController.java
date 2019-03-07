@@ -1,4 +1,4 @@
-package com.binarskugga.skugga.impl;
+package com.binarskugga.skugga.api.impl.controller;
 
 import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.AuthentifiableEntity;

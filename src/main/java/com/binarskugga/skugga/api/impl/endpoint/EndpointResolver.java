@@ -3,7 +3,7 @@ package com.binarskugga.skugga.api.impl.endpoint;
 import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.annotation.*;
 import com.binarskugga.skugga.api.enums.HttpMethod;
-import com.binarskugga.skugga.impl.TokenController;
+import com.binarskugga.skugga.api.impl.controller.TokenController;
 import com.binarskugga.skugga.util.EndpointUtils;
 import com.google.common.flogger.FluentLogger;
 import lombok.Getter;

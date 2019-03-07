@@ -12,15 +12,15 @@ import com.squareup.moshi.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MoshiExceptionParser implements ExceptionParser<String> {
+public class MoshiExceptionParser implements ExceptionParser {
 
 	@Override
-	public Throwable parse(HttpSession context, String object) {
+	public Throwable parse(HttpSession context, Object object) {
 		return null;
 	}
 
 	@Override
-	public String unparse(HttpSession session, Throwable throwable) {
+	public Object unparse(HttpSession session, Throwable throwable) {
 		Moshi moshi = MoshiProvider.get();
 		JsonAdapter<Map<String, Object>> adapter = moshi.adapter(Types.newParameterizedType(Map.class, String.class, Object.class));
 		Map<String, Object> data = new HashMap<>();
