@@ -20,6 +20,7 @@
 		<versions.google.guava>27.0.1-jre</versions.google.guava>
 		<versions.apache.commons>3.8.1</versions.apache.commons>
 		<versions.mongodb.bson>3.10.1</versions.mongodb.bson>
+		<versions.eatthepath.fast-uuid>0.1</versions.eatthepath.fast-uuid>
 		<versions.bouncycastle>1.60</versions.bouncycastle>
 		<versions.reflections>0.9.11</versions.reflections>
 		<versions.projectlombok>1.18.4</versions.projectlombok>
@@ -165,6 +166,11 @@
 			<artifactId>bson</artifactId>
 			<version>${versions.mongodb.bson}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.eatthepath</groupId>
+            <artifactId>fast-uuid</artifactId>
+            <version>${versions.eatthepath.fast-uuid}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
