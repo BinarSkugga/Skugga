@@ -49,8 +49,8 @@ public class ServerProperties {
 			root = getString("server.root", "api");
 
 			rootPackage = getString("server.config.root-package", "");
-			controllerPackage = getString("server.config.controller-package", "");
-			modelPackage = getString("server.config.model-package", "");
+			controllerPackage = getString("server.config.controller-package", "controller");
+			modelPackage = getString("server.config.model-package", "model");
 
 			Reflections reflections = new Reflections(rootPackage);
 			for (Class<? extends Token> token : reflections.getSubTypesOf(Token.class)) {

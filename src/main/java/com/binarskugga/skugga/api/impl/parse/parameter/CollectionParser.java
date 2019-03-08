@@ -77,7 +77,14 @@ public class CollectionParser implements ParameterParser<Collection> {
 
 	@Override
 	public boolean predicate(Parameter c) {
-		return Collection.class.isAssignableFrom(c.getType());
+		if(Collection.class.isAssignableFrom(c.getType())) {
+			Class inner = (Class) ((ParameterizedType) c.getParameterizedType()).getActualTypeArguments()[0];
+			return PrimitivaReflection.isBoxedPrimitive(inner) || CharSequence.class.isAssignableFrom(inner)
+					|| inner.equals(Class.class) || inner.equals(ObjectId.class) || inner.equals(UUID.class)
+					|| Enum.class.isAssignableFrom(inner);
+		}
+
+		return false;
 	}
 
 }
