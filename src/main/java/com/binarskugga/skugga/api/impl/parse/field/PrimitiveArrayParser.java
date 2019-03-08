@@ -11,15 +11,17 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class PrimitiveArrayParser implements FieldParser<Object, Object> {
+public class PrimitiveArrayParser implements FieldParser<Object> {
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object parse(Field field, Object value) throws CannotMapFieldException {
 		if (Collection.class.isAssignableFrom(value.getClass())) {
 			Object array = PrimitivaReflection.primitiveCollectionToArray((Collection) value);
-			PrimitivaArrayConverter<Object> arrayParser = PrimitivaConversion.array((Class<Object>) array.getClass());
-			return arrayParser.convertTo(field.getType(), array);
+			if(array != null) {
+				PrimitivaArrayConverter<Object> arrayParser = PrimitivaConversion.array((Class<Object>) array.getClass());
+				return arrayParser.convertTo(field.getType(), array);
+			}
 		}
 
 		throw new CannotMapFieldException();
@@ -27,6 +29,7 @@ public class PrimitiveArrayParser implements FieldParser<Object, Object> {
 
 	@Override
 	public Object unparse(Field field, Object value) throws CannotMapFieldException {
+		// TODO: Implement this in Primitiva
 		if (value.getClass().equals(byte[].class))
 			return Arrays.asList(ArrayUtils.toObject((byte[]) value));
 		else if (value.getClass().equals(short[].class))

@@ -6,15 +6,21 @@ import org.bson.types.ObjectId;
 
 import java.lang.reflect.Field;
 
-public class ObjectIdParser implements FieldParser<ObjectId, String> {
+public class ObjectIdParser implements FieldParser<ObjectId> {
 
 	@Override
-	public ObjectId parse(Field field, String value) throws CannotMapFieldException {
-		return new ObjectId(value);
+	public ObjectId parse(Field field, Object value) throws CannotMapFieldException {
+		if(CharSequence.class.isAssignableFrom(value.getClass())) {
+			CharSequence cs = (CharSequence) value;
+			StringBuilder sb = new StringBuilder(cs.length()).append(cs);
+			return new ObjectId(sb.toString());
+		}
+
+		throw new CannotMapFieldException();
 	}
 
 	@Override
-	public String unparse(Field field, ObjectId value) throws CannotMapFieldException {
+	public Object unparse(Field field, ObjectId value) throws CannotMapFieldException {
 		return value.toHexString();
 	}
 

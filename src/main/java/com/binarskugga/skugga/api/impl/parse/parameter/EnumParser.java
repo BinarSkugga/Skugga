@@ -1,15 +1,19 @@
 package com.binarskugga.skugga.api.impl.parse.parameter;
 
 import com.binarskugga.skugga.api.ParameterParser;
+import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 
 import java.lang.reflect.Parameter;
 
-public class EnumParser implements ParameterParser<Enum, String> {
+public class EnumParser implements ParameterParser<Enum> {
 
 	@SuppressWarnings("unchecked")
 	@Override public Enum parse(Parameter context, String object) throws Exception {
-		Class<? extends Enum> enumClass = (Class<? extends Enum>) context.getType();
-		return Enum.valueOf(enumClass, object);
+		if(Enum.class.isAssignableFrom(context.getType())) {
+			return Enum.valueOf((Class<? extends Enum>) context.getType(), object);
+		}
+
+		throw new CannotMapFieldException();
 	}
 
 	@Override public String unparse(Parameter context, Enum object) throws Exception {

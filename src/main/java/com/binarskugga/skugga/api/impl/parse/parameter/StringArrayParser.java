@@ -4,7 +4,7 @@ import com.binarskugga.skugga.api.ParameterParser;
 
 import java.lang.reflect.Parameter;
 
-public class StringArrayParser implements ParameterParser<String[], String> {
+public class StringArrayParser implements ParameterParser<String[]> {
 
 	@Override
 	public String[] parse(Parameter parameter, String argument) {

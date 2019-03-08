@@ -5,7 +5,7 @@ import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 
 import java.lang.reflect.Field;
 
-public class StringParser implements FieldParser<CharSequence, Object> {
+public class StringParser implements FieldParser<CharSequence> {
 
 	@Override
 	public CharSequence parse(Field field, Object value) throws CannotMapFieldException {

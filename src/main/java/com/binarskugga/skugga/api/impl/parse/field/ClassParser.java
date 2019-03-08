@@ -6,15 +6,17 @@ import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 
 import java.lang.reflect.Field;
 
-public class ClassParser implements FieldParser<Class, Object> {
+public class ClassParser implements FieldParser<Class> {
 
 	@Override
 	public Class parse(Field field, Object value) throws CannotMapFieldException {
 		if (value.getClass().equals(Class.class))
 			return (Class) value;
-		else if (CharSequence.class.isAssignableFrom(value.getClass()))
-			return PrimitivaReflection.forNameOrNull((String) value);
-		else
+		else if (CharSequence.class.isAssignableFrom(value.getClass())) {
+			CharSequence cs = (CharSequence) value;
+			StringBuilder sb = new StringBuilder(cs.length()).append(cs);
+			return PrimitivaReflection.forNameOrNull(cs.toString());
+		} else
 			throw new CannotMapFieldException();
 	}
 
