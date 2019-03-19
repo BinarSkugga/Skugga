@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 public interface DataRepository<I extends Serializable, C, T extends BaseEntity<I>, Q> {
 
+	AuthentifiableEntity<?, I> authenticatedEntity();
+
 	I createId(T entity);
 
 	T load(I id);

@@ -5,8 +5,6 @@ import com.binarskugga.skugga.api.AuthentifiableEntity;
 import com.binarskugga.skugga.api.BaseEntity;
 import com.binarskugga.skugga.api.annotation.*;
 import com.binarskugga.skugga.api.enums.InclusionMode;
-import com.binarskugga.skugga.api.exception.entity.EntityNotCreatableException;
-import com.binarskugga.skugga.api.exception.entity.EntityNotObtainableException;
 import com.binarskugga.skugga.api.exception.entity.EntityNotUpdatableException;
 import com.binarskugga.skugga.api.impl.parse.MapParser;
 
@@ -81,7 +79,7 @@ public class EntityUtils {
 
 	public static List<Field> getCreateFields(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
 		if (!isCreatable(entityClass, logged))
-			throw new EntityNotCreatableException(entityClass);
+			throw new EntityNotUpdatableException(entityClass);
 
 		Creatable creatable = entityClass.getAnnotation(Creatable.class);
 		List<Field> fields = Arrays.asList(entityClass.getDeclaredFields());
@@ -109,7 +107,7 @@ public class EntityUtils {
 
 	public static List<Field> getObtainFields(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
 		if (!isObtainable(entityClass, logged))
-			throw new EntityNotObtainableException(entityClass);
+			throw new EntityNotUpdatableException(entityClass);
 
 		Obtainable obtainable = entityClass.getAnnotation(Obtainable.class);
 		List<Field> fields = Arrays.asList(entityClass.getDeclaredFields());

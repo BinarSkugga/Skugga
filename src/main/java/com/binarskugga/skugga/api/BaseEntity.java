@@ -11,25 +11,25 @@ public interface BaseEntity<I extends Serializable> {
 		return true;
 	}
 
-	default void onLoaded() {
+	default void onLoaded(AuthentifiableEntity<?, I> entity) {
 	}
 
-	default void onCreate() {
+	default void onCreate(AuthentifiableEntity<?, I> entity) {
 	}
 
-	default void onCreated() {
+	default void onCreated(AuthentifiableEntity<?, I> entity) {
 	}
 
-	default void onUpdate() {
+	default void onUpdate(AuthentifiableEntity<?, I> entity) {
 	}
 
-	default void onUpdated() {
+	default void onUpdated(AuthentifiableEntity<?, I> entity) {
 	}
 
-	default void onDelete() {
+	default void onDelete(AuthentifiableEntity<?, I> entity) {
 	}
 
-	default void onDeleted() {
+	default void onDeleted(AuthentifiableEntity<?, I> entity) {
 	}
 
 }
