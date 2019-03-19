@@ -5,7 +5,7 @@ import com.binarskugga.skugga.util.CryptoUtils;
 import java.io.Serializable;
 import java.util.Date;
 
-public interface AuthentifiableEntity<E extends AuthentifiableEntity, I extends Serializable> extends BaseEntity<I> {
+public interface AuthentifiableEntity<E extends AuthentifiableEntity<E, I>, I extends Serializable> extends BaseEntity<I, E> {
 
 	String getAuthentifier();
 

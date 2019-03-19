@@ -3,7 +3,7 @@ package com.binarskugga.skugga.api;
 import java.io.Serializable;
 
 
-public interface BaseEntity<I extends Serializable> {
+public interface BaseEntity<I extends Serializable, E extends AuthentifiableEntity<E, I>> {
 
 	I getId();
 
@@ -11,25 +11,25 @@ public interface BaseEntity<I extends Serializable> {
 		return true;
 	}
 
-	default void onLoaded(AuthentifiableEntity<?, I> entity) {
+	default void onLoaded(E entity) {
 	}
 
-	default void onCreate(AuthentifiableEntity<?, I> entity) {
+	default void onCreate(E entity) {
 	}
 
-	default void onCreated(AuthentifiableEntity<?, I> entity) {
+	default void onCreated(E entity) {
 	}
 
-	default void onUpdate(AuthentifiableEntity<?, I> entity) {
+	default void onUpdate(E entity) {
 	}
 
-	default void onUpdated(AuthentifiableEntity<?, I> entity) {
+	default void onUpdated(E entity) {
 	}
 
-	default void onDelete(AuthentifiableEntity<?, I> entity) {
+	default void onDelete(E entity) {
 	}
 
-	default void onDeleted(AuthentifiableEntity<?, I> entity) {
+	default void onDeleted(E entity) {
 	}
 
 }
