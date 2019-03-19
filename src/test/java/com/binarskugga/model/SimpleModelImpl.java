@@ -11,7 +11,7 @@ import org.bson.types.ObjectId;
 
 @Entity(name = "simple_model") @Creatable
 @Builder @NoArgsConstructor @AllArgsConstructor
-public class SimpleModelImpl implements BaseEntity<String> {
+public class SimpleModelImpl implements BaseEntity<String, AuthModelImpl> {
 
 	@Id
 	@Getter @Setter private String id = new ObjectId().toHexString();

@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-public interface DataRepository<I extends Serializable, C, T extends BaseEntity<I>, Q> {
+public interface DataRepository<I extends Serializable, A extends AuthentifiableEntity<A, I>, C, T extends BaseEntity<I, A>, Q> {
 
-	AuthentifiableEntity<?, I> authenticatedEntity();
+	A getAuthenticated();
 
 	I createId(T entity);
 

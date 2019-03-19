@@ -1,11 +1,12 @@
 package com.binarskugga.impl;
 
-import com.binarskugga.skugga.api.AuthentifiableEntity;
+import com.binarskugga.model.AuthModelImpl;
 import com.binarskugga.skugga.api.BaseEntity;
 import com.binarskugga.skugga.api.DataRepository;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.LoadType;
 import com.googlecode.objectify.cmd.QueryExecute;
+import lombok.Getter;
 import org.bson.types.ObjectId;
 
 import java.util.List;
@@ -14,23 +15,18 @@ import java.util.stream.Collectors;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-public class ObjectifyRepository<T extends BaseEntity<String>> implements DataRepository<String, String, T, LoadType<T>> {
+public class ObjectifyRepository<T extends BaseEntity<String, AuthModelImpl>> implements DataRepository<String, AuthModelImpl, String, T, LoadType<T>> {
 
 	private Class<T> clazz;
-	private AuthentifiableEntity<?, String> authenticated;
+	@Getter private AuthModelImpl authenticated;
 
 	public ObjectifyRepository(Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
-	public ObjectifyRepository(Class<T> clazz, AuthentifiableEntity<?, String> authenticated) {
+	public ObjectifyRepository(Class<T> clazz, AuthModelImpl authenticated) {
 		this.clazz = clazz;
 		this.authenticated = authenticated;
-	}
-
-	@Override
-	public AuthentifiableEntity<?, String> authenticatedEntity() {
-		return authenticated;
 	}
 
 	@Override
