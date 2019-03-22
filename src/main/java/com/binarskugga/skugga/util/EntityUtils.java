@@ -1,10 +1,9 @@
 package com.binarskugga.skugga.util;
 
 import com.binarskugga.primitiva.reflection.PrimitivaReflection;
-import com.binarskugga.skugga.api.AuthentifiableEntity;
-import com.binarskugga.skugga.api.BaseEntity;
-import com.binarskugga.skugga.api.annotation.*;
-import com.binarskugga.skugga.api.enums.InclusionMode;
+import com.binarskugga.skugga.api.*;
+import com.binarskugga.skugga.api.annotation.Permission;
+import com.binarskugga.skugga.api.annotation.Permissions;
 import com.binarskugga.skugga.api.exception.entity.EntityNotUpdatableException;
 import com.binarskugga.skugga.api.impl.parse.MapParser;
 
@@ -18,132 +17,126 @@ public class EntityUtils {
 
 	private EntityUtils() {}
 
-	public static boolean isCreatable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
-		String role = logged == null ? null : logged.getRoleName();
-		Creatable creatable = PrimitivaReflection.getClassAnnotationOrNull(entityClass, Creatable.class);
-		if (creatable != null) {
-			List<String> roles = Arrays.asList(creatable.roles());
-			return roles.contains("*") || roles.contains(role);
-		}
-		return false;
+	private static Permission[] getPermissions(Class<? extends BaseEntity> clazz) {
+		if(!clazz.isAnnotationPresent(Permissions.class)) return null;
+		return PrimitivaReflection.getClassAnnotationOrNull(clazz, Permissions.class).value();
 	}
 
-	public static boolean isUpdatable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
-		String role = logged == null ? null : logged.getRoleName();
-		Updatable updatable = PrimitivaReflection.getClassAnnotationOrNull(entityClass, Updatable.class);
-		if (updatable != null) {
-			List<String> roles = Arrays.asList(updatable.roles());
-			return roles.contains("*") || roles.contains(role);
-		}
-		return false;
+	private static Permission[] getFieldPermissions(Field field) {
+		if(!field.isAnnotationPresent(Permissions.class)) return null;
+		return PrimitivaReflection.getFieldAnnotationOrNull(field, Permissions.class).value();
 	}
 
-	public static boolean isObtainable(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
-		String role = logged == null ? null : logged.getRoleName();
-		Obtainable obtainable = PrimitivaReflection.getClassAnnotationOrNull(entityClass, Obtainable.class);
-		if (obtainable != null) {
-			List<String> roles = Arrays.asList(obtainable.roles());
-			return roles.contains("*") || roles.contains(role);
+	private static boolean applyPredicates(Object e, Object v, Class<? extends PermissionPredicate>[] predicates) {
+		boolean pass = true;
+		for(Class<? extends PermissionPredicate> predicateClass : predicates) {
+			PermissionPredicate predicate = PrimitivaReflection.constructOrNull(predicateClass);
+			if(predicate == null) return false;
+			else if(predicate instanceof ValuePredicate) pass &= predicate.test(v);
+			else if(predicate instanceof EntityPredicate) pass &= predicate.test(e);
 		}
-		return false;
+		return pass;
 	}
 
-	public static List<Field> getUpdateFields(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
-		if (!isUpdatable(entityClass, logged))
+	private static Permission getCurrentPermission(Object e, Object v, Permission[] permissions) {
+		for(Permission perm : permissions) {
+			if(applyPredicates(e, v, perm.conditions())) return perm;
+		}
+		return null;
+	}
+
+	private static boolean accessible(String action, Object e, Object v, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
+		Permission[] perms = getPermissions(entityClass);
+		if(perms == null) return false;
+
+		String role = logged == null ? null : logged.getRoleName();
+		Permission perm = getCurrentPermission(e, v, perms);
+
+		if (perm != null) {
+			if(!perm.value().contains(action.substring(0, 1))) return false;
+
+			List<String> roles = Arrays.asList(perm.roles());
+			return roles.contains("*") || roles.contains(role);
+		} else return false;
+	}
+
+	private static boolean fieldAccessible(String action, Object e, Object v, Field field, AuthentifiableEntity logged) {
+		Permission[] perms = getFieldPermissions(field);
+		if(perms == null) return true;
+
+		String role = logged == null ? null : logged.getRoleName();
+		Permission perm = getCurrentPermission(e, v, perms);
+
+		if (perm != null) {
+			if(!perm.value().contains(action.substring(0, 1))) return false;
+
+			List<String> roles = Arrays.asList(perm.roles());
+			return roles.contains("*") || roles.contains(role);
+		} else return false;
+	}
+
+	public static boolean isReadable(Object e, Object v, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
+		return accessible("r", e, v, entityClass, logged);
+	}
+
+	public static boolean isWritable(Object e, Object v, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
+		return accessible("w", e, v, entityClass, logged);
+	}
+
+	public static boolean isCreatable(Object e, Object v, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) {
+		return accessible("c", e, v, entityClass, logged);
+	}
+
+	public static List<Field> getReadableFields(Object e, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
+		if (!isReadable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		Updatable updatable = entityClass.getAnnotation(Updatable.class);
-		List<Field> fields = Arrays.asList(entityClass.getDeclaredFields());
-		if (updatable.inclusion() == InclusionMode.INCLUDE) {
-			fields = fields.stream()
-					.filter(f -> !f.isAnnotationPresent(UpdateField.class) || f.getAnnotation(UpdateField.class).inclusion() != InclusionMode.EXCLUDE)
-					.collect(Collectors.toList());
-		} else if (updatable.inclusion() == InclusionMode.EXCLUDE) {
-			fields = fields.stream()
-					.filter(f -> f.isAnnotationPresent(UpdateField.class) && f.getAnnotation(UpdateField.class).inclusion() == InclusionMode.INCLUDE)
-					.collect(Collectors.toList());
-		}
-
-
-		fields = fields.stream().filter(f -> {
-			if (!f.isAnnotationPresent(UpdateField.class)) return true;
-			else {
-				String role = logged == null ? null : logged.getRoleName();
-				List<String> updateFieldRoles = Arrays.asList(f.getAnnotation(UpdateField.class).roles());
-				return updateFieldRoles.contains("*") || updateFieldRoles.contains(role);
-			}
-		}).collect(Collectors.toList());
+		List<Field> fields = PrimitivaReflection.getAllFields(entityClass).stream()
+				.filter(f -> {
+					Object v = PrimitivaReflection.getField(f, e);
+					return fieldAccessible("r", e, v, f, logged);
+				}).collect(Collectors.toList());
 
 		return fields;
 	}
 
-	public static List<Field> getCreateFields(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
-		if (!isCreatable(entityClass, logged))
+	public static List<Field> getWritableFields(Object e, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
+		if (!isWritable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		Creatable creatable = entityClass.getAnnotation(Creatable.class);
-		List<Field> fields = Arrays.asList(entityClass.getDeclaredFields());
-		if (creatable.inclusion() == InclusionMode.INCLUDE) {
-			fields = fields.stream()
-					.filter(f -> !f.isAnnotationPresent(CreateField.class) || f.getAnnotation(CreateField.class).inclusion() != InclusionMode.EXCLUDE)
-					.collect(Collectors.toList());
-		} else if (creatable.inclusion() == InclusionMode.EXCLUDE) {
-			fields = fields.stream()
-					.filter(f -> f.isAnnotationPresent(CreateField.class) && f.getAnnotation(CreateField.class).inclusion() == InclusionMode.INCLUDE)
-					.collect(Collectors.toList());
-		}
-
-		fields = fields.stream().filter(f -> {
-			if (!f.isAnnotationPresent(CreateField.class)) return true;
-			else {
-				String role = logged == null ? null : logged.getRoleName();
-				List<String> createFieldRoles = Arrays.asList(f.getAnnotation(CreateField.class).roles());
-				return createFieldRoles.contains("*") || createFieldRoles.contains(role);
-			}
-		}).collect(Collectors.toList());
+		List<Field> fields = PrimitivaReflection.getAllFields(entityClass).stream()
+				.filter(f -> {
+					Object v = PrimitivaReflection.getField(f, e);
+					return fieldAccessible("w", e, v, f, logged);
+				}).collect(Collectors.toList());
 
 		return fields;
 	}
 
-	public static List<Field> getObtainFields(Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
-		if (!isObtainable(entityClass, logged))
+	public static List<Field> getCreatableFields(Object e, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
+		if (!isCreatable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		Obtainable obtainable = entityClass.getAnnotation(Obtainable.class);
-		List<Field> fields = Arrays.asList(entityClass.getDeclaredFields());
-		if (obtainable.inclusion() == InclusionMode.INCLUDE) {
-			fields = fields.stream()
-					.filter(f -> !f.isAnnotationPresent(ObtainField.class) || f.getAnnotation(ObtainField.class).inclusion() != InclusionMode.EXCLUDE)
-					.collect(Collectors.toList());
-		} else if (obtainable.inclusion() == InclusionMode.EXCLUDE) {
-			fields = fields.stream()
-					.filter(f -> f.isAnnotationPresent(ObtainField.class) && f.getAnnotation(ObtainField.class).inclusion() == InclusionMode.INCLUDE)
-					.collect(Collectors.toList());
-		}
-
-		fields = fields.stream().filter(f -> {
-			if (!f.isAnnotationPresent(ObtainField.class)) return true;
-			else {
-				String role = logged == null ? null : logged.getRoleName();
-				List<String> obtainFieldRoles = Arrays.asList(f.getAnnotation(ObtainField.class).roles());
-				return obtainFieldRoles.contains("*") || obtainFieldRoles.contains(role);
-			}
-		}).collect(Collectors.toList());
+		List<Field> fields = PrimitivaReflection.getAllFields(entityClass).stream()
+				.filter(f -> {
+					Object v = PrimitivaReflection.getField(f, e);
+					return fieldAccessible("c", e, v, f, logged);
+				}).collect(Collectors.toList());
 
 		return fields;
 	}
 
-	public static <T extends BaseEntity> Map<String, Object> obtain(Class<T> entityClass, T e, AuthentifiableEntity logged) {
-		return MapParser.unparse(getObtainFields(entityClass, logged), e);
+	public static <T extends BaseEntity> Map<String, Object> read(Class<T> entityClass, T e, AuthentifiableEntity logged) {
+		return MapParser.unparse(getReadableFields(e, entityClass, logged), e);
 	}
 
-	public static <T extends BaseEntity> Map<String, Object> obtain(Class<T> entityClass, T e) {
-		return obtain(entityClass, e, null);
+	public static <T extends BaseEntity> Map<String, Object> read(Class<T> entityClass, T e) {
+		return read(entityClass, e, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends BaseEntity> T create(Class<T> entityClass, Map<String, Object> e, AuthentifiableEntity logged) {
-		return (T) MapParser.parse(getCreateFields(entityClass, logged), e);
+		return (T) MapParser.parse(getCreatableFields(e, entityClass, logged), e);
 	}
 
 	public static <T extends BaseEntity> T create(Class<T> entityClass, Map<String, Object> e) {
@@ -152,7 +145,7 @@ public class EntityUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends BaseEntity> T update(Class<T> entityClass, Map<String, Object> e, AuthentifiableEntity logged) {
-		return (T) MapParser.parse(getUpdateFields(entityClass, logged), e);
+		return (T) MapParser.parse(getWritableFields(e, entityClass, logged), e);
 	}
 
 	public static <T extends BaseEntity> T update(Class<T> entityClass, Map<String, Object> e) {
