@@ -1,6 +1,7 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.ClassTools;
+import com.binarskugga.primitiva.Primitiva;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.BodyParser;
 import com.binarskugga.skugga.api.ExceptionParser;
@@ -72,8 +73,9 @@ public class HttpSession {
 		if (endpoint == null) return ServerProperties.getContentType();
 		String contentType = this.endpoint.getContentType();
 		if(!(endpoint.getReturnType() instanceof  ParameterizedType) && !(endpoint.getReturnType() instanceof TypeVariable)) {
-			if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)
-					|| PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class))
+			ClassTools tools = ClassTools.of(endpoint.getReturnType());
+			if (tools.isOneOf(Byte.class, byte.class)
+					|| (tools.isArray() && ClassTools.of(tools.getArrayType()).isOneOf(Byte.class, byte.class)))
 				contentType = "application/octet-stream";
 		}
 		return contentType;
@@ -86,7 +88,7 @@ public class HttpSession {
 	@SuppressWarnings("unchecked")
 	public <T extends BodyParser> T getBodyParser() {
 		if (this.endpoint != null) {
-			return (T) BodyParsingHandler.get().getParser(this.endpoint, PrimitivaReflection.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+			return (T) BodyParsingHandler.get().getParser(this.endpoint, Primitiva.Reflection.ofMethod(this.endpoint.getAction()).getAnnotation(UseParser.class));
 		} else {
 			return (T) BodyParsingHandler.get().getParsers().get(0);
 		}
@@ -95,7 +97,7 @@ public class HttpSession {
 	@SuppressWarnings("unchecked")
 	public <T extends ExceptionParser> T getExceptionParser() {
 		if (this.endpoint != null) {
-			return (T) ExceptionParsingHandler.get().getParser(this.endpoint, PrimitivaReflection.getMethodAnnotationOrNull(this.endpoint.getAction(), UseParser.class));
+			return (T) ExceptionParsingHandler.get().getParser(this.endpoint, Primitiva.Reflection.ofMethod(this.endpoint.getAction()).getAnnotation(UseParser.class));
 		} else {
 			return (T) ExceptionParsingHandler.get().getParsers().get(0);
 		}

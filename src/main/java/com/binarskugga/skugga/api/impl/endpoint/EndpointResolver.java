@@ -1,6 +1,6 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.ClassTools;
 import com.binarskugga.skugga.api.annotation.*;
 import com.binarskugga.skugga.api.enums.HttpMethod;
 import com.binarskugga.skugga.api.impl.controller.TokenController;
@@ -70,7 +70,8 @@ public class EndpointResolver {
 	public void registerController(String root, Class<? extends AbstractController> controller) {
 		String controllerPath = EndpointUtils.getControllerPath(root, controller);
 
-		Set<Method> methods = PrimitivaReflection.getAllMethods(controller).stream().filter(m ->
+		ClassTools<? extends AbstractController> tools = ClassTools.of(controller);
+		Set<Method> methods = tools.getAllMethods().stream().filter(m ->
 				(m.isAnnotationPresent(Get.class) || m.isAnnotationPresent(Post.class))
 						&& !Modifier.isVolatile(m.getModifiers())
 		).collect(Collectors.toSet());

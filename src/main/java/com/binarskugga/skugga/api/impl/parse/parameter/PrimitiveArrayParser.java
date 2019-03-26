@@ -1,7 +1,7 @@
 package com.binarskugga.skugga.api.impl.parse.parameter;
 
-import com.binarskugga.primitiva.conversion.PrimitivaConversion;
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.ClassTools;
+import com.binarskugga.primitiva.Primitiva;
 import com.binarskugga.skugga.api.ParameterParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 
@@ -11,8 +11,8 @@ public class PrimitiveArrayParser implements ParameterParser<Object> {
 
 	@Override
 	public Object parse(Parameter parameter, String argument) {
-		if(PrimitivaReflection.isPrimitiveArrayOrBoxed(parameter.getType())) {
-			return PrimitivaConversion.array(String.class).setSeparator(",").convertTo(parameter.getType(), argument);
+		if(ClassTools.of(parameter.getType()).isPrimitiveOrBoxedArray()) {
+			return Primitiva.Conversion.ofPrimitive(String[].class).convertTo(argument.split(","), parameter.getType());
 		}
 
 		throw new CannotMapFieldException();
@@ -20,8 +20,8 @@ public class PrimitiveArrayParser implements ParameterParser<Object> {
 
 	@Override public String unparse(Parameter context, Object object) throws Exception {
 		// TODO: Need primitiva array to collection method
-//		if(PrimitivaReflection.isPrimitiveArrayOrBoxed(context.getType())) {
-//			return Joiner.on(",").join(object);
+//		if(ClassTools.of(context.getType()).isPrimitiveOrBoxedArray()) {
+//			return Joiner.on(",").join();
 //		}
 
 		throw new CannotMapFieldException();
@@ -29,7 +29,7 @@ public class PrimitiveArrayParser implements ParameterParser<Object> {
 
 	@Override
 	public boolean predicate(Parameter c) {
-		return PrimitivaReflection.isPrimitiveArrayOrBoxed(c.getType());
+		return ClassTools.of(c.getType()).isPrimitiveOrBoxedArray();
 	}
 
 }

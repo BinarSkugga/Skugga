@@ -1,6 +1,7 @@
 package com.binarskugga.skugga;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.ClassTools;
+import com.binarskugga.primitiva.Primitiva;
 import com.binarskugga.skugga.api.DataConnector;
 import com.binarskugga.skugga.api.RequestHandler;
 import com.binarskugga.skugga.api.enums.HttpMethod;
@@ -143,7 +144,7 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		if (this.controllers.containsKey(endpoint.getController()))
 			controller = this.controllers.get(endpoint.getController());
 		else {
-			controller = PrimitivaReflection.safeConstruct(endpoint.getController());
+			controller = (AbstractController) Primitiva.Reflection.ofType(endpoint.getController()).safeCreate();
 			this.controllers.putIfAbsent(endpoint.getController(), controller);
 		}
 		controller.setSession(session);
@@ -153,11 +154,11 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		Object result = action.invoke(controller, params.toArray());
 
 		if(!(endpoint.getReturnType() instanceof ParameterizedType) && !(endpoint.getReturnType() instanceof TypeVariable)) {
-			if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte[].class, byte[].class)) {
+			if (ClassTools.of(endpoint.getReturnType()).isOneOf(Byte[].class, byte[].class)) {
 				if (endpoint.getReturnType().equals(Byte[].class))
 					return ArrayUtils.toPrimitive((Byte[]) result);
 				return (byte[]) result;
-			} else if (PrimitivaReflection.typeEqualsIgnoreBoxing((Class) endpoint.getReturnType(), Byte.class, byte.class)) {
+			} else if (ClassTools.of(endpoint.getReturnType()).isOneOf(Byte.class, byte.class)) {
 				return new byte[]{(byte) result};
 			} else if (endpoint.getReturnType().equals(void.class)) {
 				return new byte[0];

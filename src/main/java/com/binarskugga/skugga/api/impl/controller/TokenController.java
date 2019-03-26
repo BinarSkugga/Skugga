@@ -1,6 +1,6 @@
 package com.binarskugga.skugga.api.impl.controller;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.Primitiva;
 import com.binarskugga.skugga.api.AuthentifiableEntity;
 import com.binarskugga.skugga.api.Token;
 import com.binarskugga.skugga.api.annotation.Controller;
@@ -31,7 +31,7 @@ public class TokenController extends AuthController {
 		if (!entity.validatePassword(login.getPassword()))
 			throw new LoginException();
 
-		Token token = PrimitivaReflection.constructOrNull(this.getTokenClass());
+		Token token = (Token) Primitiva.Reflection.ofType(this.getTokenClass()).create();
 		token.setAuthentifier(entity.getAuthentifier());
 		token.setLTT(true);
 		return token.generate();
@@ -43,7 +43,7 @@ public class TokenController extends AuthController {
 		if(this.getAuthRepository() == null)
 			throw new NoAuthException();
 
-		Token token = PrimitivaReflection.constructOrNull(this.getTokenClass());
+		Token token = (Token) Primitiva.Reflection.ofType(this.getTokenClass()).create();
 		if (token == null)
 			throw new InvalidTokenException();
 

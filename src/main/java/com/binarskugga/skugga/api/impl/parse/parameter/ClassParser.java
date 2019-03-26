@@ -1,6 +1,6 @@
 package com.binarskugga.skugga.api.impl.parse.parameter;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.ClassTools;
 import com.binarskugga.skugga.api.ParameterParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 
@@ -10,9 +10,9 @@ public class ClassParser implements ParameterParser<Class> {
 
 	@Override
 	public Class parse(Parameter parameter, String argument) {
-		Class c = PrimitivaReflection.forNameOrNull(argument);
+		Class c = ClassTools.of(argument).get();
 		if(c != null)
-			return PrimitivaReflection.forNameOrNull(argument);
+			return c;
 
 		throw new CannotMapFieldException();
 	}

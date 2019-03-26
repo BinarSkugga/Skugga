@@ -1,6 +1,9 @@
 package com.binarskugga.skugga.util;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.ClassTools;
+import com.binarskugga.primitiva.Primitiva;
+import com.binarskugga.primitiva.reflection.FieldReflector;
+import com.binarskugga.primitiva.reflection.TypeReflector;
 import com.binarskugga.skugga.api.*;
 import com.binarskugga.skugga.api.annotation.Permission;
 import com.binarskugga.skugga.api.annotation.Permissions;
@@ -11,26 +14,28 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class EntityUtils {
 
 	private EntityUtils() {}
 
+	@SuppressWarnings("unchecked")
 	private static Permission[] getPermissions(Class<? extends BaseEntity> clazz) {
 		if(!clazz.isAnnotationPresent(Permissions.class)) return null;
-		return PrimitivaReflection.getClassAnnotationOrNull(clazz, Permissions.class).value();
+		TypeReflector<Class<? extends BaseEntity>> reflector = Primitiva.Reflection.ofType(clazz);
+		return reflector.getAnnotation(Permissions.class).value();
 	}
 
 	private static Permission[] getFieldPermissions(Field field) {
 		if(!field.isAnnotationPresent(Permissions.class)) return null;
-		return PrimitivaReflection.getFieldAnnotationOrNull(field, Permissions.class).value();
+		FieldReflector reflector = Primitiva.Reflection.ofField(field);
+		return reflector.getAnnotation(Permissions.class).value();
 	}
 
 	private static boolean applyPredicates(Object e, Object v, Class<? extends PermissionPredicate>[] predicates) {
 		boolean pass = true;
 		for(Class<? extends PermissionPredicate> predicateClass : predicates) {
-			PermissionPredicate predicate = PrimitivaReflection.constructOrNull(predicateClass);
+			PermissionPredicate predicate = (PermissionPredicate) Primitiva.Reflection.ofType(predicateClass).create();
 			if(predicate == null) return false;
 			else if(predicate instanceof ValuePredicate) pass &= predicate.test(v);
 			else if(predicate instanceof EntityPredicate) pass &= predicate.test(e);
@@ -87,43 +92,40 @@ public class EntityUtils {
 		return accessible("c", e, v, entityClass, logged);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Field> getReadableFields(Object e, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
 		if (!isReadable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		List<Field> fields = PrimitivaReflection.getAllFields(entityClass).stream()
-				.filter(f -> {
-					Object v = PrimitivaReflection.getField(f, e);
-					return fieldAccessible("r", e, v, f, logged);
-				}).collect(Collectors.toList());
-
-		return fields;
+		ClassTools<? extends BaseEntity> tools = ClassTools.of(entityClass);
+		return tools.getFields(f -> {
+			Object v = Primitiva.Reflection.ofField(f).get(e);
+			return fieldAccessible("r", e, v, f, logged);
+		});
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Field> getWritableFields(Object e, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
 		if (!isWritable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		List<Field> fields = PrimitivaReflection.getAllFields(entityClass).stream()
-				.filter(f -> {
-					Object v = PrimitivaReflection.getField(f, e);
-					return fieldAccessible("w", e, v, f, logged);
-				}).collect(Collectors.toList());
-
-		return fields;
+		ClassTools<? extends BaseEntity> tools = ClassTools.of(entityClass);
+		return tools.getFields(f -> {
+			Object v = Primitiva.Reflection.ofField(f).get(e);
+			return fieldAccessible("w", e, v, f, logged);
+		});
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Field> getCreatableFields(Object e, Class<? extends BaseEntity> entityClass, AuthentifiableEntity logged) throws RuntimeException {
 		if (!isCreatable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		List<Field> fields = PrimitivaReflection.getAllFields(entityClass).stream()
-				.filter(f -> {
-					Object v = PrimitivaReflection.getField(f, e);
-					return fieldAccessible("c", e, v, f, logged);
-				}).collect(Collectors.toList());
-
-		return fields;
+		ClassTools<? extends BaseEntity> tools = ClassTools.of(entityClass);
+		return tools.getFields(f -> {
+			Object v = Primitiva.Reflection.ofField(f).get(e);
+			return fieldAccessible("c", e, v, f, logged);
+		});
 	}
 
 	public static <T extends BaseEntity> Map<String, Object> read(Class<T> entityClass, T e, AuthentifiableEntity logged) {

@@ -1,8 +1,5 @@
 package com.binarskugga.skugga.api.impl.parse.field;
 
-import com.binarskugga.primitiva.conversion.PrimitivaArrayConverter;
-import com.binarskugga.primitiva.conversion.PrimitivaConversion;
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
 import com.binarskugga.skugga.api.FieldParser;
 import com.binarskugga.skugga.api.exception.CannotMapFieldException;
 import org.apache.commons.lang3.ArrayUtils;

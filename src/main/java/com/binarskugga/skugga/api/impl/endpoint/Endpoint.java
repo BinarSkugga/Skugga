@@ -1,6 +1,6 @@
 package com.binarskugga.skugga.api.impl.endpoint;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.Primitiva;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.ParameterParser;
 import com.binarskugga.skugga.api.annotation.UseParser;
@@ -63,7 +63,7 @@ public class Endpoint {
 			for (int i = 0, p = 0; i < brokenEndpoint.length; i++) {
 				if (brokenEndpoint[i].equals("$")) {
 					Parameter parameter = parameters[p++];
-					ParameterParser parser = parsingHandler.getParser(parameter, PrimitivaReflection.getParamAnnotationOrNull(parameter, UseParser.class));
+					ParameterParser parser = parsingHandler.getParser(parameter, Primitiva.Reflection.ofParameter(parameter).getAnnotation(UseParser.class));
 					args.add(parser.parse(parameter, brokenRequest[i]));
 				}
 			}

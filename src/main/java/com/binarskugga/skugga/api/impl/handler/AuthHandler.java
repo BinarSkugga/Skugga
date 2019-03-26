@@ -1,6 +1,8 @@
 package com.binarskugga.skugga.api.impl.handler;
 
-import com.binarskugga.primitiva.reflection.PrimitivaReflection;
+import com.binarskugga.primitiva.Primitiva;
+import com.binarskugga.primitiva.reflection.MethodReflector;
+import com.binarskugga.primitiva.reflection.TypeReflector;
 import com.binarskugga.skugga.ServerProperties;
 import com.binarskugga.skugga.api.RequestHandler;
 import com.binarskugga.skugga.api.Token;
@@ -8,6 +10,7 @@ import com.binarskugga.skugga.api.annotation.Connected;
 import com.binarskugga.skugga.api.annotation.NotConnected;
 import com.binarskugga.skugga.api.exception.auth.InsufficientRoleException;
 import com.binarskugga.skugga.api.exception.auth.InvalidTokenException;
+import com.binarskugga.skugga.api.impl.endpoint.AbstractController;
 import com.binarskugga.skugga.api.impl.endpoint.Endpoint;
 import com.binarskugga.skugga.api.impl.endpoint.HttpSession;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,15 +27,19 @@ import java.util.stream.Collectors;
 
 public class AuthHandler implements RequestHandler {
 
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public boolean handle(HttpSession session) throws RuntimeException {
 		Endpoint endpoint = session.getEndpoint();
 		Class controller = endpoint.getController();
-		if (PrimitivaReflection.getMethodAnnotationOrNull(endpoint.getAction(), NotConnected.class) != null)
+
+		MethodReflector methodReflector = Primitiva.Reflection.ofMethod(endpoint.getAction());
+		TypeReflector<AbstractController> controllerReflector = Primitiva.Reflection.ofType(endpoint.getController());
+
+		if (methodReflector.getAnnotation(NotConnected.class) != null)
 			return true;
 
-		Connected connected = PrimitivaReflection.getMethodAnnotationOrNull(endpoint.getAction(), Connected.class);
-		if (connected == null) connected = PrimitivaReflection.getClassAnnotationOrNull(controller, Connected.class);
+		Connected connected = methodReflector.getAnnotation(Connected.class);
+		if (connected == null) connected = controllerReflector.getAnnotation(Connected.class);
 		if (connected == null) return true;
 
 		List<String> roles = Arrays.stream(connected.roles()).map(String::toUpperCase).collect(Collectors.toList());
@@ -67,7 +74,7 @@ public class AuthHandler implements RequestHandler {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Token> T createToken(Cookie cookie) throws SignatureException, ExpiredJwtException, MalformedJwtException, UnsupportedJwtException {
-		Token token = PrimitivaReflection.constructOrNull(ServerProperties.getTokenClass());
+		Token token = (Token) Primitiva.Reflection.ofType(ServerProperties.getTokenClass()).create();
 		if (token == null) return null;
 
 		token.parse(cookie.getValue());
