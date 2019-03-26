@@ -144,7 +144,7 @@ public class SkuggaHandler extends LinkedList<RequestHandler> implements HttpHan
 		if (this.controllers.containsKey(endpoint.getController()))
 			controller = this.controllers.get(endpoint.getController());
 		else {
-			controller = (AbstractController) Primitiva.Reflection.ofType(endpoint.getController()).safeCreate();
+			controller = Primitiva.Reflection.ofType(endpoint.getController()).safeCreate();
 			this.controllers.putIfAbsent(endpoint.getController(), controller);
 		}
 		controller.setSession(session);

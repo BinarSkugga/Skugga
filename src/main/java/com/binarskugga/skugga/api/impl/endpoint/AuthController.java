@@ -27,7 +27,7 @@ public abstract class AuthController extends AbstractController {
 		if (authenticatorClasses.size() > 0) {
 			Class<? extends AuthentifiableEntity> authenticatorClass = authenticatorClasses.get(0);
 			Class<? extends DataRepository> repositoryClass = authenticatorClass.getAnnotation(Authenticator.class).value();
-			this.authRepository = (DataRepository) Primitiva.Reflection.ofType(repositoryClass).create(authenticatorClass);
+			this.authRepository = Primitiva.Reflection.ofType(repositoryClass).create(authenticatorClass);
 			this.tokenClass = ServerProperties.getTokenClass();
 		}
 		return this;

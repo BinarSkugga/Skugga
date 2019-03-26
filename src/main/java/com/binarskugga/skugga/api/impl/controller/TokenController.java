@@ -31,7 +31,7 @@ public class TokenController extends AuthController {
 		if (!entity.validatePassword(login.getPassword()))
 			throw new LoginException();
 
-		Token token = (Token) Primitiva.Reflection.ofType(this.getTokenClass()).create();
+		Token token = Primitiva.Reflection.ofType(this.getTokenClass()).create();
 		token.setAuthentifier(entity.getAuthentifier());
 		token.setLTT(true);
 		return token.generate();
@@ -43,7 +43,7 @@ public class TokenController extends AuthController {
 		if(this.getAuthRepository() == null)
 			throw new NoAuthException();
 
-		Token token = (Token) Primitiva.Reflection.ofType(this.getTokenClass()).create();
+		Token token = Primitiva.Reflection.ofType(this.getTokenClass()).create();
 		if (token == null)
 			throw new InvalidTokenException();
 

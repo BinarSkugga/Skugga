@@ -2,8 +2,6 @@ package com.binarskugga.skugga.util;
 
 import com.binarskugga.primitiva.ClassTools;
 import com.binarskugga.primitiva.Primitiva;
-import com.binarskugga.primitiva.reflection.FieldReflector;
-import com.binarskugga.primitiva.reflection.TypeReflector;
 import com.binarskugga.skugga.api.*;
 import com.binarskugga.skugga.api.annotation.Permission;
 import com.binarskugga.skugga.api.annotation.Permissions;
@@ -22,20 +20,18 @@ public class EntityUtils {
 	@SuppressWarnings("unchecked")
 	private static Permission[] getPermissions(Class<? extends BaseEntity> clazz) {
 		if(!clazz.isAnnotationPresent(Permissions.class)) return null;
-		TypeReflector<Class<? extends BaseEntity>> reflector = Primitiva.Reflection.ofType(clazz);
-		return reflector.getAnnotation(Permissions.class).value();
+		return Primitiva.Reflection.ofType(clazz).getAnnotation(Permissions.class).value();
 	}
 
 	private static Permission[] getFieldPermissions(Field field) {
 		if(!field.isAnnotationPresent(Permissions.class)) return null;
-		FieldReflector reflector = Primitiva.Reflection.ofField(field);
-		return reflector.getAnnotation(Permissions.class).value();
+		return Primitiva.Reflection.ofField(field).getAnnotation(Permissions.class).value();
 	}
 
 	private static boolean applyPredicates(Object e, Object v, Class<? extends PermissionPredicate>[] predicates) {
 		boolean pass = true;
 		for(Class<? extends PermissionPredicate> predicateClass : predicates) {
-			PermissionPredicate predicate = (PermissionPredicate) Primitiva.Reflection.ofType(predicateClass).create();
+			PermissionPredicate predicate = Primitiva.Reflection.ofType(predicateClass).create();
 			if(predicate == null) return false;
 			else if(predicate instanceof ValuePredicate) pass &= predicate.test(v);
 			else if(predicate instanceof EntityPredicate) pass &= predicate.test(e);
@@ -97,8 +93,7 @@ public class EntityUtils {
 		if (!isReadable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		ClassTools<? extends BaseEntity> tools = ClassTools.of(entityClass);
-		return tools.getFields(f -> {
+		return ClassTools.of(entityClass).getFields(f -> {
 			Object v = Primitiva.Reflection.ofField(f).get(e);
 			return fieldAccessible("r", e, v, f, logged);
 		});
@@ -109,8 +104,7 @@ public class EntityUtils {
 		if (!isWritable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		ClassTools<? extends BaseEntity> tools = ClassTools.of(entityClass);
-		return tools.getFields(f -> {
+		return ClassTools.of(entityClass).getFields(f -> {
 			Object v = Primitiva.Reflection.ofField(f).get(e);
 			return fieldAccessible("w", e, v, f, logged);
 		});
@@ -121,8 +115,7 @@ public class EntityUtils {
 		if (!isCreatable(e, null, entityClass, logged))
 			throw new EntityNotUpdatableException(entityClass);
 
-		ClassTools<? extends BaseEntity> tools = ClassTools.of(entityClass);
-		return tools.getFields(f -> {
+		return ClassTools.of(entityClass).getFields(f -> {
 			Object v = Primitiva.Reflection.ofField(f).get(e);
 			return fieldAccessible("c", e, v, f, logged);
 		});

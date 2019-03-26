@@ -69,9 +69,8 @@ public class EndpointResolver {
 
 	public void registerController(String root, Class<? extends AbstractController> controller) {
 		String controllerPath = EndpointUtils.getControllerPath(root, controller);
-
-		ClassTools<? extends AbstractController> tools = ClassTools.of(controller);
-		Set<Method> methods = tools.getAllMethods().stream().filter(m ->
+		
+		Set<Method> methods = ClassTools.of(controller).getAllMethods().stream().filter(m ->
 				(m.isAnnotationPresent(Get.class) || m.isAnnotationPresent(Post.class))
 						&& !Modifier.isVolatile(m.getModifiers())
 		).collect(Collectors.toSet());

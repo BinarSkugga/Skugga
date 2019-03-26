@@ -19,8 +19,8 @@ public class MapParser {
 
 	@SuppressWarnings("unchecked")
 	public static Object parse(List<Field> fields, Map<String, Object> input) {
-		TypeReflector<Class> reflector = Primitiva.Reflection.ofType(fields.get(0).getDeclaringClass());
-		Object instance = reflector.create(fields.get(0).getDeclaringClass());
+		TypeReflector reflector = Primitiva.Reflection.ofType(fields.get(0).getDeclaringClass());
+		Object instance = Primitiva.Reflection.ofType(fields.get(0).getDeclaringClass()).create();
 		if (instance != null) {
 			try {
 				for (Field f : fields) {

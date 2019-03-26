@@ -33,7 +33,7 @@ public abstract class ParsingHandler<P extends Parser, T> {
 
 		List<P> defaultParsers = new LinkedList<>();
 		for (Class<? extends Parser> parserClass : reflections.getSubTypesOf(parserType)) {
-			TypeReflector<? extends Parser> parserReflector = Primitiva.Reflection.ofType(parserClass);
+			TypeReflector parserReflector = Primitiva.Reflection.ofType(parserClass);
 			if(parserClass.getName().startsWith(ServerProperties.getSkuggaPackage()))
 				defaultParsers.add((P) parserReflector.create());
 			else if (!parserClass.isAnnotationPresent(IgnoreParser.class))
