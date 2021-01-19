@@ -29,7 +29,7 @@
 		<versions.binarskugga.primitiva>1.0</versions.binarskugga.primitiva>
 
 		<!-- CORE -->
-		<versions.undertow.core>2.0.16.Final</versions.undertow.core>
+		<versions.undertow.core>2.0.23.Final</versions.undertow.core>
 		<versions.jsonwebtoken.api>0.10.5</versions.jsonwebtoken.api>
 		<versions.jsonwebtoken.impl>0.10.5</versions.jsonwebtoken.impl>
 
