@@ -17,7 +17,7 @@
 		<github.global.server>github</github.global.server>
 
 		<!-- UTILS -->
-		<versions.google.guava>27.0.1-jre</versions.google.guava>
+		<versions.google.guava>29.0-jre</versions.google.guava>
 		<versions.apache.commons>3.8.1</versions.apache.commons>
 		<versions.mongodb.bson>3.10.1</versions.mongodb.bson>
 		<versions.eatthepath.fast-uuid>0.1</versions.eatthepath.fast-uuid>
