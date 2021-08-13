@@ -21,7 +21,7 @@
 		<versions.apache.commons>3.8.1</versions.apache.commons>
 		<versions.mongodb.bson>3.10.1</versions.mongodb.bson>
 		<versions.eatthepath.fast-uuid>0.1</versions.eatthepath.fast-uuid>
-		<versions.bouncycastle>1.60</versions.bouncycastle>
+		<versions.bouncycastle>1.67</versions.bouncycastle>
 		<versions.reflections>0.9.11</versions.reflections>
 		<versions.projectlombok>1.18.4</versions.projectlombok>
 		<versions.slf4j.jdk14>1.7.25</versions.slf4j.jdk14>
